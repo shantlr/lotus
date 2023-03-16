@@ -32,7 +32,7 @@ export function RadioGroup<Value>({
         const res = (
           <div
             className={classNames(
-              'px-4 py-1 hover:bg-gray-500 cursor-pointer',
+              'px-4 py-1 transition hover:bg-gray-500 cursor-pointer',
               {
                 'rounded-l-sm': index === 0,
                 'rounded-r-sm': index === options.length - 1,
