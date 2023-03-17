@@ -17,15 +17,9 @@ export default function HomePage() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className="w-full h-full">
-        {!session && (
-          <div>
-            <button onClick={() => signIn('google')}>Sign in</button>
-          </div>
-        )}
-        {Boolean(session) && (
-          <>
-            <SideBar />
-            {/* <div className={styles.description}>
+        <>
+          <SideBar />
+          {/* <div className={styles.description}>
               <p>
                 Get started by editing&nbsp;
                 <code className={styles.code}>src/pages/index.tsx</code>
@@ -128,8 +122,7 @@ export default function HomePage() {
                 </p>
               </a>
             </div> */}
-          </>
-        )}
+        </>
       </main>
     </>
   );
