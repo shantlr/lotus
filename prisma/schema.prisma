@@ -33,8 +33,8 @@ model Account {
 model Session {
   id           String   @id @default(cuid())
   sessionToken String   @unique
-  userId       String
   expires      DateTime
+  userId       String   @map("user_id")
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("sessions")
@@ -44,10 +44,11 @@ model User {
   id            String    @id @default(cuid())
   name          String?
   email         String?   @unique
-  emailVerified DateTime?
+  emailVerified DateTime? @map("email_verified")
   image         String?
   accounts      Account[]
   sessions      Session[]
+  tasks         Task[]
 
   @@map("users")
 }
@@ -59,4 +60,15 @@ model VerificationToken {
 
   @@unique([identifier, token])
   @@map("verification_tokens")
+}
+
+model Task {
+  id String @id @default(cuid())
+  start DateTime
+  end DateTime
+
+  title String
+
+  creator_id String
+  creator User @relation(fields: [creator_id], references: [id], onDelete: Cascade)
 }
