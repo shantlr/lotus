@@ -3,6 +3,8 @@ import dayjs from 'dayjs';
 import { range } from 'lodash';
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 
+const HOUR_HEIGHT = 120;
+
 export const DayCalendar = () => {
   const [selectedDate, setSelectedDate] = useState(() => {
     return dayjs().format('DD/MM/YYYY');
@@ -82,7 +84,8 @@ export const DayCalendar = () => {
         {range(0, 24).map((h) => (
           <div
             key={h}
-            className={`flex h-[50px] flex-shrink-0 w-full hover:bg-gray-800 hour-block-${h}`}
+            style={{ height: HOUR_HEIGHT }}
+            className={`flex flex-shrink-0 w-full hover:bg-gray-800 hour-block-${h}`}
           >
             <div
               className={classNames(
