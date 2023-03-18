@@ -27,7 +27,7 @@ export function RadioGroup<Value>({
   }, [options, value]);
 
   return (
-    <div className="inline-flex border-2 rounded">
+    <div className="inline-flex border rounded">
       {options.map((opt, index) => {
         const res = (
           <div

@@ -1,6 +1,7 @@
 import classNames from 'classnames';
 import dayjs from 'dayjs';
 import { range } from 'lodash';
+import { useRouter } from 'next/router';
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 
 const HOUR_HEIGHT = 120;
@@ -51,11 +52,13 @@ export const DayCalendar = () => {
           top:
             elem.offsetTop -
             hoursContainerRef.current.offsetTop -
-            elem.offsetHeight * 2,
+            elem.offsetHeight * 1.2,
         });
       }
     }
   }, []);
+
+  const router = useRouter();
 
   return (
     <div className="flex flex-col overflow-hidden w-full h-full">
@@ -97,12 +100,15 @@ export const DayCalendar = () => {
             >{`${h}h`}</div>
             <div
               className={classNames(
-                'border-b-2 border-r-2 border-gray-700 w-full h-full',
+                'border-b-2 border-r-2 border-gray-700 w-full h-full cursor-pointer',
                 {
                   'border-t-2 border-t-gray-700 rounded-tr': h === 0,
                   'rounded-br': h === 23,
                 }
               )}
+              onClick={() => {
+                router.replace(`${router.pathname}?new_task`);
+              }}
             ></div>
           </div>
         ))}

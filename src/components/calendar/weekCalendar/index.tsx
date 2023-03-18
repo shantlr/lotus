@@ -43,7 +43,7 @@ export const WeekCalendar = () => {
                 className="flex-grow border-l-2 h-auto border-gray-700"
                 key={d.key}
               >
-                <div className="">A</div>
+                <div className=""></div>
               </div>
             ))}
           </div>
