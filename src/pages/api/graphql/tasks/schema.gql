@@ -1,0 +1,22 @@
+extend type Query {
+  tasks: [Task!]!
+}
+
+extend type Mutation {
+  createTask(input: CreateTaskInput!): TaskCreated!
+}
+
+input CreateTaskInput {
+  title: String!
+  startDate: DateTime!
+  endDate: DateTime!
+}
+
+type TaskCreated {
+  task: Task!
+}
+
+type Task {
+  id: ID!
+  title: String!
+}

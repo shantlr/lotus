@@ -1,16 +1,43 @@
+import { graphql } from '@/gql/__generated/client';
 import dayjs from 'dayjs';
 import { useState } from 'react';
+import { useMutation } from 'urql';
 import { Button } from '../base/button';
 import { Input } from '../base/input';
 
-export const CreateTaskPane = ({ onClose }: { onClose?: () => void }) => {
-  const [title, setTitle] = useState('');
+const CREATE_TASK = graphql(`
+  mutation CreateTask($input: CreateTaskInput!) {
+    createTask(input: $input) {
+      task {
+        id
+        title
+      }
+    }
+  }
+`);
+
+const DATE_FORMAT = 'YYYY-MM-DDTHH:mm';
+
+export const CreateTaskPane = ({
+  initial,
+  onClose,
+}: {
+  initial?: {
+    title?: string;
+    start?: Date;
+    end?: Date;
+  };
+  onClose?: () => void;
+}) => {
+  const [title, setTitle] = useState(initial?.title ?? '');
   const [start, setStart] = useState<string>(() =>
-    dayjs().format('YYYY-MM-DDTHH:mm')
+    dayjs(initial?.start ?? undefined).format(DATE_FORMAT)
   );
   const [end, setEnd] = useState<string>(() =>
-    dayjs().format('YYYY-MM-DDTHH:mm')
+    dayjs(initial?.end ?? undefined).format(DATE_FORMAT)
   );
+
+  const [{}, createTask] = useMutation(CREATE_TASK);
 
   return (
     <div className="w-full border-l-2 border-l-gray-900 px-8 py-2">
@@ -49,7 +76,19 @@ export const CreateTaskPane = ({ onClose }: { onClose?: () => void }) => {
         />
       </div>
       <div>
-        <Button disabled={!title || !start || !end} className="mt-2">
+        <Button
+          disabled={!title || !start || !end}
+          className="mt-2"
+          onClick={async () => {
+            await createTask({
+              input: {
+                title,
+                startDate: dayjs(start, DATE_FORMAT).toDate(),
+                endDate: dayjs(end, DATE_FORMAT).toDate(),
+              },
+            });
+          }}
+        >
           Create task
         </Button>
       </div>

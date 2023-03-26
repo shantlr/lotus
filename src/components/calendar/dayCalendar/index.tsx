@@ -1,36 +1,39 @@
+import { graphql } from '@/gql/__generated/client';
 import classNames from 'classnames';
 import dayjs from 'dayjs';
+import customFormat from 'dayjs/plugin/customParseFormat';
 import { range } from 'lodash';
 import { useRouter } from 'next/router';
-import { useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { gql, useQuery } from 'urql';
+import { useLayoutEffect, useRef, useState } from 'react';
+import { useQuery } from 'urql';
 
 const HOUR_HEIGHT = 120;
 
-const QUERY_TASKS = gql`
+const QUERY_TASKS = graphql(`
   query DayTasks {
     tasks {
       id
     }
   }
-`;
+`);
+
+const DATE_FORMAT = 'DD/MM/YYYY';
+dayjs.extend(customFormat);
 
 export const DayCalendar = () => {
   const [{ data }, t] = useQuery({
     query: QUERY_TASKS,
   });
 
-  console.log(data);
-
   const [selectedDate, setSelectedDate] = useState(() => {
-    return dayjs().format('DD/MM/YYYY');
+    return dayjs().format(DATE_FORMAT);
   });
   const datesContainerRef = useRef<HTMLDivElement | null>(null);
   const [dates, setDates] = useState(() => {
     return range(-15, 15).map((delta) => {
       const d = dayjs().add(delta, 'day');
       return {
-        key: d.format('DD/MM/YYYY'),
+        key: d.format(DATE_FORMAT),
         month: d.month(),
         date: d.date(),
         formatted: d.format('DD MMM'),
@@ -122,7 +125,18 @@ export const DayCalendar = () => {
                 }
               )}
               onClick={() => {
-                router.replace(`${router.pathname}?new_task`);
+                const start = dayjs(selectedDate, DATE_FORMAT)
+                  .hour(h)
+                  .startOf('hour');
+                router.replace({
+                  pathname: router.pathname,
+                  query: {
+                    ...router.query,
+                    new_task: `${start.valueOf()}:${start
+                      .add(1, 'h')
+                      .valueOf()}`,
+                  },
+                });
               }}
             ></div>
           </div>

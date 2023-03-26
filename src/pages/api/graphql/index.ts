@@ -1,14 +1,18 @@
 import { Resolvers } from '@/gql/__generated/resolversTypes';
 import { typeDefs } from '@/gql/__generated/typeDefs';
-import { prisma } from '@/lib/prisma';
 import { useGenericAuth } from '@envelop/generic-auth';
 
 import { makeExecutableSchema } from '@graphql-tools/schema';
 import { createYoga } from 'graphql-yoga';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { getServerSession } from 'next-auth';
+import { resolvers as scalarResolvers } from 'graphql-scalars';
+
 import { authOptions } from '../auth/[...nextauth]';
 import { GraphqlContext } from './types';
+
+import { resolvers as tasks } from './tasks';
+import { pick } from 'lodash';
 
 export const config = {
   api: {
@@ -17,25 +21,14 @@ export const config = {
   },
 };
 
-const resolvers: Resolvers<GraphqlContext> = {
+const baseResolvers: Resolvers<GraphqlContext> = {
   Query: {
     greetings: () => 'Hello...',
-    tasks: async (root, args, context) => {
-      if (!context.currentSession?.user) {
-        return [];
-      }
-      const tasks = prisma.task.findMany({
-        where: {
-          creator_id: context.currentSession.user.id,
-        },
-      });
-      return tasks;
-    },
   },
 };
 
 const schema = makeExecutableSchema({
-  resolvers: [resolvers],
+  resolvers: [baseResolvers, pick(scalarResolvers, 'DateTime'), tasks],
   typeDefs: typeDefs,
 });
 
