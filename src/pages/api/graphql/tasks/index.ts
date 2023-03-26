@@ -1,16 +1,39 @@
 import { Resolvers } from '@/gql/__generated/resolversTypes';
 import { prisma } from '@/lib/prisma';
+import { Prisma } from '@prisma/client';
 import { GraphqlContext } from '../types';
 
 export const resolvers: Resolvers<GraphqlContext> = {
   Query: {
-    tasks: async (root, args, context) => {
+    tasks: async (root, { input }, context) => {
       if (!context.currentSession?.user) {
         return [];
       }
+      const conds: Prisma.TaskWhereInput[] = [
+        {
+          creator_id: context.currentSession.user.id,
+        },
+      ];
+      if (input?.start) {
+        conds.push({
+          start: {
+            gte: input.start,
+          },
+        });
+      }
+      if (input?.end) {
+        conds.push({
+          end: {
+            lte: input.end,
+          },
+        });
+      }
       const tasks = prisma.task.findMany({
         where: {
-          creator_id: context.currentSession.user.id,
+          AND: conds,
+        },
+        orderBy: {
+          start: 'asc',
         },
       });
       return tasks;

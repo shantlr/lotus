@@ -1,6 +1,7 @@
 import { Calendar } from '@/components/calendar';
 import { CreateTaskPane } from '@/components/createTaskPane';
 import { SideBar } from '@/components/sideBar';
+import { pick } from 'lodash';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { useMemo } from 'react';
@@ -42,7 +43,10 @@ export default function CalendarPage({ type }: { type?: string }) {
             initial={newTask}
             key={`${newTask.start}:${newTask.end}`}
             onClose={() => {
-              router.replace(router.pathname);
+              router.replace({
+                pathname: router.pathname,
+                query: pick(router.query, ['type']),
+              });
             }}
           />
         )}

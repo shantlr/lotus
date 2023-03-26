@@ -6,28 +6,31 @@ import { range } from 'lodash';
 import { useRouter } from 'next/router';
 import { useLayoutEffect, useRef, useState } from 'react';
 import { useQuery } from 'urql';
+import { QUERY_TASKS } from '../query';
 
 const HOUR_HEIGHT = 120;
-
-const QUERY_TASKS = graphql(`
-  query DayTasks {
-    tasks {
-      id
-    }
-  }
-`);
+const HEADER_HOUR_WIDTH = 35;
 
 const DATE_FORMAT = 'DD/MM/YYYY';
 dayjs.extend(customFormat);
 
 export const DayCalendar = () => {
-  const [{ data }, t] = useQuery({
-    query: QUERY_TASKS,
-  });
-
   const [selectedDate, setSelectedDate] = useState(() => {
     return dayjs().format(DATE_FORMAT);
   });
+
+  const [{ data }, t] = useQuery({
+    query: QUERY_TASKS,
+    variables: {
+      input: {
+        start: dayjs(selectedDate, DATE_FORMAT).startOf('day').toDate(),
+        end: dayjs(selectedDate, DATE_FORMAT).endOf('day').toDate(),
+      },
+    },
+  });
+
+  console.log(data);
+
   const datesContainerRef = useRef<HTMLDivElement | null>(null);
   const [dates, setDates] = useState(() => {
     return range(-15, 15).map((delta) => {
@@ -98,9 +101,10 @@ export const DayCalendar = () => {
           </div>
         ))}
       </div>
+
       <div
         ref={hoursContainerRef}
-        className="flex flex-col overflow-auto w-full h-full pr-4"
+        className="relative flex flex-col overflow-auto w-full h-full pr-4"
       >
         {range(0, 24).map((h) => (
           <div
@@ -109,8 +113,9 @@ export const DayCalendar = () => {
             className={`flex flex-shrink-0 w-full hover:bg-gray-800 hour-block-${h}`}
           >
             <div
+              style={{ width: HEADER_HOUR_WIDTH }}
               className={classNames(
-                'text-center w-[35px] text-sm border-r-2 border-r-gray-500',
+                'text-center text-sm border-r-2 border-r-gray-500',
                 {
                   'text-rose-300': h === new Date().getHours(),
                 }
@@ -141,6 +146,25 @@ export const DayCalendar = () => {
             ></div>
           </div>
         ))}
+        {data?.tasks.map((t) => {
+          const start = new Date(t.start);
+          const end = new Date(t.end);
+
+          const startHour = start.getHours() + start.getMinutes() / 60;
+
+          return (
+            <div
+              key={t.id}
+              className="absolute bg-gray-500 rounded px-4 py-1 cursor-pointer hover:bg-gray-400 transition"
+              style={{
+                top: startHour * HOUR_HEIGHT,
+                left: HEADER_HOUR_WIDTH,
+              }}
+            >
+              <span className="font-bold">{t.title}</span>
+            </div>
+          );
+        })}
       </div>
     </div>
   );
