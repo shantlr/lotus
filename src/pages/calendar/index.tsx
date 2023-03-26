@@ -6,6 +6,7 @@ import { useRouter } from 'next/router';
 
 export default function CalendarPage({ type }: { type?: string }) {
   const router = useRouter();
+
   return (
     <>
       <Head>

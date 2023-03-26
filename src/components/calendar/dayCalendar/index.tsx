@@ -3,10 +3,25 @@ import dayjs from 'dayjs';
 import { range } from 'lodash';
 import { useRouter } from 'next/router';
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { gql, useQuery } from 'urql';
 
 const HOUR_HEIGHT = 120;
 
+const QUERY_TASKS = gql`
+  query DayTasks {
+    tasks {
+      id
+    }
+  }
+`;
+
 export const DayCalendar = () => {
+  const [{ data }, t] = useQuery({
+    query: QUERY_TASKS,
+  });
+
+  console.log(data);
+
   const [selectedDate, setSelectedDate] = useState(() => {
     return dayjs().format('DD/MM/YYYY');
   });

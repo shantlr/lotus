@@ -1,7 +1,8 @@
 import '@/styles/globals.css';
 import type { AppProps } from 'next/app';
 import { SessionProvider } from 'next-auth/react';
-import { Authenticated } from '@/components/authenticated';
+import { Authenticated } from '@/components/context/authenticated';
+import { UrqlProvider } from '@/components/context/urql';
 
 export default function App({
   Component,
@@ -9,9 +10,11 @@ export default function App({
 }: AppProps) {
   return (
     <SessionProvider session={session}>
-      <Authenticated>
-        <Component {...pageProps} />
-      </Authenticated>
+      <UrqlProvider>
+        <Authenticated>
+          <Component {...pageProps} />
+        </Authenticated>
+      </UrqlProvider>
     </SessionProvider>
   );
 }
