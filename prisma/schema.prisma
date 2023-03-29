@@ -71,4 +71,6 @@ model Task {
 
   creator_id String
   creator User @relation(fields: [creator_id], references: [id], onDelete: Cascade)
+
+  created_at DateTime @default(now())
 }

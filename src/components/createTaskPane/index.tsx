@@ -1,6 +1,7 @@
 import { graphql } from '@/gql/__generated/client';
 import dayjs from 'dayjs';
 import { useState } from 'react';
+import { FaTimes } from 'react-icons/fa';
 import { useMutation } from 'urql';
 import { Button } from '../base/button';
 import { Input } from '../base/input';
@@ -40,14 +41,19 @@ export const CreateTaskPane = ({
   const [{}, createTask] = useMutation(CREATE_TASK);
 
   return (
-    <div className="w-full border-l-2 border-l-gray-900 px-8 py-2">
-      <div
-        onClick={() => {
-          onClose?.();
-        }}
-      >
-        X
+    <div className="w-full border-l-2 border-l-gray-900 px-4 py-2">
+      <div className="">
+        <Button
+          round
+          onClick={() => {
+            onClose?.();
+          }}
+        >
+          <FaTimes />
+        </Button>
+        <span className="pl-4 font-bold">New Task</span>
       </div>
+
       <div className="pt-4">
         <Input
           value={title}
@@ -77,6 +83,7 @@ export const CreateTaskPane = ({
       </div>
       <div>
         <Button
+          highlight
           disabled={!title || !start || !end}
           className="mt-2"
           onClick={async () => {

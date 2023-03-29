@@ -13,7 +13,7 @@ export default function CalendarPage({ type }: { type?: string }) {
     if (!('new_task' in router.query)) {
       return null;
     }
-    if (typeof router.query.new_task === 'string') {
+    if (router.query.new_task && typeof router.query.new_task === 'string') {
       const [start, end] = router.query.new_task
         .split(':')
         .map((d) => Number(d));

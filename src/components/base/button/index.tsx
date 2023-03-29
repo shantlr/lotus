@@ -1,12 +1,32 @@
 import classNames from 'classnames';
 import { ComponentProps } from 'react';
+import { BASE_STYLES } from '../styles';
 
-export const Button = ({ className, ...props }: ComponentProps<'button'>) => {
+const STYLE = {
+  highlight: `${BASE_STYLES.highlightAction.base}`,
+  default: `${BASE_STYLES.defaultAction.base}`,
+};
+
+export const Button = ({
+  className,
+  round,
+  highlight,
+  t,
+  ...props
+}: {
+  t?: keyof typeof STYLE;
+  highlight?: boolean;
+  round?: boolean;
+} & ComponentProps<'button'>) => {
   return (
     <button
       className={classNames(
-        'px-4 py-1 bg-gray-600 rounded hover:bg-gray-500 active:bg-gray-700',
-        'disabled:bg-gray-800 disabled:cursor-not-allowed',
+        'transition disabled:cursor-not-allowed',
+        t === 'highlight' || highlight ? STYLE['highlight'] : STYLE['default'],
+        {
+          'rounded px-4 py-1': !round,
+          'rounded-full px-4 py-2': round,
+        },
         className
       )}
       {...props}

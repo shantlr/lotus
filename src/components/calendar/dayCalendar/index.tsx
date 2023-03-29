@@ -7,9 +7,11 @@ import { useRouter } from 'next/router';
 import { useLayoutEffect, useRef, useState } from 'react';
 import { useQuery } from 'urql';
 import { QUERY_TASKS } from '../query';
+import { useHeightSizedTasks, usePositionedTasks } from './useTasksPositions';
 
 const HOUR_HEIGHT = 120;
 const HEADER_HOUR_WIDTH = 35;
+const TASK_MIN_HEIGHT = 35;
 
 const DATE_FORMAT = 'DD/MM/YYYY';
 dayjs.extend(customFormat);
@@ -28,9 +30,6 @@ export const DayCalendar = () => {
       },
     },
   });
-
-  console.log(data);
-
   const datesContainerRef = useRef<HTMLDivElement | null>(null);
   const [dates, setDates] = useState(() => {
     return range(-15, 15).map((delta) => {
@@ -79,6 +78,18 @@ export const DayCalendar = () => {
     }
   }, []);
 
+  const heightSizedTasks = useHeightSizedTasks({
+    data,
+    size: {
+      hourSlotHeight: HOUR_HEIGHT,
+      taskMinHeight: TASK_MIN_HEIGHT,
+    },
+  });
+  usePositionedTasks(hoursContainerRef, heightSizedTasks, {
+    offsetLeft: HEADER_HOUR_WIDTH,
+    spaceBetweenTask: 5,
+  });
+
   const router = useRouter();
 
   return (
@@ -110,7 +121,7 @@ export const DayCalendar = () => {
           <div
             key={h}
             style={{ height: HOUR_HEIGHT }}
-            className={`flex flex-shrink-0 w-full hover:bg-gray-800 hour-block-${h}`}
+            className={`hour-slot flex flex-shrink-0 w-full hover:bg-gray-800 hour-block-${h}`}
           >
             <div
               style={{ width: HEADER_HOUR_WIDTH }}
@@ -146,22 +157,20 @@ export const DayCalendar = () => {
             ></div>
           </div>
         ))}
-        {data?.tasks.map((t) => {
-          const start = new Date(t.start);
-          const end = new Date(t.end);
 
-          const startHour = start.getHours() + start.getMinutes() / 60;
-
+        {heightSizedTasks.map(({ id, task, height, top }) => {
           return (
             <div
-              key={t.id}
-              className="absolute bg-gray-500 rounded px-4 py-1 cursor-pointer hover:bg-gray-400 transition"
+              key={task.id}
+              id={id}
+              className="task-item absolute bg-gray-500 rounded px-4 py-1 cursor-pointer hover:bg-gray-400 transition"
               style={{
-                top: startHour * HOUR_HEIGHT,
-                left: HEADER_HOUR_WIDTH,
+                top,
+                height,
+                // left,
               }}
             >
-              <span className="font-bold">{t.title}</span>
+              <span className="font-bold">{task.title}</span>
             </div>
           );
         })}
