@@ -53,6 +53,9 @@ const isColliding = (
 };
 export const usePositionedTasks = (
   parentRef: MutableRefObject<HTMLElement | null>,
+  /**
+   * Tasks are expected to be ordered
+   */
   tasks: ReturnType<typeof useHeightSizedTasks>,
   size: {
     offsetLeft?: number;
@@ -77,6 +80,7 @@ export const usePositionedTasks = (
         const elem = e as HTMLElement;
         let left: number = size.offsetLeft ?? 0;
         taskWithElems.forEach((prevTask) => {
+          // in case of collision move task to the right
           if (
             isColliding(prevTask, {
               height: task.height,
@@ -89,6 +93,7 @@ export const usePositionedTasks = (
               prevTask.left + prevTask.width + (size.spaceBetweenTask ?? 2);
           }
         });
+
         taskWithElems.push({
           ...task,
           width: elem.offsetWidth,
@@ -97,7 +102,6 @@ export const usePositionedTasks = (
         });
         elem.style.left = `${left}px`;
         maxWidth = Math.max(maxWidth, elem.offsetLeft + elem.offsetWidth);
-        // sumWidth += elem.offsetWidth;
       }
     });
 
@@ -105,15 +109,11 @@ export const usePositionedTasks = (
       parentRef.current.offsetWidth -
       parseInt(getComputedStyle(parentRef.current).paddingRight);
 
-    const slotWidth = `${Math.max(parentWidth, maxWidth)}px`;
+    const slotWidth =
+      maxWidth > parentWidth ? `${maxWidth + 4}px` : `${parentWidth}px`;
+    // Update hour-slot width in case of x overflow so slot width match tasks width
     parentRef.current.querySelectorAll('.hour-slot').forEach((e) => {
       (e as HTMLElement).style.width = slotWidth;
     });
-
-    // if (parentWidth && sumWidth > parentWidth) {
-    //   parentRef.current.style.width = `${sumWidth}px`;
-    // } else if (parentWidth) {
-    //   parentRef.current.style.width = `${parentWidth}px`;
-    // }
   }, [parentRef, size.offsetLeft, size.spaceBetweenTask, tasks]);
 };

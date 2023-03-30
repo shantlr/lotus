@@ -115,12 +115,14 @@ export const DayCalendar = () => {
 
       <div
         ref={hoursContainerRef}
-        className="relative flex flex-col overflow-auto w-full h-full pr-4"
+        className="relative flex flex-col h-full w-full overflow-auto pr-4"
       >
+        {/* Left hour header */}
         {range(0, 24).map((h) => (
           <div
             key={h}
-            style={{ height: HOUR_HEIGHT }}
+            style={{ top: h * HOUR_HEIGHT, height: HOUR_HEIGHT }}
+            // style={{ height: HOUR_HEIGHT }}
             className={`hour-slot flex flex-shrink-0 w-full hover:bg-gray-800 hour-block-${h}`}
           >
             <div
@@ -158,6 +160,7 @@ export const DayCalendar = () => {
           </div>
         ))}
 
+        {/* Slots */}
         {heightSizedTasks.map(({ id, task, height, top }) => {
           return (
             <div
@@ -167,7 +170,6 @@ export const DayCalendar = () => {
               style={{
                 top,
                 height,
-                // left,
               }}
             >
               <span className="font-bold">{task.title}</span>

@@ -41,7 +41,7 @@ export const CreateTaskPane = ({
   const [{}, createTask] = useMutation(CREATE_TASK);
 
   return (
-    <div className="w-full border-l-2 border-l-gray-900 px-4 py-2">
+    <div className="w-full max-w-[280px] border-l-2 border-l-gray-900 px-4 py-2">
       <div className="">
         <Button
           round
