@@ -1,11 +1,14 @@
 import { CalendarTasksQuery } from '@/gql/__generated/client/graphql';
+import dayjs, { Dayjs } from 'dayjs';
 import { nanoid } from 'nanoid';
 import { MutableRefObject, useLayoutEffect, useMemo } from 'react';
 
 export const useHeightSizedTasks = ({
+  refDay,
   data,
   size,
 }: {
+  refDay: Dayjs;
   data?: CalendarTasksQuery;
   size: {
     hourSlotHeight: number;
@@ -17,27 +20,36 @@ export const useHeightSizedTasks = ({
     if (!data?.tasks) {
       return [];
     }
+
+    const refDayStart = refDay.startOf('day').valueOf();
+    const refDayEnd = refDay.endOf('day').valueOf();
+
     const tasks = data.tasks.map((t) => {
-      const start = new Date(t.start);
-      const end = new Date(t.end);
+      const overflowBefore = refDayStart > dayjs(t.start).valueOf();
+      const overflowAfter = refDayEnd < dayjs(t.end).valueOf();
+
+      const start = overflowBefore
+        ? dayjs(refDayStart).toDate()
+        : new Date(t.start);
+      const end = overflowAfter ? dayjs(refDayEnd).toDate() : new Date(t.end);
+      let height: number;
 
       const startHour = start.getHours() + start.getMinutes() / 60;
       const duration = (end.valueOf() - start.valueOf()) / (60 * 60 * 1000);
-      const height = Math.max(
-        size.taskMinHeight,
-        size.hourSlotHeight * duration
-      );
+      height = Math.max(size.taskMinHeight, size.hourSlotHeight * duration);
       const top = startHour * size.hourSlotHeight;
 
       return {
         id: nanoid(),
+        overflowBefore,
+        overflowAfter,
         task: t,
         height,
         top,
       };
     });
     return tasks;
-  }, [data?.tasks, size.hourSlotHeight, size.taskMinHeight]);
+  }, [data?.tasks, refDay, size.hourSlotHeight, size.taskMinHeight]);
 };
 
 const isColliding = (

@@ -18,26 +18,30 @@ dayjs.extend(customFormat);
 
 export const DayCalendar = () => {
   const [selectedDate, setSelectedDate] = useState(() => {
-    return dayjs().format(DATE_FORMAT);
+    const d = dayjs();
+    return {
+      date: d,
+      key: dayjs().format(DATE_FORMAT),
+    };
   });
 
   const [{ data }, t] = useQuery({
     query: QUERY_TASKS,
     variables: {
       input: {
-        start: dayjs(selectedDate, DATE_FORMAT).startOf('day').toDate(),
-        end: dayjs(selectedDate, DATE_FORMAT).endOf('day').toDate(),
+        start: selectedDate.date.startOf('day').toDate(),
+        end: selectedDate.date.endOf('day').toDate(),
       },
     },
   });
   const datesContainerRef = useRef<HTMLDivElement | null>(null);
+
   const [dates, setDates] = useState(() => {
     return range(-15, 15).map((delta) => {
       const d = dayjs().add(delta, 'day');
       return {
         key: d.format(DATE_FORMAT),
-        month: d.month(),
-        date: d.date(),
+        date: d,
         formatted: d.format('DD MMM'),
       };
     });
@@ -79,6 +83,7 @@ export const DayCalendar = () => {
   }, []);
 
   const heightSizedTasks = useHeightSizedTasks({
+    refDay: selectedDate.date,
     data,
     size: {
       hourSlotHeight: HOUR_HEIGHT,
@@ -98,12 +103,17 @@ export const DayCalendar = () => {
         {dates.map((u) => (
           <div
             key={u.key}
-            onClick={() => setSelectedDate(u.key)}
+            onClick={() =>
+              setSelectedDate({
+                key: u.key,
+                date: u.date,
+              })
+            }
             className={classNames(
               'date-item text-sm w-[70px] text-center rounded mx-4 flex-shrink-0 cursor-pointer transition hover:bg-gray-400',
               {
-                'bg-gray-300 selected-date-item': selectedDate === u.key,
-                'bg-gray-600 ': selectedDate !== u.key,
+                'bg-gray-300 selected-date-item': selectedDate.key === u.key,
+                'bg-gray-600 ': selectedDate.key !== u.key,
                 'text-rose-300': u.key === dayjs().format('DD/MM/YYYY'),
               }
             )}
@@ -143,9 +153,7 @@ export const DayCalendar = () => {
                 }
               )}
               onClick={() => {
-                const start = dayjs(selectedDate, DATE_FORMAT)
-                  .hour(h)
-                  .startOf('hour');
+                const start = selectedDate.date.hour(h).startOf('hour');
                 router.replace({
                   pathname: router.pathname,
                   query: {
@@ -161,21 +169,29 @@ export const DayCalendar = () => {
         ))}
 
         {/* Slots */}
-        {heightSizedTasks.map(({ id, task, height, top }) => {
-          return (
-            <div
-              key={task.id}
-              id={id}
-              className="task-item absolute bg-gray-500 rounded px-4 py-1 cursor-pointer hover:bg-gray-400 transition"
-              style={{
-                top,
-                height,
-              }}
-            >
-              <span className="font-bold">{task.title}</span>
-            </div>
-          );
-        })}
+        {heightSizedTasks.map(
+          ({ overflowAfter, overflowBefore, id, task, height, top }) => {
+            return (
+              <div
+                key={task.id}
+                id={id}
+                className={classNames(
+                  'task-item absolute bg-gray-500 px-4 py-1 cursor-pointer hover:bg-gray-400 transition',
+                  {
+                    'rounded-t': !overflowBefore,
+                    'rounded-b': !overflowAfter,
+                  }
+                )}
+                style={{
+                  top,
+                  height,
+                }}
+              >
+                <span className="font-bold">{task.title}</span>
+              </div>
+            );
+          }
+        )}
       </div>
     </div>
   );

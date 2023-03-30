@@ -16,15 +16,15 @@ export const resolvers: Resolvers<GraphqlContext> = {
       ];
       if (input?.start) {
         conds.push({
-          start: {
-            gte: input.start,
+          end: {
+            gt: input.start,
           },
         });
       }
       if (input?.end) {
         conds.push({
-          end: {
-            lte: input.end,
+          start: {
+            lt: input.end,
           },
         });
       }
