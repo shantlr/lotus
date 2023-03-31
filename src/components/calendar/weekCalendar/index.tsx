@@ -68,7 +68,10 @@ export const WeekCalendar = () => {
       <div className="flex flex-col w-full h-full overflow-hidden">
         {/* Header */}
         <div className="flex w-full pr-4">
-          <div className={`w-[${HEADER_HOUR_WIDTH}px] shrink-0`}></div>
+          <div
+            style={{ width: HEADER_HOUR_WIDTH }}
+            className={`shrink-0`}
+          ></div>
           {weekDays.map((d, idx) => (
             <div
               className={classNames(
@@ -92,11 +95,12 @@ export const WeekCalendar = () => {
 
         <div className="h-full w-full flex overflow-auto pr-4">
           {/* Hour header */}
-          <div className={`flex shrink-0 w-[${HEADER_HOUR_WIDTH}px]`}>
+          <div style={{ width: HEADER_HOUR_WIDTH }} className={`flex shrink-0`}>
             <div className="w-full h-full">
               {range(0, 24).map((h) => (
                 <div
-                  className={`h-[${HOUR_HEIGHT}px] text-center w-full hover:bg-gray-800 hour-block-${h}`}
+                  style={{ height: HOUR_HEIGHT }}
+                  className={`text-center w-full hover:bg-gray-800 hour-block-${h}`}
                   key={h}
                 >
                   {h}h
@@ -111,8 +115,9 @@ export const WeekCalendar = () => {
                 {range(0, 24).map((h) => (
                   <div
                     key={h}
+                    style={{ height: HOUR_HEIGHT }}
                     className={classNames(
-                      `h-[${HOUR_HEIGHT}px] border-l-2 border-gray-700 border-b-2 border-b-gray-500`,
+                      `border-l-2 border-gray-700 border-b-2 border-b-gray-500`,
                       {
                         'border-r-2': idx === weekDays.length - 1,
                       }

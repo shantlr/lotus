@@ -4,10 +4,15 @@ import dayjs from 'dayjs';
 import customFormat from 'dayjs/plugin/customParseFormat';
 import { range } from 'lodash';
 import { useRouter } from 'next/router';
-import { useLayoutEffect, useRef, useState } from 'react';
+import { useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { useQuery } from 'urql';
 import { QUERY_TASKS } from '../query';
-import { useHeightSizedTasks, usePositionedTasks } from './useTasksPositions';
+import { AnchoredTaskItem, BaseTaskItem } from '../taskItem';
+import {
+  useHeightSizedTasks,
+  usePartitionTasks,
+  usePositionedTasks,
+} from './useTasksPositions';
 
 const HOUR_HEIGHT = 120;
 const HEADER_HOUR_WIDTH = 35;
@@ -82,9 +87,21 @@ export const DayCalendar = () => {
     }
   }, []);
 
+  const selectedDateRange = useMemo(
+    () => ({
+      start: selectedDate.date.startOf('day'),
+      end: selectedDate.date.endOf('day'),
+    }),
+    [selectedDate?.date]
+  );
+  const [fulldayTask, tasks] = usePartitionTasks({
+    tasks: data?.tasks,
+    start: selectedDateRange.start,
+    end: selectedDateRange.end,
+  });
   const heightSizedTasks = useHeightSizedTasks({
     refDay: selectedDate.date,
-    data,
+    tasks,
     size: {
       hourSlotHeight: HOUR_HEIGHT,
       taskMinHeight: TASK_MIN_HEIGHT,
@@ -120,6 +137,16 @@ export const DayCalendar = () => {
           >
             {u.formatted}
           </div>
+        ))}
+      </div>
+
+      <div
+        className={classNames('space-y-1', {
+          'pb-2': fulldayTask.length > 0,
+        })}
+      >
+        {fulldayTask.map((t) => (
+          <AnchoredTaskItem key={t.id}>{t.title}</AnchoredTaskItem>
         ))}
       </div>
 
@@ -178,6 +205,10 @@ export const DayCalendar = () => {
                 className={classNames(
                   'task-item absolute bg-gray-500 px-4 py-1 cursor-pointer hover:bg-gray-400 transition',
                   {
+                    'border-dashed border-t-white border-t-[1px]':
+                      overflowBefore,
+                    'border-dashed border-b-white border-b-[1px]':
+                      overflowAfter,
                     'rounded-t': !overflowBefore,
                     'rounded-b': !overflowAfter,
                   }
