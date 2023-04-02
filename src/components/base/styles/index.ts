@@ -7,6 +7,9 @@ const CORE = {
   defaultAction: {
     base: 'bg-default-600 hover:bg-default-500 active:bg-default-700 disabled:bg-default-800',
   },
+  dangerAction: {
+    base: `text-white bg-red-600 hover:bg-red-500 active:bg-red-700 disabled:bg-red-800`,
+  },
 };
 
 export const BASE_STYLES = merge(cloneDeep(CORE), {});

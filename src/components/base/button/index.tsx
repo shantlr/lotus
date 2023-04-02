@@ -5,6 +5,7 @@ import { BASE_STYLES } from '../styles';
 const STYLE = {
   highlight: `${BASE_STYLES.highlightAction.base}`,
   default: `${BASE_STYLES.defaultAction.base}`,
+  danger: `${BASE_STYLES.dangerAction.base}`,
 };
 
 export const Button = ({
@@ -22,7 +23,11 @@ export const Button = ({
     <button
       className={classNames(
         'transition disabled:cursor-not-allowed',
-        t === 'highlight' || highlight ? STYLE['highlight'] : STYLE['default'],
+        t === 'highlight' || highlight
+          ? STYLE['highlight']
+          : t in STYLE
+          ? STYLE[t]
+          : STYLE['default'],
         {
           'rounded px-4 py-1': !round,
           'rounded-full px-4 py-2': round,

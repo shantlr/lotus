@@ -61,5 +61,22 @@ export const resolvers: Resolvers<GraphqlContext> = {
         task,
       };
     },
+    deleteTask: async (root, { input: { id } }, { currentSession }) => {
+      if (!currentSession?.user) {
+        throw new Error('UNAUTHENTICATED');
+      }
+
+      const task = await prisma.task.findFirst({ where: { id } });
+      if (!task) {
+        throw new Error('TASK_NOT_FOUND');
+      }
+
+      if (task.creator_id !== currentSession.user.id) {
+        throw new Error('UNAUTHORIZED');
+      }
+
+      await prisma.task.delete({ where: { id } });
+      return true;
+    },
   },
 };

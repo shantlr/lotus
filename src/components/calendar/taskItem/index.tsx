@@ -31,14 +31,19 @@ export const BaseTaskItem = ({
     }
 
     const listener = (e: MouseEvent) => {
-      if (containerRef && !containerRef.contains(e.target as HTMLElement)) {
+      if (
+        containerRef &&
+        popupRef &&
+        !containerRef.contains(e.target as HTMLElement) &&
+        !popupRef?.contains(e.target)
+      ) {
         setShow(false);
       }
     };
 
     window.addEventListener('click', listener);
     return () => window.removeEventListener('click', listener);
-  }, [containerRef, show]);
+  }, [containerRef, popupRef, show]);
 
   return (
     <>
