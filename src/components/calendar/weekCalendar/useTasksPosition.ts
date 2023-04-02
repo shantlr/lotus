@@ -15,7 +15,7 @@ export const usePartitionTasks = <T extends { start?: Date; end?: Date }>({
   });
 };
 
-type Task = CalendarTasksQuery['tasks'][number];
+export type Task = CalendarTasksQuery['tasks'][number];
 
 type CollidingTaskNode = {
   task: Task;

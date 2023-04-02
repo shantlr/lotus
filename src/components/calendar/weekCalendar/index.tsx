@@ -6,12 +6,13 @@ import { useRouter } from 'next/router';
 import { useMemo, useRef, useState } from 'react';
 import { useQuery } from 'urql';
 import { QUERY_TASKS } from '../query';
-import { CalendarTask } from '../taskItem';
+import { AnchoredTaskItem, CalendarTask } from '../taskItem';
 import {
   SlotSpacing,
   usePartitionTasks,
   usePositionedTasks,
 } from './useTasksPosition';
+import { useAnchoredTasks } from './useAnchoredTasks';
 
 const DATE_FORMAT = 'DD/MM/YYYY';
 const HOUR_SLOT_HEIGHT = 40;
@@ -78,7 +79,7 @@ export const WeekCalendar = () => {
     null
   );
 
-  const [tasks] = usePartitionTasks({ tasks: data?.tasks });
+  const [tasks, multiDayTasks] = usePartitionTasks({ tasks: data?.tasks });
   const hourSlotWidth = useObserveWidth(tasksContainer, '.hour-slot');
   const positionedTasks = usePositionedTasks({
     tasks,
@@ -89,6 +90,13 @@ export const WeekCalendar = () => {
 
     taskMinHeight: 20,
     spacing: SPACING,
+  });
+
+  const anchoredTasks = useAnchoredTasks({
+    tasks: multiDayTasks,
+    daySlotWidth: hourSlotWidth,
+    currentRangeStart: currenteDateRange.start,
+    currentRangeEnd: currenteDateRange.end,
   });
 
   return (
@@ -137,6 +145,23 @@ export const WeekCalendar = () => {
                 {d.formatted}
               </div>
             </div>
+          ))}
+        </div>
+        <div
+          className={classNames('space-y-1', {
+            'py-1': anchoredTasks.length > 0,
+          })}
+        >
+          {anchoredTasks.map((t) => (
+            <AnchoredTaskItem
+              className="relative"
+              style={{
+                width: t.width,
+                left: t.left + HOUR_SLOT_HEADER_WIDTH,
+              }}
+              key={t.task.id}
+              task={t.task}
+            />
           ))}
         </div>
 
