@@ -37,7 +37,7 @@ export default function CalendarPage({ type }: { type?: string }) {
       </Head>
       <main className="w-full h-full flex">
         <SideBar />
-        <Calendar className="p-2" type={type ?? 'day'} />
+        <Calendar className="p-2" type={type ?? 'week'} />
         {newTask && (
           <CreateTaskPane
             initial={newTask}
