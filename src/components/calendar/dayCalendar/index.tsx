@@ -7,15 +7,15 @@ import { useRouter } from 'next/router';
 import { useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { useQuery } from 'urql';
 import { QUERY_TASKS } from '../query';
-import { AnchoredTaskItem, BaseTaskItem } from '../taskItem';
+import { AnchoredTaskItem } from '../taskItem';
 import {
   useHeightSizedTasks,
   usePartitionTasks,
   usePositionedTasks,
 } from './useTasksPositions';
 
-const HOUR_HEIGHT = 120;
-const HEADER_HOUR_WIDTH = 35;
+const HOUR_HEIGHT = 100;
+const HEADER_HOUR_WIDTH = 45;
 const TASK_MIN_HEIGHT = 35;
 
 const DATE_FORMAT = 'DD/MM/YYYY';
@@ -47,7 +47,7 @@ export const DayCalendar = () => {
       return {
         key: d.format(DATE_FORMAT),
         date: d,
-        formatted: d.format('DD MMM'),
+        formatted: d.format('ddd DD/MM'),
       };
     });
   });
@@ -127,7 +127,7 @@ export const DayCalendar = () => {
               })
             }
             className={classNames(
-              'date-item text-sm w-[70px] text-center rounded mx-4 flex-shrink-0 cursor-pointer transition hover:bg-gray-400',
+              'date-item text-sm w-[90px] text-center rounded mx-4 flex-shrink-0 cursor-pointer transition hover:bg-gray-400',
               {
                 'bg-gray-300 selected-date-item': selectedDate.key === u.key,
                 'bg-gray-600 ': selectedDate.key !== u.key,
@@ -146,7 +146,7 @@ export const DayCalendar = () => {
         })}
       >
         {fulldayTask.map((t) => (
-          <AnchoredTaskItem key={t.id}>{t.title}</AnchoredTaskItem>
+          <AnchoredTaskItem key={t.id} task={t} />
         ))}
       </div>
 
@@ -159,7 +159,6 @@ export const DayCalendar = () => {
           <div
             key={h}
             style={{ top: h * HOUR_HEIGHT, height: HOUR_HEIGHT }}
-            // style={{ height: HOUR_HEIGHT }}
             className={`hour-slot flex flex-shrink-0 w-full hover:bg-gray-800 hour-block-${h}`}
           >
             <div
@@ -171,6 +170,8 @@ export const DayCalendar = () => {
                 }
               )}
             >{`${h}h`}</div>
+
+            {/* Slot placeholder */}
             <div
               className={classNames(
                 'border-b-2 border-r-2 border-gray-700 w-full h-full cursor-pointer',
@@ -195,7 +196,7 @@ export const DayCalendar = () => {
           </div>
         ))}
 
-        {/* Slots */}
+        {/* Tasks */}
         {heightSizedTasks.map(
           ({ overflowAfter, overflowBefore, id, task, height, top }) => {
             return (

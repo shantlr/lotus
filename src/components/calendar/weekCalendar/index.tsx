@@ -1,36 +1,41 @@
+import { useObserveWidth } from '@/components/base/hooks';
 import classNames from 'classnames';
 import dayjs, { Dayjs } from 'dayjs';
 import { first, last, range } from 'lodash';
-import { useState } from 'react';
+import { useRouter } from 'next/router';
+import { useMemo, useRef, useState } from 'react';
 import { useQuery } from 'urql';
 import { QUERY_TASKS } from '../query';
+import { CalendarTask } from '../taskItem';
+import { usePartitionTasks, usePositionedTasks } from './useTasksPosition';
 
 const DATE_FORMAT = 'DD/MM/YYYY';
-const HOUR_HEIGHT = 100;
-const HEADER_HOUR_WIDTH = 35;
+const HOUR_SLOT_HEIGHT = 40;
+const HOUR_SLOT_HEADER_WIDTH = 35;
 
 const mapWeekRange = (date: Dayjs) => {
   const weekStart = date.startOf('w');
   return {
-    key: weekStart.format(DATE_FORMAT),
+    key: weekStart.add(1, 'day').format(DATE_FORMAT),
     start: weekStart,
     formatted: `${weekStart.add(1, 'day').format('D')} - ${weekStart
       .add(8, 'day')
       .format('D MMM')}`,
-  };
-};
-
-export const WeekCalendar = () => {
-  const [weekDays, setWeekDays] = useState(() => {
-    const start = dayjs().startOf('week');
-    return range(1, 8).map((d) => {
-      const date = start.add(d, 'day');
+    days: range(1, 8).map((d) => {
+      const date = weekStart.add(d, 'day');
       return {
         key: date.format(DATE_FORMAT),
         date,
         formatted: date.format('dd, DD MMM'),
       };
-    });
+    }),
+  };
+};
+
+export const WeekCalendar = () => {
+  const [selectedWeek, setSelectedWeek] = useState(() => {
+    const start = dayjs().subtract(1, 'day').startOf('week');
+    return mapWeekRange(start);
   });
 
   const [weeks] = useState(() => {
@@ -38,14 +43,39 @@ export const WeekCalendar = () => {
     return range(-6, 6).map((i) => mapWeekRange(currentWeek.add(i, 'week')));
   });
 
-  const [{ data }, t] = useQuery({
+  const currenteDateRange = useMemo(
+    () =>
+      ({
+        start: first(selectedWeek.days)?.date.startOf('day').toDate(),
+        end: last(selectedWeek.days)?.date.endOf('day').toDate(),
+      } as { start: Date; end: Date }),
+    [selectedWeek]
+  );
+
+  const [{ data }] = useQuery({
     query: QUERY_TASKS,
     variables: {
       input: {
-        start: first(weekDays)?.date.startOf('day').toDate(),
-        end: last(weekDays)?.date.endOf('day').toDate(),
+        start: currenteDateRange.start,
+        end: currenteDateRange.end,
       },
     },
+  });
+
+  const router = useRouter();
+
+  const [tasksContainer, setTasksContainer] = useState<HTMLDivElement | null>(
+    null
+  );
+
+  const [tasks] = usePartitionTasks({ tasks: data?.tasks });
+  const hourSlotWidth = useObserveWidth(tasksContainer, '.hour-slot');
+  const positionedTasks = usePositionedTasks({
+    tasks,
+    hourSlotHeight: HOUR_SLOT_HEIGHT,
+    hourSlotWidth,
+    currentRangeStart: currenteDateRange.start,
+    currentRangeEnd: currenteDateRange.end,
   });
 
   return (
@@ -53,10 +83,14 @@ export const WeekCalendar = () => {
       <div className="w-full flex overflow-auto py-4">
         {weeks.map((w) => (
           <div
+            onClick={() => {
+              setSelectedWeek(w);
+            }}
             className={classNames(
               'shrink-0 text-sm w-[100px] rounded text-center transition hover:bg-gray-400 cursor-pointer mx-4',
               {
-                'bg-gray-600 ': true,
+                'bg-gray-300': w.key === selectedWeek.key,
+                'bg-gray-600 ': w.key !== selectedWeek.key,
               }
             )}
             key={w.key}
@@ -69,15 +103,15 @@ export const WeekCalendar = () => {
         {/* Header */}
         <div className="flex w-full pr-4">
           <div
-            style={{ width: HEADER_HOUR_WIDTH }}
+            style={{ width: HOUR_SLOT_HEADER_WIDTH }}
             className={`shrink-0`}
           ></div>
-          {weekDays.map((d, idx) => (
+          {selectedWeek.days.map((d, idx) => (
             <div
               className={classNames(
                 'w-full flex-grow border-l-2 border-b-2 border-b-gray-500 border-gray-700',
                 {
-                  'border-r-2': idx === weekDays.length - 1,
+                  'border-r-2': idx === selectedWeek.days.length - 1,
                 }
               )}
               key={d.key}
@@ -93,13 +127,19 @@ export const WeekCalendar = () => {
           ))}
         </div>
 
-        <div className="h-full w-full flex overflow-auto pr-4">
+        <div
+          ref={setTasksContainer}
+          className="relative h-full w-full flex overflow-auto pr-4"
+        >
           {/* Hour header */}
-          <div style={{ width: HEADER_HOUR_WIDTH }} className={`flex shrink-0`}>
+          <div
+            style={{ width: HOUR_SLOT_HEADER_WIDTH }}
+            className={`flex shrink-0`}
+          >
             <div className="w-full h-full">
               {range(0, 24).map((h) => (
                 <div
-                  style={{ height: HOUR_HEIGHT }}
+                  style={{ height: HOUR_SLOT_HEIGHT }}
                   className={`text-center w-full hover:bg-gray-800 hour-block-${h}`}
                   key={h}
                 >
@@ -109,26 +149,52 @@ export const WeekCalendar = () => {
             </div>
           </div>
 
+          {/* Placeholders */}
           <div className="w-full flex flex-grow">
-            {weekDays.map((d, idx) => (
+            {selectedWeek.days.map((d, idx) => (
               <div className="flex-grow relative" key={d.key}>
                 {range(0, 24).map((h) => (
                   <div
                     key={h}
-                    style={{ height: HOUR_HEIGHT }}
+                    style={{ height: HOUR_SLOT_HEIGHT }}
+                    onClick={() => {
+                      const start = d.date.hour(h).startOf('hour');
+                      router.replace({
+                        pathname: router.pathname,
+                        query: {
+                          ...router.query,
+                          new_task: `${start.valueOf()}:${start
+                            .add(1, 'h')
+                            .valueOf()}`,
+                        },
+                      });
+                    }}
                     className={classNames(
-                      `border-l-2 border-gray-700 border-b-2 border-b-gray-500`,
+                      `hour-slot border-l-2 border-gray-700 border-b-2 border-b-gray-500 cursor-pointer hover:bg-gray-800 transition`,
                       {
-                        'border-r-2': idx === weekDays.length - 1,
+                        'border-r-2': idx === selectedWeek.days.length - 1,
                       }
                     )}
-                  >
-                    azezae
-                  </div>
+                  />
                 ))}
               </div>
             ))}
           </div>
+
+          {/* Tasks */}
+          {positionedTasks.map((t) => (
+            <CalendarTask
+              style={{
+                top: t.top,
+                height: t.height,
+                left: t.left + HOUR_SLOT_HEADER_WIDTH + 2,
+                width: t.width,
+              }}
+              className="absolute"
+              key={t.task.id}
+              task={t.task}
+            />
+          ))}
         </div>
       </div>
     </div>
