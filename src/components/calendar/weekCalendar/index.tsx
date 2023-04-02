@@ -7,7 +7,11 @@ import { useMemo, useRef, useState } from 'react';
 import { useQuery } from 'urql';
 import { QUERY_TASKS } from '../query';
 import { CalendarTask } from '../taskItem';
-import { usePartitionTasks, usePositionedTasks } from './useTasksPosition';
+import {
+  SlotSpacing,
+  usePartitionTasks,
+  usePositionedTasks,
+} from './useTasksPosition';
 
 const DATE_FORMAT = 'DD/MM/YYYY';
 const HOUR_SLOT_HEIGHT = 40;
@@ -30,6 +34,12 @@ const mapWeekRange = (date: Dayjs) => {
       };
     }),
   };
+};
+
+const SPACING: SlotSpacing = {
+  hourSlotPaddingRight: 10,
+  hourSlotPaddingBottom: 2,
+  collidingTasksXDivider: 2,
 };
 
 export const WeekCalendar = () => {
@@ -76,6 +86,9 @@ export const WeekCalendar = () => {
     hourSlotWidth,
     currentRangeStart: currenteDateRange.start,
     currentRangeEnd: currenteDateRange.end,
+
+    taskMinHeight: 20,
+    spacing: SPACING,
   });
 
   return (
@@ -190,7 +203,7 @@ export const WeekCalendar = () => {
                 left: t.left + HOUR_SLOT_HEADER_WIDTH + 2,
                 width: t.width,
               }}
-              className="absolute"
+              className="text-xs absolute px-[6px] py-[6px] whitespace-pre-line overflow-hidden break-all"
               key={t.task.id}
               task={t.task}
             />

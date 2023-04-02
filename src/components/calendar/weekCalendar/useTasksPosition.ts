@@ -37,6 +37,12 @@ type CollidingTaskNode = {
   childrenDepth: number;
 };
 
+export type SlotSpacing = {
+  collidingTasksXDivider?: number;
+  hourSlotPaddingBottom?: number;
+  hourSlotPaddingRight?: number;
+};
+
 const pushCollidingNode = (
   tree: CollidingTaskNode,
   node: CollidingTaskNode
@@ -67,7 +73,8 @@ const pushCollidingNode = (
 const computeTaskRect = (
   node: CollidingTaskNode,
   left: number,
-  widthLeft: number
+  widthLeft: number,
+  spacing: SlotSpacing
 ) => {
   const nbItemsInSlot = 1 + node.childrenDepth;
   const item = {
@@ -82,8 +89,9 @@ const computeTaskRect = (
   for (const c of node.children) {
     const r = computeTaskRect(
       c,
-      item.left + item.width + 2,
-      widthLeft - item.width - 2
+      item.left + item.width + (spacing.collidingTasksXDivider || 0),
+      widthLeft - item.width - (spacing.collidingTasksXDivider || 0),
+      spacing
     );
     res.push(...r);
   }
@@ -96,12 +104,16 @@ export const usePositionedTasks = ({
   hourSlotWidth,
   currentRangeStart,
   currentRangeEnd,
+  taskMinHeight,
+  spacing,
 }: {
   currentRangeEnd: Date;
   currentRangeStart: Date;
   tasks: CalendarTasksQuery['tasks'];
   hourSlotHeight: number;
   hourSlotWidth?: number;
+  taskMinHeight: number;
+  spacing: SlotSpacing;
 }) => {
   const tasksByDay = useMemo(
     () => groupBy(tasks, (t) => dayjs(t.start).format('DD/MM/YYYY')),
@@ -125,10 +137,20 @@ export const usePositionedTasks = ({
           : dayjs(t.start);
         const end = overflowAfter ? dayjs(currentRangeEnd) : dayjs(t.end);
 
+        const slotHeight =
+          hourSlotHeight - (spacing.hourSlotPaddingBottom || 0);
+
         const top =
           (start.get('hour') + start.get('minute') / 60) * hourSlotHeight;
 
-        const height = (end.diff(start, 'minute') / 60) * hourSlotHeight;
+        const height =
+          Math.max(
+            taskMinHeight,
+            (end.diff(start, 'minute') / 60) * slotHeight
+          ) -
+          // Add padding bottom adjuster
+          (spacing?.hourSlotPaddingBottom || 0) +
+          end.diff(start, 'hour') * (spacing?.hourSlotPaddingBottom || 0);
 
         const node: CollidingTaskNode = {
           task: t,
@@ -157,15 +179,23 @@ export const usePositionedTasks = ({
 
       return roots;
     });
-  }, [currentRangeEnd, currentRangeStart, hourSlotHeight, tasksByDay]);
+  }, [
+    currentRangeEnd,
+    currentRangeStart,
+    hourSlotHeight,
+    spacing.hourSlotPaddingBottom,
+    taskMinHeight,
+    tasksByDay,
+  ]);
 
   return useMemo(() => {
     return flatMap(collidingTaskTrees, (node) => {
       return computeTaskRect(
         node,
         node.leftOffset * (hourSlotWidth || 0),
-        hourSlotWidth || 0
+        (hourSlotWidth || 0) - (spacing.hourSlotPaddingRight || 0),
+        spacing
       );
     });
-  }, [collidingTaskTrees, hourSlotWidth]);
+  }, [collidingTaskTrees, hourSlotWidth, spacing]);
 };
