@@ -32,9 +32,17 @@ export const resolvers: Resolvers<GraphqlContext> = {
         where: {
           AND: conds,
         },
-        orderBy: {
-          start: 'asc',
-        },
+        orderBy: [
+          {
+            start: 'asc',
+          },
+          {
+            end: 'desc',
+          },
+        ],
+        // orderBy: {
+        //   start: 'asc',
+        // },
       });
       return tasks;
     },

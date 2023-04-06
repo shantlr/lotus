@@ -20,9 +20,11 @@ export const BaseTaskItem = ({
   const [show, setShow] = useState(false);
   const [containerRef, setContainerRef] = useState<HTMLElement | null>(null);
   const [popupRef, setPopupRef] = useState<HTMLElement | null>(null);
+  const [popupArrowRef, setPopupArrowRef] = useState<HTMLElement | null>(null);
 
   const popper = usePopper(containerRef, popupRef, {
     strategy: 'absolute',
+    modifiers: [{ name: 'arrow', options: { element: popupArrowRef } }],
   });
 
   useEffect(() => {
@@ -35,7 +37,7 @@ export const BaseTaskItem = ({
         containerRef &&
         popupRef &&
         !containerRef.contains(e.target as HTMLElement) &&
-        !popupRef?.contains(e.target)
+        !popupRef?.contains(e.target as HTMLElement)
       ) {
         setShow(false);
       }
@@ -51,19 +53,24 @@ export const BaseTaskItem = ({
         ref={setContainerRef}
         onClick={(e) => {
           e.preventDefault();
-          setShow(true);
+          setShow(!show);
         }}
         {...props}
       />
       {show &&
         createPortal(
           <div
-            className="shadow"
+            className="shadow-xl"
             style={popper.styles.popper}
             {...popper.attributes.popper}
             ref={setPopupRef}
           >
             <TaskDetails task={task} onClose={() => setShow(false)} />
+            <div
+              ref={setPopupArrowRef}
+              data-popper-arrow
+              style={popper.styles.arrow}
+            />
           </div>,
           document.body
         )}

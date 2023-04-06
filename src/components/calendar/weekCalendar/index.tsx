@@ -7,12 +7,12 @@ import { useMemo, useState } from 'react';
 import { useQuery } from 'urql';
 import { QUERY_TASKS } from '../query';
 import { AnchoredTaskItem, CalendarTask } from '../taskItem';
+import { useAnchoredTasks } from './useAnchoredTasks';
 import {
   SlotSpacing,
   usePartitionTasks,
   usePositionedTasks,
-} from './useTasksPosition';
-import { useAnchoredTasks } from './useAnchoredTasks';
+} from '../useTasksPosition';
 
 const DATE_FORMAT = 'DD/MM/YYYY';
 const HOUR_SLOT_HEIGHT = 40;
@@ -79,8 +79,13 @@ export const WeekCalendar = () => {
     null
   );
 
-  const [tasks, multiDayTasks] = usePartitionTasks({ tasks: data?.tasks });
+  const [tasks, multiDayTasks] = usePartitionTasks({
+    tasks: data?.tasks,
+    currentRangeEnd: currenteDateRange.end,
+    currentRangeStart: currenteDateRange.start,
+  });
   const hourSlotWidth = useObserveWidth(tasksContainer, '.hour-slot');
+
   const positionedTasks = usePositionedTasks({
     tasks,
     hourSlotHeight: HOUR_SLOT_HEIGHT,
@@ -167,6 +172,7 @@ export const WeekCalendar = () => {
 
         <div
           ref={setTasksContainer}
+          key={selectedWeek.key}
           className="relative h-full w-full flex overflow-auto pr-4"
         >
           {/* Hour header */}

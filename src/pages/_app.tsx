@@ -3,6 +3,7 @@ import type { AppProps } from 'next/app';
 import { SessionProvider } from 'next-auth/react';
 import { Authenticated } from '@/components/context/authenticated';
 import { UrqlProvider } from '@/components/context/urql';
+import { Themed } from '@/components/base/themed';
 
 export default function App({
   Component,
@@ -12,7 +13,9 @@ export default function App({
     <SessionProvider session={session}>
       <UrqlProvider>
         <Authenticated>
-          <Component {...pageProps} />
+          <Themed>
+            <Component {...pageProps} />
+          </Themed>
         </Authenticated>
       </UrqlProvider>
     </SessionProvider>

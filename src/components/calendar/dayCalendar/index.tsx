@@ -7,12 +7,10 @@ import { useRouter } from 'next/router';
 import { useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { useQuery } from 'urql';
 import { QUERY_TASKS } from '../query';
-import { AnchoredTaskItem } from '../taskItem';
-import {
-  useHeightSizedTasks,
-  usePartitionTasks,
-  usePositionedTasks,
-} from './useTasksPositions';
+import { AnchoredTaskItem, CalendarTask } from '../taskItem';
+import { usePartitionTasks } from './useTasksPositions';
+import { usePositionedTasks } from '../useTasksPosition';
+import { useObserveWidth } from '@/components/base/hooks';
 
 const HOUR_HEIGHT = 100;
 const HEADER_HOUR_WIDTH = 45;
@@ -69,19 +67,19 @@ export const DayCalendar = () => {
     }
   }, []);
 
-  const hoursContainerRef = useRef<HTMLDivElement | null>(null);
+  const [hoursContainer, setHourContainer] = useState<HTMLDivElement | null>(
+    null
+  );
   // initial auto scroll to current hour range
   useLayoutEffect(() => {
-    if (hoursContainerRef.current) {
-      const elem = hoursContainerRef.current.querySelector<HTMLDivElement>(
+    if (hoursContainer) {
+      const elem = hoursContainer.querySelector<HTMLDivElement>(
         `.hour-block-${new Date().getHours()}`
       );
       if (elem) {
-        hoursContainerRef.current.scroll({
+        hoursContainer.scroll({
           top:
-            elem.offsetTop -
-            hoursContainerRef.current.offsetTop -
-            elem.offsetHeight * 1.2,
+            elem.offsetTop - hoursContainer.offsetTop - elem.offsetHeight * 1.2,
         });
       }
     }
@@ -99,18 +97,33 @@ export const DayCalendar = () => {
     start: selectedDateRange.start,
     end: selectedDateRange.end,
   });
-  const heightSizedTasks = useHeightSizedTasks({
-    refDay: selectedDate.date,
+  const hourSlotWidth = useObserveWidth(hoursContainer, '.hour-slot');
+  console.log('W', hourSlotWidth);
+  const positionedTasks = usePositionedTasks({
+    currentRangeStart: selectedDateRange.start,
+    currentRangeEnd: selectedDateRange.end,
     tasks,
-    size: {
-      hourSlotHeight: HOUR_HEIGHT,
-      taskMinHeight: TASK_MIN_HEIGHT,
+    hourSlotHeight: HOUR_HEIGHT,
+    hourSlotWidth: hourSlotWidth,
+    taskMinHeight: TASK_MIN_HEIGHT,
+    spacing: {
+      collidingTasksXDivider: 4,
+      hourSlotPaddingBottom: 2,
+      hourSlotPaddingRight: 20,
     },
   });
-  usePositionedTasks(hoursContainerRef, heightSizedTasks, {
-    offsetLeft: HEADER_HOUR_WIDTH,
-    spaceBetweenTask: 5,
-  });
+  // const heightSizedTasks = useHeightSizedTasks({
+  //   refDay: selectedDate.date,
+  //   tasks,
+  //   size: {
+  //     hourSlotHeight: HOUR_HEIGHT,
+  //     taskMinHeight: TASK_MIN_HEIGHT,
+  //   },
+  // });
+  // usePositionedTasks(hoursContainerRef, heightSizedTasks, {
+  //   offsetLeft: HEADER_HOUR_WIDTH,
+  //   spaceBetweenTask: 5,
+  // });
 
   const router = useRouter();
 
@@ -151,7 +164,7 @@ export const DayCalendar = () => {
       </div>
 
       <div
-        ref={hoursContainerRef}
+        ref={setHourContainer}
         className="relative flex flex-col h-full w-full overflow-auto pr-4"
       >
         {/* Left hour header */}
@@ -159,7 +172,7 @@ export const DayCalendar = () => {
           <div
             key={h}
             style={{ top: h * HOUR_HEIGHT, height: HOUR_HEIGHT }}
-            className={`hour-slot flex flex-shrink-0 w-full hover:bg-gray-800 hour-block-${h}`}
+            className={`flex flex-shrink-0 w-full hover:bg-gray-800 hour-block-${h}`}
           >
             <div
               style={{ width: HEADER_HOUR_WIDTH }}
@@ -174,7 +187,7 @@ export const DayCalendar = () => {
             {/* Slot placeholder */}
             <div
               className={classNames(
-                'border-b-2 border-r-2 border-gray-700 w-full h-full cursor-pointer',
+                'hour-slot border-b-2 border-r-2 border-gray-700 w-full h-full cursor-pointer',
                 {
                   'border-t-2 border-t-gray-700 rounded-tr': h === 0,
                   'rounded-br': h === 23,
@@ -197,14 +210,22 @@ export const DayCalendar = () => {
         ))}
 
         {/* Tasks */}
-        {heightSizedTasks.map(
-          ({ overflowAfter, overflowBefore, id, task, height, top }) => {
+        {positionedTasks.map(
+          ({
+            overflowAfter,
+            overflowBefore,
+            task,
+            height,
+            top,
+            left,
+            width,
+          }) => {
             return (
-              <div
+              <CalendarTask
                 key={task.id}
-                id={id}
+                id={task.id}
                 className={classNames(
-                  'task-item absolute bg-gray-500 px-4 py-1 cursor-pointer hover:bg-gray-400 transition',
+                  'task-item whitespace-pre-line overflow-hidden break-all absolute px-4 py-1',
                   {
                     'border-dashed border-t-white border-t-[1px]':
                       overflowBefore,
@@ -217,10 +238,11 @@ export const DayCalendar = () => {
                 style={{
                   top,
                   height,
+                  width,
+                  left: left + HEADER_HOUR_WIDTH,
                 }}
-              >
-                <span className="font-bold">{task.title}</span>
-              </div>
+                task={task}
+              />
             );
           }
         )}

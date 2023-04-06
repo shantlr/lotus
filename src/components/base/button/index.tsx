@@ -23,9 +23,9 @@ export const Button = ({
     <button
       className={classNames(
         'transition disabled:cursor-not-allowed',
-        t === 'highlight' || highlight
+        highlight
           ? STYLE['highlight']
-          : t in STYLE
+          : typeof t === 'string' && t in STYLE
           ? STYLE[t]
           : STYLE['default'],
         {

@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { Task } from './useTasksPosition';
+import { Task } from '../useTasksPosition';
 import dayjs from 'dayjs';
 
 export const useAnchoredTasks = ({
