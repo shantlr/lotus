@@ -83,7 +83,7 @@ export const DayCalendar = () => {
         });
       }
     }
-  }, []);
+  }, [hoursContainer]);
 
   const selectedDateRange = useMemo(
     () => ({
@@ -98,7 +98,7 @@ export const DayCalendar = () => {
     end: selectedDateRange.end,
   });
   const hourSlotWidth = useObserveWidth(hoursContainer, '.hour-slot');
-  console.log('W', hourSlotWidth);
+
   const positionedTasks = usePositionedTasks({
     currentRangeStart: selectedDateRange.start,
     currentRangeEnd: selectedDateRange.end,
@@ -112,18 +112,6 @@ export const DayCalendar = () => {
       hourSlotPaddingRight: 20,
     },
   });
-  // const heightSizedTasks = useHeightSizedTasks({
-  //   refDay: selectedDate.date,
-  //   tasks,
-  //   size: {
-  //     hourSlotHeight: HOUR_HEIGHT,
-  //     taskMinHeight: TASK_MIN_HEIGHT,
-  //   },
-  // });
-  // usePositionedTasks(hoursContainerRef, heightSizedTasks, {
-  //   offsetLeft: HEADER_HOUR_WIDTH,
-  //   spaceBetweenTask: 5,
-  // });
 
   const router = useRouter();
 

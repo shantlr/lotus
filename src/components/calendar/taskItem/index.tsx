@@ -12,10 +12,10 @@ const Base = classed(
 );
 
 export const BaseTaskItem = ({
-  task,
+  taskId,
   ...props
 }: {
-  task: CalendarTasksQuery['tasks'][number];
+  taskId: string;
 } & ComponentProps<typeof BaseTaskItem>) => {
   const [show, setShow] = useState(false);
   const [containerRef, setContainerRef] = useState<HTMLElement | null>(null);
@@ -65,7 +65,7 @@ export const BaseTaskItem = ({
             {...popper.attributes.popper}
             ref={setPopupRef}
           >
-            <TaskDetails task={task} onClose={() => setShow(false)} />
+            <TaskDetails taskId={taskId} onClose={() => setShow(false)} />
             <div
               ref={setPopupArrowRef}
               data-popper-arrow
@@ -87,7 +87,7 @@ export const CalendarTask = ({
 } & ComponentProps<typeof BaseTaskItem>) => {
   return (
     <BaseTaskItem
-      task={task}
+      taskId={task.id}
       className={classNames('rounded', className)}
       {...props}
     >
@@ -105,7 +105,7 @@ export const AnchoredTaskItem = ({
 } & ComponentProps<typeof BaseTaskItem>) => {
   return (
     <BaseTaskItem
-      task={task}
+      taskId={task.id}
       className={classNames('text-xs rounded px-4 py-1', className)}
       {...props}
     >

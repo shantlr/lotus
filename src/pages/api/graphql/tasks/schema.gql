@@ -1,5 +1,6 @@
 extend type Query {
   tasks(input: GetTasksInput): [Task!]!
+  task(id: ID!): Task
 }
 
 extend type Mutation {

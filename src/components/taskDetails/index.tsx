@@ -3,7 +3,8 @@ import { Button } from '../base/button';
 import { FaTimes, FaTrash } from 'react-icons/fa';
 import dayjs from 'dayjs';
 import { graphql } from '@/gql/__generated/client';
-import { useMutation } from 'urql';
+import { useMutation, useQuery } from 'urql';
+import { QUERY_TASK_DETAIL } from './query';
 
 const DELETE_TASK_MUTATION = graphql(`
   mutation DeleteTask($input: DeleteTaskInput!) {
@@ -12,18 +13,26 @@ const DELETE_TASK_MUTATION = graphql(`
 `);
 
 export const TaskDetails = ({
-  task,
+  taskId,
   onClose,
 }: {
-  task: {
-    id: string;
-    title: string;
-    start: Date;
-    end: Date;
-  };
+  taskId: string;
   onClose?: () => void;
 }) => {
+  const [{ data }] = useQuery({
+    query: QUERY_TASK_DETAIL,
+    variables: {
+      id: taskId,
+    },
+  });
+
+  const task = data?.task;
+
   const formattedDate = useMemo(() => {
+    if (!task?.end || !task?.start) {
+      return '';
+    }
+
     const start = dayjs(task.start);
     const end = dayjs(task.end);
 
@@ -46,9 +55,13 @@ export const TaskDetails = ({
     return `${start.format('DD/MM/YYYY HH:mm')} - ${end.format(
       'DD/MM/YYYY HH:mm'
     )}`;
-  }, [task.end, task.start]);
+  }, [task?.end, task?.start]);
 
   const [{ fetching }, deleteTask] = useMutation(DELETE_TASK_MUTATION);
+
+  if (!task) {
+    return null;
+  }
 
   return (
     <div className="min-w-[200px] bg-white rounded p-2 text-slate-500">
