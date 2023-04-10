@@ -70,6 +70,8 @@ export default function CalendarPage({ type }: { type?: string }) {
         <Calendar
           className="p-2"
           type={type ?? 'week'}
+          selectedStart={createTask?.start}
+          selectedEnd={createTask?.end}
           onCreateTask={onOpenCreateTask}
         />
         {createTask && (

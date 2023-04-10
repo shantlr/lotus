@@ -1,10 +1,5 @@
 import classNames from 'classnames';
-import {
-  ComponentProps,
-  createElement,
-  forwardRef,
-  FunctionComponent,
-} from 'react';
+import { ComponentProps, createElement, forwardRef } from 'react';
 
 export function classed<T extends keyof JSX.IntrinsicElements>(
   elemType: T,

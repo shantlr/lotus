@@ -2,7 +2,6 @@ import { useObserveWidth } from '@/components/base/hooks';
 import classNames from 'classnames';
 import dayjs, { Dayjs } from 'dayjs';
 import { first, last, range } from 'lodash';
-import { useRouter } from 'next/router';
 import { useMemo, useState } from 'react';
 import { useQuery } from 'urql';
 import { QUERY_TASKS } from '../query';
@@ -13,10 +12,11 @@ import {
   usePartitionTasks,
   usePositionedTasks,
 } from '../useTasksPosition';
+import { WeekCalendarPlaceholders } from './placecholders';
+import { HOUR_SLOT_HEADER_WIDTH, HOUR_SLOT_HEIGHT } from './constants';
+import { OnCreateTask } from '../types';
 
 const DATE_FORMAT = 'DD/MM/YYYY';
-const HOUR_SLOT_HEIGHT = 40;
-const HOUR_SLOT_HEADER_WIDTH = 35;
 
 const mapWeekRange = (date: Dayjs) => {
   const weekStart = date.startOf('w');
@@ -44,14 +44,13 @@ const SPACING: SlotSpacing = {
 };
 
 export const WeekCalendar = ({
+  selectedStart,
+  selectedEnd,
   onCreateTask,
 }: {
-  onCreateTask?: (value: {
-    elem?: HTMLElement;
-    title?: string;
-    start?: Date;
-    end?: Date;
-  }) => void;
+  selectedStart?: Date | number;
+  selectedEnd?: Date | number;
+  onCreateTask?: OnCreateTask;
 }) => {
   const [selectedWeek, setSelectedWeek] = useState(() => {
     const start = dayjs().subtract(1, 'day').startOf('week');
@@ -81,8 +80,6 @@ export const WeekCalendar = ({
       },
     },
   });
-
-  const router = useRouter();
 
   const [tasksContainer, setTasksContainer] = useState<HTMLDivElement | null>(
     null
@@ -136,15 +133,15 @@ export const WeekCalendar = ({
       </div>
       <div className="flex flex-col w-full h-full overflow-hidden">
         {/* Header */}
-        <div className="flex w-full pr-4">
+        <div className="flex w-full pr-4 border-b-2 border-b-gray-500">
           <div
             style={{ width: HOUR_SLOT_HEADER_WIDTH }}
-            className={`shrink-0`}
+            className={`shrink-0 border-r-2 border-gray-700`}
           ></div>
           {selectedWeek.days.map((d, idx) => (
             <div
               className={classNames(
-                'w-full flex-grow border-l-2 border-b-2 border-b-gray-500 border-gray-700',
+                'w-full flex-grow border-r-2 border-gray-700',
                 {
                   'border-r-2': idx === selectedWeek.days.length - 1,
                 }
@@ -193,7 +190,7 @@ export const WeekCalendar = ({
               {range(0, 24).map((h) => (
                 <div
                   style={{ height: HOUR_SLOT_HEIGHT }}
-                  className={`text-center w-full hover:bg-gray-800 hour-block-${h}`}
+                  className={`text-center w-full hover:bg-gray-800 hour-block-${h} border-r-2 border-gray-700 text-sm`}
                   key={h}
                 >
                   {h}h
@@ -203,38 +200,12 @@ export const WeekCalendar = ({
           </div>
 
           {/* Placeholders */}
-          <div className="w-full flex flex-grow">
-            {selectedWeek.days.map((d, idx) => (
-              <div className="flex-grow relative" key={d.key}>
-                {range(0, 24).map((h) => (
-                  <div
-                    key={h}
-                    style={{ height: HOUR_SLOT_HEIGHT }}
-                    onClick={(e) => {
-                      if (e.defaultPrevented) {
-                        return;
-                      }
-
-                      if (onCreateTask) {
-                        const start = d.date.hour(h).startOf('hour');
-                        onCreateTask({
-                          elem: e.target as HTMLDivElement,
-                          start: start.toDate(),
-                          end: start.add(1, 'h').toDate(),
-                        });
-                      }
-                    }}
-                    className={classNames(
-                      `hour-slot border-l-2 border-gray-700 border-b-2 border-b-gray-500 cursor-pointer hover:bg-gray-800 transition`,
-                      {
-                        'border-r-2': idx === selectedWeek.days.length - 1,
-                      }
-                    )}
-                  />
-                ))}
-              </div>
-            ))}
-          </div>
+          <WeekCalendarPlaceholders
+            week={selectedWeek}
+            onCreateTask={onCreateTask}
+            selectedStart={selectedStart}
+            selectedEnd={selectedEnd}
+          />
 
           {/* Tasks */}
           {positionedTasks.map((t) => (

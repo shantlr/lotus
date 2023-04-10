@@ -2,7 +2,6 @@ import classNames from 'classnames';
 import dayjs from 'dayjs';
 import customFormat from 'dayjs/plugin/customParseFormat';
 import { range } from 'lodash';
-import { useRouter } from 'next/router';
 import { useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { useQuery } from 'urql';
 import { QUERY_TASKS } from '../query';
@@ -10,6 +9,9 @@ import { AnchoredTaskItem, CalendarTask } from '../taskItem';
 import { usePartitionTasks } from './useTasksPositions';
 import { usePositionedTasks } from '../useTasksPosition';
 import { useObserveWidth } from '@/components/base/hooks';
+import { useHourSlots } from '../useHourSlots';
+import { SlotPlaceholder } from '../slot';
+import { OnCreateTask } from '../types';
 
 const HOUR_HEIGHT = 100;
 const HEADER_HOUR_WIDTH = 45;
@@ -19,14 +21,13 @@ const DATE_FORMAT = 'DD/MM/YYYY';
 dayjs.extend(customFormat);
 
 export const DayCalendar = ({
+  selectedStart,
+  selectedEnd,
   onCreateTask,
 }: {
-  onCreateTask?: (value: {
-    elem?: HTMLElement;
-    title?: string;
-    start?: Date;
-    end?: Date;
-  }) => void;
+  selectedStart?: Date | number;
+  selectedEnd?: Date | number;
+  onCreateTask?: OnCreateTask;
 }) => {
   const [selectedDate, setSelectedDate] = useState(() => {
     const d = dayjs();
@@ -121,7 +122,11 @@ export const DayCalendar = ({
     },
   });
 
-  const router = useRouter();
+  const slots = useHourSlots({
+    day: selectedDateRange.start,
+    selectedStart,
+    selectedEnd,
+  });
 
   return (
     <div className="flex flex-col overflow-hidden w-full h-full">
@@ -164,10 +169,10 @@ export const DayCalendar = ({
         className="relative flex flex-col h-full w-full overflow-auto pr-4"
       >
         {/* Left hour header */}
-        {range(0, 24).map((h) => (
+        {slots.map((s, h) => (
           <div
-            key={h}
-            style={{ top: h * HOUR_HEIGHT, height: HOUR_HEIGHT }}
+            key={s.key}
+            style={{ height: HOUR_HEIGHT }}
             className={`flex flex-shrink-0 w-full hover:bg-gray-800 hour-block-${h}`}
           >
             <div
@@ -181,14 +186,12 @@ export const DayCalendar = ({
             >{`${h}h`}</div>
 
             {/* Slot placeholder */}
-            <div
-              className={classNames(
-                'hour-slot border-b-2 border-r-2 border-gray-700 w-full h-full cursor-pointer',
-                {
-                  'border-t-2 border-t-gray-700 rounded-tr': h === 0,
-                  'rounded-br': h === 23,
-                }
-              )}
+            <SlotPlaceholder
+              selected={Boolean(s.selected)}
+              className={classNames('hour-slot ', {
+                'border-t-2 border-t-gray-700 rounded-tr': h === 0,
+                'rounded-br': h === 23,
+              })}
               onClick={(e) => {
                 if (e.defaultPrevented) {
                   return;
@@ -203,7 +206,7 @@ export const DayCalendar = ({
                   });
                 }
               }}
-            ></div>
+            />
           </div>
         ))}
 

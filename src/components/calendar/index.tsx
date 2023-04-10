@@ -8,6 +8,7 @@ import { RadioGroup } from '../base/radio';
 import { DayCalendar } from './dayCalendar';
 import { MonthCalendar } from './monthCalendar';
 import { WeekCalendar } from './weekCalendar';
+import { OnCreateTask } from './types';
 
 const OPTIONS = [
   {
@@ -31,15 +32,15 @@ export const Calendar = ({
   type,
   className,
   onCreateTask,
+
+  selectedStart,
+  selectedEnd,
 }: {
   type?: string;
   className?: string;
-  onCreateTask?: (value: {
-    elem?: HTMLElement;
-    title?: string;
-    start?: Date;
-    end?: Date;
-  }) => void;
+  selectedStart?: Date | number;
+  selectedEnd?: Date | number;
+  onCreateTask?: OnCreateTask;
 }) => {
   const router = useRouter();
   return (
@@ -69,9 +70,27 @@ export const Calendar = ({
         </div>
       </div>
 
-      {type === 'day' && <DayCalendar onCreateTask={onCreateTask} />}
-      {type === 'week' && <WeekCalendar onCreateTask={onCreateTask} />}
-      {type === 'month' && <MonthCalendar onCreateTask={onCreateTask} />}
+      {type === 'day' && (
+        <DayCalendar
+          selectedStart={selectedStart}
+          selectedEnd={selectedEnd}
+          onCreateTask={onCreateTask}
+        />
+      )}
+      {type === 'week' && (
+        <WeekCalendar
+          selectedStart={selectedStart}
+          selectedEnd={selectedEnd}
+          onCreateTask={onCreateTask}
+        />
+      )}
+      {type === 'month' && (
+        <MonthCalendar
+          selectedStart={selectedStart}
+          selectedEnd={selectedEnd}
+          onCreateTask={onCreateTask}
+        />
+      )}
     </div>
   );
 };
