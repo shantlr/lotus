@@ -31,8 +31,17 @@ export default function CalendarPage({ type }: { type?: string }) {
   }, [router.query]);
 
   useEffect(() => {
+    // auto clean popper elem
     if (!createTask && taskPopperElem) {
-      setPopperElem(undefined);
+      // if we immediately clean timeout
+      // there is a case where elem is cleaned before router updated
+      // => timeout do the job
+      const handle = setTimeout(() => {
+        setPopperElem(undefined);
+      }, 2000);
+      return () => {
+        clearTimeout(handle);
+      };
     }
   }, [createTask, taskPopperElem]);
 
