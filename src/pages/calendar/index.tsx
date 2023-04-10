@@ -1,31 +1,61 @@
 import { Calendar } from '@/components/calendar';
-import { CreateTaskPane } from '@/components/createTaskPane';
+import { CreateTaskPopper } from '@/components/createTaskPane';
 import { SideBar } from '@/components/sideBar';
-import { pick } from 'lodash';
+import { omit } from 'lodash';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
-import { useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 export default function CalendarPage({ type }: { type?: string }) {
   const router = useRouter();
 
-  const newTask = useMemo(() => {
+  const [taskPopperElem, setPopperElem] = useState<HTMLElement>();
+
+  const createTask = useMemo(() => {
     if (!('new_task' in router.query)) {
       return null;
     }
-    if (router.query.new_task && typeof router.query.new_task === 'string') {
+
+    if (typeof router.query.new_task === 'string') {
       const [start, end] = router.query.new_task
         .split(':')
         .map((d) => Number(d));
-      if (isFinite(start)) {
+      if (isFinite(start) || isFinite(end)) {
         return {
-          start: isFinite(start) ? new Date(start) : undefined,
-          end: isFinite(end) ? new Date(end) : undefined,
+          start: isFinite(start) ? start : undefined,
+          end: isFinite(end) ? end : undefined,
         };
       }
+      return {};
     }
-    return {};
   }, [router.query]);
+
+  useEffect(() => {
+    if (!createTask && taskPopperElem) {
+      setPopperElem(undefined);
+    }
+  }, [createTask, taskPopperElem]);
+
+  const onOpenCreateTask = useCallback(
+    (value: {
+      elem?: HTMLElement;
+      title?: string;
+      start?: Date;
+      end?: Date;
+    }) => {
+      setPopperElem(value.elem);
+      router.replace({
+        pathname: router.pathname,
+        query: {
+          ...router.query,
+          new_task: `${value.start?.valueOf() ?? ''}:${
+            value.end?.valueOf() ?? ''
+          }`,
+        },
+      });
+    },
+    [router]
+  );
 
   return (
     <>
@@ -37,15 +67,38 @@ export default function CalendarPage({ type }: { type?: string }) {
       </Head>
       <main className="w-full h-full flex">
         <SideBar />
-        <Calendar className="p-2" type={type ?? 'week'} />
-        {newTask && (
-          <CreateTaskPane
-            initial={newTask}
-            key={`${newTask.start}:${newTask.end}`}
+        <Calendar
+          className="p-2"
+          type={type ?? 'week'}
+          onCreateTask={onOpenCreateTask}
+        />
+        {createTask && (
+          <CreateTaskPopper
+            start={createTask.start}
+            end={createTask.end}
+            parentElem={taskPopperElem}
+            onStartChange={(d) => {
+              router.replace({
+                pathname: router.pathname,
+                query: {
+                  ...router.query,
+                  new_task: `${d.valueOf()}:${createTask.end}`,
+                },
+              });
+            }}
+            onEndChange={(d) => {
+              router.replace({
+                pathname: router.pathname,
+                query: {
+                  ...router.query,
+                  new_task: `${createTask.start}:${d.valueOf()}`,
+                },
+              });
+            }}
             onClose={() => {
               router.replace({
                 pathname: router.pathname,
-                query: pick(router.query, ['type']),
+                query: omit(router.query, ['new_task']),
               });
             }}
           />

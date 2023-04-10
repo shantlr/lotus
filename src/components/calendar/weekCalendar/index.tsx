@@ -43,7 +43,16 @@ const SPACING: SlotSpacing = {
   collidingTasksXDivider: 2,
 };
 
-export const WeekCalendar = () => {
+export const WeekCalendar = ({
+  onCreateTask,
+}: {
+  onCreateTask?: (value: {
+    elem?: HTMLElement;
+    title?: string;
+    start?: Date;
+    end?: Date;
+  }) => void;
+}) => {
   const [selectedWeek, setSelectedWeek] = useState(() => {
     const start = dayjs().subtract(1, 'day').startOf('week');
     return mapWeekRange(start);
@@ -201,17 +210,19 @@ export const WeekCalendar = () => {
                   <div
                     key={h}
                     style={{ height: HOUR_SLOT_HEIGHT }}
-                    onClick={() => {
-                      const start = d.date.hour(h).startOf('hour');
-                      router.replace({
-                        pathname: router.pathname,
-                        query: {
-                          ...router.query,
-                          new_task: `${start.valueOf()}:${start
-                            .add(1, 'h')
-                            .valueOf()}`,
-                        },
-                      });
+                    onClick={(e) => {
+                      if (e.defaultPrevented) {
+                        return;
+                      }
+
+                      if (onCreateTask) {
+                        const start = d.date.hour(h).startOf('hour');
+                        onCreateTask({
+                          elem: e.target as HTMLDivElement,
+                          start: start.toDate(),
+                          end: start.add(1, 'h').toDate(),
+                        });
+                      }
                     }}
                     className={classNames(
                       `hour-slot border-l-2 border-gray-700 border-b-2 border-b-gray-500 cursor-pointer hover:bg-gray-800 transition`,

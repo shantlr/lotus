@@ -30,9 +30,16 @@ const OPTIONS = [
 export const Calendar = ({
   type,
   className,
+  onCreateTask,
 }: {
   type?: string;
   className?: string;
+  onCreateTask?: (value: {
+    elem?: HTMLElement;
+    title?: string;
+    start?: Date;
+    end?: Date;
+  }) => void;
 }) => {
   const router = useRouter();
   return (
@@ -62,9 +69,9 @@ export const Calendar = ({
         </div>
       </div>
 
-      {type === 'day' && <DayCalendar />}
-      {type === 'week' && <WeekCalendar />}
-      {type === 'month' && <MonthCalendar />}
+      {type === 'day' && <DayCalendar onCreateTask={onCreateTask} />}
+      {type === 'week' && <WeekCalendar onCreateTask={onCreateTask} />}
+      {type === 'month' && <MonthCalendar onCreateTask={onCreateTask} />}
     </div>
   );
 };

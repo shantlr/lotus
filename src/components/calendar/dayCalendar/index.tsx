@@ -1,4 +1,3 @@
-import { graphql } from '@/gql/__generated/client';
 import classNames from 'classnames';
 import dayjs from 'dayjs';
 import customFormat from 'dayjs/plugin/customParseFormat';
@@ -19,7 +18,16 @@ const TASK_MIN_HEIGHT = 35;
 const DATE_FORMAT = 'DD/MM/YYYY';
 dayjs.extend(customFormat);
 
-export const DayCalendar = () => {
+export const DayCalendar = ({
+  onCreateTask,
+}: {
+  onCreateTask?: (value: {
+    elem?: HTMLElement;
+    title?: string;
+    start?: Date;
+    end?: Date;
+  }) => void;
+}) => {
   const [selectedDate, setSelectedDate] = useState(() => {
     const d = dayjs();
     return {
@@ -181,17 +189,19 @@ export const DayCalendar = () => {
                   'rounded-br': h === 23,
                 }
               )}
-              onClick={() => {
-                const start = selectedDate.date.hour(h).startOf('hour');
-                router.replace({
-                  pathname: router.pathname,
-                  query: {
-                    ...router.query,
-                    new_task: `${start.valueOf()}:${start
-                      .add(1, 'h')
-                      .valueOf()}`,
-                  },
-                });
+              onClick={(e) => {
+                if (e.defaultPrevented) {
+                  return;
+                }
+
+                if (onCreateTask) {
+                  const start = selectedDate.date.hour(h).startOf('hour');
+                  onCreateTask({
+                    elem: e.target as HTMLDivElement,
+                    start: start.toDate(),
+                    end: start.add(1, 'h').toDate(),
+                  });
+                }
               }}
             ></div>
           </div>
