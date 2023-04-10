@@ -15,6 +15,7 @@ import {
 import { WeekCalendarPlaceholders } from './placecholders';
 import { HOUR_SLOT_HEADER_WIDTH, HOUR_SLOT_HEIGHT } from './constants';
 import { OnCreateTask } from '../types';
+import { useClickToCreateTask } from '../useClickToCreateTask';
 
 const DATE_FORMAT = 'DD/MM/YYYY';
 
@@ -110,6 +111,10 @@ export const WeekCalendar = ({
     currentRangeEnd: currenteDateRange.end,
   });
 
+  const slotClickHandlers = useClickToCreateTask({
+    onCreateTask,
+  });
+
   return (
     <div className="flex flex-col w-full h-full overflow-hidden">
       <div className="w-full flex overflow-auto py-4">
@@ -202,9 +207,9 @@ export const WeekCalendar = ({
           {/* Placeholders */}
           <WeekCalendarPlaceholders
             week={selectedWeek}
-            onCreateTask={onCreateTask}
             selectedStart={selectedStart}
             selectedEnd={selectedEnd}
+            slotProps={slotClickHandlers}
           />
 
           {/* Tasks */}

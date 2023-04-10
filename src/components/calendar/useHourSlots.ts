@@ -17,7 +17,9 @@ export const useHourSlots = ({
       const d = start.set('hour', s);
       return {
         key: d.valueOf(),
-        date: d,
+        start: d,
+        end: d.add(1, 'h'),
+
         selected: Boolean(
           selectedStart &&
             selectedEnd &&

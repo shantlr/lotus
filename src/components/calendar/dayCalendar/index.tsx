@@ -12,6 +12,7 @@ import { useObserveWidth } from '@/components/base/hooks';
 import { useHourSlots } from '../useHourSlots';
 import { SlotPlaceholder } from '../slot';
 import { OnCreateTask } from '../types';
+import { useClickToCreateTask } from '../useClickToCreateTask';
 
 const HOUR_HEIGHT = 100;
 const HEADER_HOUR_WIDTH = 45;
@@ -128,6 +129,8 @@ export const DayCalendar = ({
     selectedEnd,
   });
 
+  const clickEvents = useClickToCreateTask({ onCreateTask });
+
   return (
     <div className="flex flex-col overflow-hidden w-full h-full">
       <div ref={datesContainerRef} className="py-4 w-full flex overflow-auto">
@@ -168,13 +171,13 @@ export const DayCalendar = ({
         ref={setHourContainer}
         className="relative flex flex-col h-full w-full overflow-auto pr-4"
       >
-        {/* Left hour header */}
         {slots.map((s, h) => (
           <div
             key={s.key}
             style={{ height: HOUR_HEIGHT }}
             className={`flex flex-shrink-0 w-full hover:bg-gray-800 hour-block-${h}`}
           >
+            {/* Left hour header */}
             <div
               style={{ width: HEADER_HOUR_WIDTH }}
               className={classNames(
@@ -192,20 +195,9 @@ export const DayCalendar = ({
                 'border-t-2 border-t-gray-700 rounded-tr': h === 0,
                 'rounded-br': h === 23,
               })}
-              onClick={(e) => {
-                if (e.defaultPrevented) {
-                  return;
-                }
-
-                if (onCreateTask) {
-                  const start = selectedDate.date.hour(h).startOf('hour');
-                  onCreateTask({
-                    elem: e.target as HTMLDivElement,
-                    start: start.toDate(),
-                    end: start.add(1, 'h').toDate(),
-                  });
-                }
-              }}
+              data-slot-start={s.start.valueOf()}
+              data-slot-end={s.end.valueOf()}
+              {...clickEvents}
             />
           </div>
         ))}

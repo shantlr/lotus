@@ -4,19 +4,20 @@ import { HOUR_SLOT_HEIGHT } from './constants';
 import { OnCreateTask } from '../types';
 import classNames from 'classnames';
 import { SlotPlaceholder } from '../slot';
+import { ComponentProps } from 'react';
 
 const DayHourSlots = ({
   day,
   selectedEnd,
   selectedStart,
-  onCreateTask,
+  slotProps,
 }: {
   day: Date | Dayjs;
   selectedStart?: Date | number;
   selectedEnd?: Date | number;
   onCreateTask?: OnCreateTask;
+  slotProps?: ComponentProps<typeof SlotPlaceholder>;
 }) => {
-  console.log({ selectedEnd, selectedStart });
   const slots = useHourSlots({
     day,
     selectedEnd,
@@ -29,27 +30,12 @@ const DayHourSlots = ({
           key={h.key}
           style={{ height: HOUR_SLOT_HEIGHT }}
           selected={h.selected}
-          onClick={(e) => {
-            if (e.defaultPrevented) {
-              return;
-            }
-
-            if (onCreateTask) {
-              const start = h.date;
-              onCreateTask({
-                elem: e.target as HTMLDivElement,
-                start: start.toDate(),
-                end: start.add(1, 'h').toDate(),
-              });
-            }
-          }}
-          className={classNames(
-            'hour-slot',
-            // `hour-slot border-l-2 border-gray-700 border-b-2 border-b-gray-500 cursor-pointer hover:bg-gray-800 transition`,
-            {
-              'border-r-2': idx === slots.length - 1,
-            }
-          )}
+          data-slot-start={h.start.valueOf()}
+          data-slot-end={h.end.valueOf()}
+          {...slotProps}
+          className={classNames('hour-slot', {
+            'border-r-2': idx === slots.length - 1,
+          })}
         />
       ))}
     </>
@@ -60,7 +46,8 @@ export const WeekCalendarPlaceholders = ({
   week,
   selectedEnd,
   selectedStart,
-  onCreateTask,
+
+  slotProps,
 }: {
   week: {
     days: {
@@ -70,7 +57,8 @@ export const WeekCalendarPlaceholders = ({
   };
   selectedStart?: Date | number;
   selectedEnd?: Date | number;
-  onCreateTask?: OnCreateTask;
+
+  slotProps?: ComponentProps<typeof SlotPlaceholder>;
 }) => {
   return (
     <div className="w-full flex flex-grow">
@@ -80,7 +68,7 @@ export const WeekCalendarPlaceholders = ({
             day={d.date}
             selectedStart={selectedStart}
             selectedEnd={selectedEnd}
-            onCreateTask={onCreateTask}
+            slotProps={slotProps}
           />
         </div>
       ))}
