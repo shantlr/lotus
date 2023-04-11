@@ -20,11 +20,14 @@ export const BaseTaskItem = ({
   const [show, setShow] = useState(false);
   const [containerRef, setContainerRef] = useState<HTMLElement | null>(null);
   const [popupRef, setPopupRef] = useState<HTMLElement | null>(null);
-  const [popupArrowRef, setPopupArrowRef] = useState<HTMLElement | null>(null);
+  const [popupArrow, setPopupArrow] = useState<HTMLElement | null>(null);
 
   const popper = usePopper(containerRef, popupRef, {
     strategy: 'absolute',
-    modifiers: [{ name: 'arrow', options: { element: popupArrowRef } }],
+    modifiers: [
+      { name: 'offset', options: { offset: [0, 10] } },
+      // { name: 'arrow', options: { element: popupArrow, padding: 5 } },
+    ],
   });
 
   useEffect(() => {
@@ -65,12 +68,12 @@ export const BaseTaskItem = ({
             {...popper.attributes.popper}
             ref={setPopupRef}
           >
-            <TaskDetails taskId={taskId} onClose={() => setShow(false)} />
             <div
-              ref={setPopupArrowRef}
+              ref={setPopupArrow}
               data-popper-arrow
               style={popper.styles.arrow}
             />
+            <TaskDetails taskId={taskId} onClose={() => setShow(false)} />
           </div>,
           document.body
         )}

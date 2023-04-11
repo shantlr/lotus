@@ -155,6 +155,10 @@ export const CreateTaskPopper = ({
           tether: false,
         },
       },
+      {
+        name: 'offset',
+        options: { offset: [0, 10] },
+      },
     ],
   });
 
