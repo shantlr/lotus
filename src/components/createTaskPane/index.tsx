@@ -1,7 +1,7 @@
 import { graphql } from '@/gql/__generated/client';
 import dayjs from 'dayjs';
 import { useMemo, useState } from 'react';
-import { FaTimes } from 'react-icons/fa';
+import { FaRegClock, FaTimes } from 'react-icons/fa';
 import { useMutation } from 'urql';
 import { Button } from '../base/button';
 import { Input } from '../base/input';
@@ -54,8 +54,10 @@ export const CreateTaskPaneForm = ({
         <span className="pl-4 font-bold">New Task</span>
       </div>
 
-      <div className="pt-4">
+      <div className="pt-4 flex">
+        <div className="w-1/6 min-h-[1px] shrink-0" />
         <Input
+          className="w-full"
           value={title || ''}
           onChange={(e) =>
             onTitleChange?.((e.target as HTMLInputElement).value)
@@ -63,8 +65,11 @@ export const CreateTaskPaneForm = ({
           placeholder="Title"
         />
       </div>
-      <div className="pt-2">
-        <span className="inline-block w-[50px]">Start</span>
+      <div className="flex pt-2">
+        {/* <span className="inline-block w-[50px]">Start</span> */}
+        <div className="w-1/6 min-h-[1px] shrink-0 flex items-center">
+          <FaRegClock />
+        </div>
         <Input
           type="datetime-local"
           value={dayjs(start).format(DATE_FORMAT)}
@@ -73,8 +78,8 @@ export const CreateTaskPaneForm = ({
           }}
         />
       </div>
-      <div className="pt-2">
-        <span className="inline-block w-[50px]">End</span>
+      <div className="flex pt-2">
+        <div className="w-1/6 min-h-[1px] shrink-0" />
         <Input
           type="datetime-local"
           value={dayjs(end).format(DATE_FORMAT)}
@@ -83,7 +88,7 @@ export const CreateTaskPaneForm = ({
           }}
         />
       </div>
-      <div>
+      <div className="flex justify-end mt-4">
         <Button
           highlight
           disabled={!title || !start || !end}
@@ -158,7 +163,7 @@ export const CreateTaskPopper = ({
 
   return createPortal(
     <div
-      className="bg-white rounded drop-shadow py-8 px-8 pt-4"
+      className="bg-white rounded drop-shadow py-4 px-4"
       ref={setContainer}
       {...popper.attributes.popper}
       style={popper.styles.popper}
