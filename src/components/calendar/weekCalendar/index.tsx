@@ -142,7 +142,7 @@ export const WeekCalendar = ({
           <div
             style={{ width: HOUR_SLOT_HEADER_WIDTH }}
             className={`shrink-0 border-r-2 border-gray-700`}
-          ></div>
+          />
           {selectedWeek.days.map((d, idx) => (
             <div
               className={classNames(
@@ -163,14 +163,15 @@ export const WeekCalendar = ({
             </div>
           ))}
         </div>
+
         <div
-          className={classNames('space-y-1', {
+          className={classNames('relative space-y-1', {
             'py-1': anchoredTasks.length > 0,
           })}
         >
           {anchoredTasks.map((t) => (
             <AnchoredTaskItem
-              className="relative"
+              className="relative z-10"
               style={{
                 width: t.width,
                 left: t.left + HOUR_SLOT_HEADER_WIDTH,
@@ -179,6 +180,18 @@ export const WeekCalendar = ({
               task={t.task}
             />
           ))}
+          <div className="absolute flex h-full w-full top-0 z-0 pr-4">
+            <div
+              className="border-r-2 border-gray-700"
+              style={{ width: HOUR_SLOT_HEADER_WIDTH }}
+            />
+            {selectedWeek.days.map((d) => (
+              <div
+                className="flex-grow border-r-2 border-b-2 border-gray-700"
+                key={d.key}
+              />
+            ))}
+          </div>
         </div>
 
         <div
