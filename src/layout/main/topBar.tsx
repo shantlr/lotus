@@ -1,9 +1,12 @@
 import { ActionItem } from '@/components/base/button';
+import { ButtonPopper } from '@/components/base/buttonPopper';
 import classNames from 'classnames';
 import { useSession } from 'next-auth/react';
+import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { ComponentProps } from 'react';
 import { FaCalendar, FaListUl } from 'react-icons/fa';
+import { UserMenu } from './userMenu';
 
 const MenuItem = ({
   className,
@@ -12,11 +15,13 @@ const MenuItem = ({
 }: { href: string } & ComponentProps<typeof ActionItem>) => {
   const router = useRouter();
   return (
-    <ActionItem
-      noBg={!router.pathname.startsWith(href)}
-      className={classNames('px-4 py-2 rounded', className)}
-      {...props}
-    ></ActionItem>
+    <Link href={href}>
+      <ActionItem
+        noBg={!router.pathname.startsWith(href)}
+        className={classNames('px-4 py-2 rounded', className)}
+        {...props}
+      ></ActionItem>
+    </Link>
   );
 };
 
@@ -28,9 +33,12 @@ const UserItem = () => {
   }
 
   return (
-    <ActionItem className="rounded-full w-[32px] h-[32px] flex items-center justify-center">
+    <ButtonPopper
+      className="rounded-full w-[32px] h-[32px] flex items-center justify-center"
+      popperContent={<UserMenu />}
+    >
       {session.user?.name?.[0]}
-    </ActionItem>
+    </ButtonPopper>
   );
 };
 

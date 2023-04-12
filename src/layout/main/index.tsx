@@ -12,7 +12,7 @@ export const MainLayout = ({ children }: { children: ReactNode }) => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <main className="w-full h-full">
+      <main className="flex flex-col overflow-hidden w-full h-full">
         <MainLayoutTopBar />
         {children}
       </main>
