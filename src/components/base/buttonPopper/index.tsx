@@ -1,4 +1,4 @@
-import { ComponentProps, ReactNode, useState } from 'react';
+import { ComponentProps, ReactNode, useEffect, useState } from 'react';
 import { Button } from '../button';
 import { usePopper } from 'react-popper';
 import { createPortal } from 'react-dom';
@@ -32,6 +32,22 @@ export const ButtonPopper = ({
       },
     ],
   });
+
+  useEffect(() => {
+    if (!show) {
+      return;
+    }
+
+    const listener = (e: MouseEvent) => {
+      if (!container?.contains(e.target as HTMLElement)) {
+        setShow(false);
+      }
+    };
+    window.addEventListener('click', listener);
+    return () => {
+      window.removeEventListener('click', listener);
+    };
+  }, [container, show]);
 
   return (
     <>
