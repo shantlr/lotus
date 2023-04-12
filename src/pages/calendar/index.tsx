@@ -1,6 +1,7 @@
 import { Calendar } from '@/components/calendar';
 import { CreateTaskPopper } from '@/components/createTaskPane';
 import { SideBar } from '@/components/sideBar';
+import { MainLayout } from '@/layout/main';
 import { omit } from 'lodash';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
@@ -67,54 +68,45 @@ export default function CalendarPage({ type }: { type?: string }) {
   );
 
   return (
-    <>
-      <Head>
-        <title>Lotus</title>
-        <meta name="description" content="Lotus" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-      <main className="w-full h-full flex">
-        <SideBar />
-        <Calendar
-          className="p-2"
-          type={type ?? 'week'}
-          selectedStart={createTask?.start}
-          selectedEnd={createTask?.end}
-          onCreateTask={onOpenCreateTask}
+    <MainLayout>
+      <Calendar
+        className="p-2"
+        type={type ?? 'week'}
+        selectedStart={createTask?.start}
+        selectedEnd={createTask?.end}
+        onCreateTask={onOpenCreateTask}
+      />
+      {createTask && (
+        <CreateTaskPopper
+          start={createTask.start}
+          end={createTask.end}
+          parentElem={taskPopperElem}
+          onStartChange={(d) => {
+            router.replace({
+              pathname: router.pathname,
+              query: {
+                ...router.query,
+                new_task: `${d.valueOf()}:${createTask.end}`,
+              },
+            });
+          }}
+          onEndChange={(d) => {
+            router.replace({
+              pathname: router.pathname,
+              query: {
+                ...router.query,
+                new_task: `${createTask.start}:${d.valueOf()}`,
+              },
+            });
+          }}
+          onClose={() => {
+            router.replace({
+              pathname: router.pathname,
+              query: omit(router.query, ['new_task']),
+            });
+          }}
         />
-        {createTask && (
-          <CreateTaskPopper
-            start={createTask.start}
-            end={createTask.end}
-            parentElem={taskPopperElem}
-            onStartChange={(d) => {
-              router.replace({
-                pathname: router.pathname,
-                query: {
-                  ...router.query,
-                  new_task: `${d.valueOf()}:${createTask.end}`,
-                },
-              });
-            }}
-            onEndChange={(d) => {
-              router.replace({
-                pathname: router.pathname,
-                query: {
-                  ...router.query,
-                  new_task: `${createTask.start}:${d.valueOf()}`,
-                },
-              });
-            }}
-            onClose={() => {
-              router.replace({
-                pathname: router.pathname,
-                query: omit(router.query, ['new_task']),
-              });
-            }}
-          />
-        )}
-      </main>
-    </>
+      )}
+    </MainLayout>
   );
 }

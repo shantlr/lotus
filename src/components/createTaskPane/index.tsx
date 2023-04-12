@@ -167,7 +167,7 @@ export const CreateTaskPopper = ({
 
   return createPortal(
     <div
-      className="bg-white rounded drop-shadow py-4 px-4"
+      className="bg-white rounded drop-shadow py-4 px-4 z-50"
       ref={setContainer}
       {...popper.attributes.popper}
       style={popper.styles.popper}

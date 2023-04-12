@@ -2,7 +2,8 @@ import classNames from 'classnames';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { HTMLProps } from 'react';
+import { HTMLProps, ReactNode } from 'react';
+import { FaCalendar } from 'react-icons/fa';
 
 const BaseItem = ({
   className,
@@ -12,13 +13,35 @@ const BaseItem = ({
   return (
     <div
       className={classNames(
-        `w-full hover:bg-gray-300 py-1 px-4 rounded-md cursor-pointer transition ${className}`,
+        `flex items-center justify-start w-full hover:bg-gray-400 hover:shadow py-2 px-4 rounded-md cursor-pointer transition ${className}`,
         {
           'bg-gray-700': active,
         }
       )}
       {...props}
     />
+  );
+};
+
+const MenuItem = ({
+  icon,
+  href,
+  children,
+}: {
+  icon: ReactNode;
+  href: string;
+  children: ReactNode;
+}) => {
+  const router = useRouter();
+  return (
+    <div>
+      <Link href={href}>
+        <BaseItem active={router.pathname.startsWith(href)}>
+          <span className="mr-2">{icon}</span>
+          {children}
+        </BaseItem>
+      </Link>
+    </div>
   );
 };
 
@@ -29,20 +52,25 @@ const UserItem = () => {
     return null;
   }
 
-  return <BaseItem className="mb-8">{session.user?.name}</BaseItem>;
+  return <BaseItem>{session.user?.name}</BaseItem>;
 };
 
 export const SideBar = () => {
-  const router = useRouter();
-
   return (
-    <div className="w-[150px] h-full py-8 px-2 space-y-2">
-      <UserItem />
-      <Link href="/calendar">
-        <BaseItem active={router.pathname.startsWith('/calendar')}>
+    <div className="w-[260px] h-full py-8 px-4 divide-y divide-gray-500 bg-slate-800">
+      <div className="pb-4">
+        <UserItem />
+      </div>
+
+      <div className="pt-4 space-y-4">
+        <MenuItem href="/planning" icon={<FaCalendar />}>
           Planning
-        </BaseItem>
-      </Link>
+        </MenuItem>
+
+        <MenuItem href="/calendar" icon={<FaCalendar />}>
+          Calendar
+        </MenuItem>
+      </div>
     </div>
   );
 };

@@ -63,7 +63,7 @@ export const BaseTaskItem = ({
       {show &&
         createPortal(
           <div
-            className="shadow-xl"
+            className="shadow-xl z-50"
             style={popper.styles.popper}
             {...popper.attributes.popper}
             ref={setPopupRef}

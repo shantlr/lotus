@@ -8,6 +8,27 @@ const STYLE = {
   danger: `${BASE_STYLES.dangerAction.base}`,
 };
 
+export const ActionItem = ({
+  className,
+  noBg,
+  ...props
+}: { noBg?: boolean } & ComponentProps<'div'>) => {
+  return (
+    <div
+      className={classNames(
+        'hover:bg-gray-500 transition',
+        {
+          'bg-gray-600': !noBg,
+        },
+        className
+      )}
+      role="button"
+      tabIndex={-1}
+      {...props}
+    ></div>
+  );
+};
+
 export const Button = ({
   className,
   round,
