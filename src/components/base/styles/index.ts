@@ -2,8 +2,8 @@ import { cloneDeep, merge } from 'lodash';
 
 const CORE = {
   highlightAction: {
-    bg: 'bg-highlight-300',
-    base: 'bg-highlight-300 hover:bg-highlight-400 active:bg-highlight-600 text-white disabled:text-gray-300 disabled:bg-highlight-900',
+    bg: 'bg-highlight',
+    base: 'bg-highlight hover:bg-highlight-! active:bg-highlight-deep text-white disabled:text-gray-300 disabled:bg-highlight-dark',
   },
   defaultAction: {
     base: 'bg-default-600 hover:bg-default-500 active:bg-default-700 text-white disabled:text-gray-300 disabled:bg-default-800',

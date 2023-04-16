@@ -13,8 +13,8 @@ export const IconButton = ({
       role="button"
       tabIndex={-1}
       className={classNames(
-        `cursor-pointer hover:text-highlight-300 transition outline-none`,
-        { 'text-highlight-300': active },
+        `cursor-pointer hover:text-highlight-! transition outline-none`,
+        { 'text-highlight': active, 'text-gray-500': !active },
         className
       )}
       {...props}

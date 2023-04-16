@@ -61,7 +61,7 @@ export const ButtonPopper = ({
           onClick?.(e);
         }}
         {...props}
-      ></Button>
+      />
       {show &&
         createPortal(
           <div

@@ -9,7 +9,11 @@ module.exports = {
         1: '1px',
       },
       colors: {
-        highlight: colors.rose,
+        highlight: colors.rose[300],
+        'highlight-!': colors.rose[400],
+        'highlight-deep': colors.rose[600],
+        'highlight-dark': colors.rose[900],
+
         default: colors.gray,
       },
     },
