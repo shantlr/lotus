@@ -1,25 +1,24 @@
 import classNames from 'classnames';
-import { ComponentProps, forwardRef } from 'react';
+import { ComponentProps, ForwardedRef, forwardRef } from 'react';
 import { BASE_STYLES } from '../styles';
 
 const STYLE = {
   highlight: `${BASE_STYLES.highlightAction.base}`,
   default: `${BASE_STYLES.defaultAction.base}`,
+  light: `${BASE_STYLES.lightAction.base}`,
   danger: `${BASE_STYLES.dangerAction.base}`,
+  ghost: `${BASE_STYLES.defaultAction.ghost}`,
 };
 
 export const ActionItem = ({
+  t,
   className,
-  noBg,
   ...props
-}: { noBg?: boolean } & ComponentProps<'div'>) => {
+}: { t?: keyof typeof STYLE } & ComponentProps<'div'>) => {
   return (
     <div
       className={classNames(
-        'hover:bg-gray-500 transition',
-        {
-          'bg-gray-600': !noBg,
-        },
+        t && t in STYLE ? STYLE[t] : STYLE.default,
         className
       )}
       role="button"
@@ -42,7 +41,7 @@ export const Button = forwardRef(
       highlight?: boolean;
       round?: boolean;
     } & ComponentProps<'button'>,
-    ref
+    ref: ForwardedRef<HTMLButtonElement>
   ) => {
     return (
       <button
@@ -55,8 +54,8 @@ export const Button = forwardRef(
             ? STYLE[t]
             : STYLE['default'],
           {
-            'rounded px-4 py-1': !round,
-            'rounded-full px-4 py-2': round,
+            'rounded px-2 py-1': !round,
+            'rounded-full px-2 py-2': round,
           },
           className
         )}

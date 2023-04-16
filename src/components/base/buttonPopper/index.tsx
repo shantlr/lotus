@@ -39,7 +39,10 @@ export const ButtonPopper = ({
     }
 
     const listener = (e: MouseEvent) => {
-      if (!container?.contains(e.target as HTMLElement)) {
+      if (
+        !container?.contains(e.target as HTMLElement) &&
+        !popperRef?.contains(e.target as HTMLElement)
+      ) {
         setShow(false);
       }
     };
@@ -47,7 +50,7 @@ export const ButtonPopper = ({
     return () => {
       window.removeEventListener('click', listener);
     };
-  }, [container, show]);
+  }, [container, popperRef, show]);
 
   return (
     <>
@@ -62,7 +65,7 @@ export const ButtonPopper = ({
       {show &&
         createPortal(
           <div
-            className="rounded bg-white p-2 shadow"
+            className="rounded bg-white p-2 shadow z-50"
             {...popper.attributes.popper}
             style={popper.styles.popper}
             ref={setPopperRef}
