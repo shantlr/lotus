@@ -186,7 +186,7 @@ export const CalendarHeader = ({
             }
 
             onCreateTask?.({
-              elem: e.target as HTMLElement,
+              elem: e.currentTarget as HTMLElement,
               start,
               end: dayjs(start).add(1, 'h').toDate(),
             });
