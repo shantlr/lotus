@@ -61,9 +61,25 @@ export const CalendarHeader = ({
         <Button
           className="h-[22px] mr-2"
           onClick={() => {
-            setSelectedStart(
-              dayjs(selectedStart).subtract(1, 'w').startOf('isoWeek').toDate()
-            );
+            if (type === 'day') {
+              setSelectedStart(
+                dayjs(selectedStart).subtract(1, 'd').startOf('day').toDate()
+              );
+            } else if (type === 'week') {
+              setSelectedStart(
+                dayjs(selectedStart)
+                  .subtract(1, 'w')
+                  .startOf('isoWeek')
+                  .toDate()
+              );
+            } else if (type === 'month') {
+              setSelectedStart(
+                dayjs(selectedStart)
+                  .subtract(1, 'month')
+                  .startOf('month')
+                  .toDate()
+              );
+            }
           }}
         >
           <FaCaretLeft />
@@ -97,9 +113,19 @@ export const CalendarHeader = ({
         <Button
           className="h-[22px] ml-2"
           onClick={() => {
-            setSelectedStart(
-              dayjs(selectedStart).add(1, 'w').startOf('isoWeek').toDate()
-            );
+            if (type === 'day') {
+              setSelectedStart(
+                dayjs(selectedStart).add(1, 'd').startOf('day').toDate()
+              );
+            } else if (type === 'week') {
+              setSelectedStart(
+                dayjs(selectedStart).add(1, 'w').startOf('isoWeek').toDate()
+              );
+            } else if (type === 'month') {
+              setSelectedStart(
+                dayjs(selectedStart).add(1, 'month').startOf('month').toDate()
+              );
+            }
           }}
         >
           <FaCaretRight />
