@@ -3,7 +3,6 @@
 @tailwind utilities;
 
 @layer components {
-  .test,
   .button-default {
     @apply bg-default-600 hover:bg-default-500 active:bg-default-700 text-white disabled:text-gray-300 disabled:bg-default-800;
   }
@@ -16,6 +15,6 @@
   }
 
   .button-ghost {
-    @apply bg-transparent;
+    @apply button-default bg-transparent;
   }
 }
