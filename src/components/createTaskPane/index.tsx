@@ -90,7 +90,7 @@ export const CreateTaskPaneForm = ({
       </div>
       <div className="flex justify-end mt-4">
         <Button
-          highlight
+          t="highlight"
           disabled={!title || !start || !end}
           className="mt-2"
           onClick={async () => {

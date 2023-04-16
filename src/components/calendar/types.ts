@@ -1,3 +1,5 @@
+export type CalendarType = 'day' | 'week' | 'month';
+
 export type OnCreateTask = (value: {
   elem?: HTMLElement;
   title?: string;

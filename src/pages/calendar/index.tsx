@@ -1,13 +1,12 @@
 import { Calendar } from '@/components/calendar';
+import { CalendarType } from '@/components/calendar/types';
 import { CreateTaskPopper } from '@/components/createTaskPane';
-import { SideBar } from '@/components/sideBar';
 import { MainLayout } from '@/layout/main';
 import { omit } from 'lodash';
-import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
-export default function CalendarPage({ type }: { type?: string }) {
+export default function CalendarPage({ type }: { type?: CalendarType }) {
   const router = useRouter();
 
   const [taskPopperElem, setPopperElem] = useState<HTMLElement>();
@@ -71,8 +70,8 @@ export default function CalendarPage({ type }: { type?: string }) {
     <MainLayout>
       <Calendar
         type={type ?? 'week'}
-        selectedStart={createTask?.start}
-        selectedEnd={createTask?.end}
+        createTaskSelectedStart={createTask?.start}
+        createTaskSelectedEnd={createTask?.end}
         onCreateTask={onOpenCreateTask}
       />
       {createTask && (

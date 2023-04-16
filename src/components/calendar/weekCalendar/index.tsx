@@ -1,6 +1,7 @@
 import { useObserveWidth } from '@/components/base/hooks';
 import classNames from 'classnames';
 import dayjs, { Dayjs } from 'dayjs';
+import isoWeek from 'dayjs/plugin/isoWeek';
 import { first, last, range } from 'lodash';
 import { useMemo, useState } from 'react';
 import { useQuery } from 'urql';
@@ -17,17 +18,19 @@ import { HOUR_SLOT_HEADER_WIDTH, HOUR_SLOT_HEIGHT } from './constants';
 import { OnCreateTask } from '../types';
 import { useClickToCreateTask } from '../useClickToCreateTask';
 
+dayjs.extend(isoWeek);
+
 const DATE_FORMAT = 'DD/MM/YYYY';
 
 const mapWeekRange = (date: Dayjs) => {
-  const weekStart = date.startOf('w');
+  const weekStart = date.startOf('isoWeek');
   return {
-    key: weekStart.add(1, 'day').format(DATE_FORMAT),
+    key: weekStart.format(DATE_FORMAT),
     start: weekStart,
-    formatted: `${weekStart.add(1, 'day').format('D')} - ${weekStart
-      .add(8, 'day')
+    formatted: `${weekStart.format('D')} - ${weekStart
+      .endOf('isoWeek')
       .format('D MMM')}`,
-    days: range(1, 8).map((d) => {
+    days: range(0, 7).map((d) => {
       const date = weekStart.add(d, 'day');
       return {
         key: date.format(DATE_FORMAT),
@@ -46,22 +49,18 @@ const SPACING: SlotSpacing = {
 
 export const WeekCalendar = ({
   selectedStart,
-  selectedEnd,
+  createTaskSelectedStart,
+  createTaskSelectedEnd,
   onCreateTask,
 }: {
-  selectedStart?: Date | number;
-  selectedEnd?: Date | number;
+  selectedStart: Date;
+  createTaskSelectedStart?: Date | number;
+  createTaskSelectedEnd?: Date | number;
   onCreateTask?: OnCreateTask;
 }) => {
-  const [selectedWeek, setSelectedWeek] = useState(() => {
-    const start = dayjs().subtract(1, 'day').startOf('week');
-    return mapWeekRange(start);
-  });
-
-  const [weeks] = useState(() => {
-    const currentWeek = dayjs().startOf('week');
-    return range(-6, 6).map((i) => mapWeekRange(currentWeek.add(i, 'week')));
-  });
+  const selectedWeek = useMemo(() => {
+    return mapWeekRange(dayjs(selectedStart));
+  }, [selectedStart]);
 
   const currenteDateRange = useMemo(
     () =>
@@ -117,25 +116,6 @@ export const WeekCalendar = ({
 
   return (
     <div className="flex flex-col w-full h-full overflow-hidden">
-      <div className="w-full flex overflow-auto py-4">
-        {weeks.map((w) => (
-          <div
-            onClick={() => {
-              setSelectedWeek(w);
-            }}
-            className={classNames(
-              'shrink-0 text-sm w-[100px] rounded text-center transition hover:bg-gray-400 cursor-pointer mx-4',
-              {
-                'bg-gray-300': w.key === selectedWeek.key,
-                'bg-gray-600 ': w.key !== selectedWeek.key,
-              }
-            )}
-            key={w.key}
-          >
-            {w.formatted}
-          </div>
-        ))}
-      </div>
       <div className="flex flex-col w-full h-full overflow-hidden">
         {/* Header */}
         <div className="flex w-full pr-4 border-b-2 border-b-gray-500">
@@ -220,8 +200,8 @@ export const WeekCalendar = ({
           {/* Placeholders */}
           <WeekCalendarPlaceholders
             week={selectedWeek}
-            selectedStart={selectedStart}
-            selectedEnd={selectedEnd}
+            selectedStart={createTaskSelectedStart}
+            selectedEnd={createTaskSelectedEnd}
             slotProps={slotClickHandlers}
           />
 

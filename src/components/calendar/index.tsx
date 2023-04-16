@@ -1,14 +1,10 @@
 import classNames from 'classnames';
-import Link from 'next/link';
-import { useRouter } from 'next/router';
-import { FaPlus } from 'react-icons/fa';
-
-import { Button } from '../base/button';
-import { RadioGroup } from '../base/radio';
 import { DayCalendar } from './dayCalendar';
 import { MonthCalendar } from './monthCalendar';
 import { WeekCalendar } from './weekCalendar';
-import { OnCreateTask } from './types';
+import { CalendarType, OnCreateTask } from './types';
+import { CalendarHeader } from './header';
+import { useState } from 'react';
 
 const OPTIONS = [
   {
@@ -29,20 +25,20 @@ const OPTIONS = [
 ];
 
 export const Calendar = ({
-  type,
   className,
   onCreateTask,
 
-  selectedStart,
-  selectedEnd,
+  createTaskSelectedStart,
+  createTaskSelectedEnd,
 }: {
-  type?: string;
   className?: string;
-  selectedStart?: Date | number;
-  selectedEnd?: Date | number;
+  createTaskSelectedStart?: Date | number;
+  createTaskSelectedEnd?: Date | number;
   onCreateTask?: OnCreateTask;
 }) => {
-  const router = useRouter();
+  const [type, setType] = useState<CalendarType>('week');
+  const [selectedStart, setSelectedStart] = useState<Date>(() => new Date());
+
   return (
     <div
       className={classNames(
@@ -50,44 +46,34 @@ export const Calendar = ({
         className
       )}
     >
-      {/* Header */}
-      <div>
-        <Link
-          href={{
-            pathname: router.pathname,
-            query: {
-              ...router.query,
-              new_task: '',
-            },
-          }}
-        >
-          <Button highlight className="float-right" round>
-            <FaPlus />
-          </Button>
-        </Link>
-        <div className="flex justify-center">
-          <RadioGroup value={type ?? null} options={OPTIONS}></RadioGroup>
-        </div>
-      </div>
+      <CalendarHeader
+        selectedStart={selectedStart}
+        setSelectedStart={setSelectedStart}
+        type={type}
+        setType={setType}
+        onCreateTask={onCreateTask}
+      />
 
       {type === 'day' && (
         <DayCalendar
           selectedStart={selectedStart}
-          selectedEnd={selectedEnd}
+          createTaskSelectedStart={createTaskSelectedStart}
+          createTaskSelectedEnd={createTaskSelectedEnd}
           onCreateTask={onCreateTask}
         />
       )}
       {type === 'week' && (
         <WeekCalendar
           selectedStart={selectedStart}
-          selectedEnd={selectedEnd}
+          createTaskSelectedStart={createTaskSelectedStart}
+          createTaskSelectedEnd={createTaskSelectedEnd}
           onCreateTask={onCreateTask}
         />
       )}
       {type === 'month' && (
         <MonthCalendar
-          selectedStart={selectedStart}
-          selectedEnd={selectedEnd}
+          createTaskSelectedStart={createTaskSelectedStart}
+          createTaskSelectedEnd={createTaskSelectedEnd}
           onCreateTask={onCreateTask}
         />
       )}

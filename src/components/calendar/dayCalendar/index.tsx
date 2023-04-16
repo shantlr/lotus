@@ -1,8 +1,6 @@
 import classNames from 'classnames';
 import dayjs from 'dayjs';
-import customFormat from 'dayjs/plugin/customParseFormat';
-import { range } from 'lodash';
-import { useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { useLayoutEffect, useMemo, useState } from 'react';
 import { useQuery } from 'urql';
 import { QUERY_TASKS } from '../query';
 import { AnchoredTaskItem, CalendarTask } from '../taskItem';
@@ -18,68 +16,36 @@ const HOUR_HEIGHT = 100;
 const HEADER_HOUR_WIDTH = 45;
 const TASK_MIN_HEIGHT = 35;
 
-const DATE_FORMAT = 'DD/MM/YYYY';
-dayjs.extend(customFormat);
-
 export const DayCalendar = ({
   selectedStart,
-  selectedEnd,
+  createTaskSelectedStart,
+  createTaskSelectedEnd,
   onCreateTask,
 }: {
-  selectedStart?: Date | number;
-  selectedEnd?: Date | number;
+  selectedStart: Date;
+  createTaskSelectedStart?: Date | number;
+  createTaskSelectedEnd?: Date | number;
+  onSetSelectedStart?: Date;
   onCreateTask?: OnCreateTask;
 }) => {
-  const [selectedDate, setSelectedDate] = useState(() => {
-    const d = dayjs();
-    return {
-      date: d,
-      key: dayjs().format(DATE_FORMAT),
-    };
-  });
-
-  const [{ data }, t] = useQuery({
+  const input = useMemo(
+    () => ({
+      start: dayjs(selectedStart).startOf('day').toDate(),
+      end: dayjs(selectedStart).startOf('day').toDate(),
+    }),
+    [selectedStart]
+  );
+  const [{ data }] = useQuery({
     query: QUERY_TASKS,
     variables: {
-      input: {
-        start: selectedDate.date.startOf('day').toDate(),
-        end: selectedDate.date.endOf('day').toDate(),
-      },
+      input,
     },
   });
-  const datesContainerRef = useRef<HTMLDivElement | null>(null);
-
-  const [dates, setDates] = useState(() => {
-    return range(-15, 15).map((delta) => {
-      const d = dayjs().add(delta, 'day');
-      return {
-        key: d.format(DATE_FORMAT),
-        date: d,
-        formatted: d.format('ddd DD/MM'),
-      };
-    });
-  });
-
-  // initial auto scroll date selector to today
-  useLayoutEffect(() => {
-    if (datesContainerRef.current) {
-      const elem = datesContainerRef.current.querySelector<HTMLDivElement>(
-        '.selected-date-item'
-      );
-      if (elem) {
-        datesContainerRef.current.scroll({
-          left:
-            elem.offsetLeft -
-            datesContainerRef.current.offsetLeft -
-            elem.offsetWidth * 2,
-        });
-      }
-    }
-  }, []);
 
   const [hoursContainer, setHourContainer] = useState<HTMLDivElement | null>(
     null
   );
+
   // initial auto scroll to current hour range
   useLayoutEffect(() => {
     if (hoursContainer) {
@@ -97,10 +63,10 @@ export const DayCalendar = ({
 
   const selectedDateRange = useMemo(
     () => ({
-      start: selectedDate.date.startOf('day'),
-      end: selectedDate.date.endOf('day'),
+      start: dayjs(selectedStart).startOf('day'),
+      end: dayjs(selectedStart).endOf('day'),
     }),
-    [selectedDate?.date]
+    [selectedStart]
   );
   const [fulldayTask, tasks] = usePartitionTasks({
     tasks: data?.tasks,
@@ -125,38 +91,14 @@ export const DayCalendar = ({
 
   const slots = useHourSlots({
     day: selectedDateRange.start,
-    selectedStart,
-    selectedEnd,
+    selectedStart: createTaskSelectedStart,
+    selectedEnd: createTaskSelectedEnd,
   });
 
   const clickEvents = useClickToCreateTask({ onCreateTask });
 
   return (
     <div className="flex flex-col overflow-hidden w-full h-full">
-      <div ref={datesContainerRef} className="py-4 w-full flex overflow-auto">
-        {dates.map((u) => (
-          <div
-            key={u.key}
-            onClick={() =>
-              setSelectedDate({
-                key: u.key,
-                date: u.date,
-              })
-            }
-            className={classNames(
-              'date-item text-sm w-[90px] text-center rounded mx-4 flex-shrink-0 cursor-pointer transition hover:bg-gray-400',
-              {
-                'bg-gray-300 selected-date-item': selectedDate.key === u.key,
-                'bg-gray-600 ': selectedDate.key !== u.key,
-                'text-rose-300': u.key === dayjs().format('DD/MM/YYYY'),
-              }
-            )}
-          >
-            {u.formatted}
-          </div>
-        ))}
-      </div>
-
       <div
         className={classNames('space-y-1', {
           'pb-2': fulldayTask.length > 0,
@@ -169,7 +111,7 @@ export const DayCalendar = ({
 
       <div
         ref={setHourContainer}
-        className="relative flex flex-col h-full w-full overflow-auto pr-4"
+        className="relative flex flex-col h-full w-full overflow-auto pr-4 pb-2"
       >
         {slots.map((s, h) => (
           <div

@@ -17,8 +17,8 @@ const MenuItem = ({
   return (
     <Link href={href}>
       <ActionItem
-        noBg={!router.pathname.startsWith(href)}
-        className={classNames('px-4 py-2 rounded', className)}
+        t={router.pathname.startsWith(href) ? 'default' : 'ghost'}
+        className={classNames('px-4 py-2 rounded transition', className)}
         {...props}
       ></ActionItem>
     </Link>
