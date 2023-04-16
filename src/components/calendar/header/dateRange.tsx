@@ -10,6 +10,7 @@ import {
   FaCalendarWeek,
   FaCaretLeft,
   FaCaretRight,
+  FaRedo,
 } from 'react-icons/fa';
 import { CalendarType } from '../types';
 import { IconButton } from '@/components/base/iconButton';
@@ -137,7 +138,7 @@ export const SelectDateRange = ({
     <div className="">
       {/* Header buttons */}
       {onSetType && (
-        <div className="flex mb-2">
+        <div className="flex mb-2 space-x-1">
           <IconButton
             active={type === 'day'}
             icon={FaCalendarDay}
@@ -152,6 +153,32 @@ export const SelectDateRange = ({
             active={type === 'month'}
             icon={FaCalendarAlt}
             onClick={() => onSetType('month')}
+          />
+          <div className="w-full" />
+          <IconButton
+            icon={FaRedo}
+            onClick={() => {
+              if (!onSelectDateRange) {
+                return;
+              }
+
+              if (type === 'day') {
+                onSelectDateRange?.({
+                  start: dayjs().startOf('d').toDate(),
+                  end: dayjs().endOf('d').toDate(),
+                });
+              } else if (type === 'week') {
+                onSelectDateRange?.({
+                  start: dayjs().startOf('isoWeek').toDate(),
+                  end: dayjs().endOf('isoWeek').toDate(),
+                });
+              } else if (type === 'month') {
+                onSelectDateRange?.({
+                  start: dayjs().startOf('month').toDate(),
+                  end: dayjs().endOf('month').toDate(),
+                });
+              }
+            }}
           />
         </div>
       )}
