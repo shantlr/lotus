@@ -145,6 +145,12 @@ export const CreateTaskPopper = ({
         name: 'offset',
         options: { offset: [0, 10] },
       },
+      {
+        name: 'computeStyles',
+        options: {
+          adaptive: false,
+        },
+      },
     ],
   });
 
