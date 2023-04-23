@@ -7,6 +7,7 @@ import { Button } from '../base/button';
 import { Input } from '../base/input';
 import { usePopper } from 'react-popper';
 import { createPortal } from 'react-dom';
+import { DateRangePicker } from '../base/dateRangePicker';
 
 const CREATE_TASK = graphql(`
   mutation CreateTask($input: CreateTaskInput!) {
@@ -42,52 +43,40 @@ export const CreateTaskPaneForm = ({
 }) => {
   return (
     <div className="w-full max-w-[280px]">
-      <div className="">
-        <Button
-          round
-          onClick={() => {
-            onClose?.();
-          }}
-        >
-          <FaTimes />
-        </Button>
-        <span className="pl-4 font-bold">New Task</span>
-      </div>
-
-      <div className="pt-4 flex">
-        <div className="w-1/6 min-h-[1px] shrink-0" />
+      <div className="flex">
+        <div className="w-[30px] min-h-[1px] shrink-0" />
         <Input
           className="w-full"
           value={title || ''}
           onChange={(e) =>
             onTitleChange?.((e.target as HTMLInputElement).value)
           }
-          placeholder="Title"
+          placeholder="Task title"
         />
+        <Button
+          round
+          className="ml-2"
+          onClick={() => {
+            onClose?.();
+          }}
+        >
+          <FaTimes />
+        </Button>
       </div>
       <div className="flex pt-2">
-        {/* <span className="inline-block w-[50px]">Start</span> */}
-        <div className="w-1/6 min-h-[1px] shrink-0 flex items-center">
+        <div className="w-[30px] min-h-[1px] shrink-0 flex items-center">
           <FaRegClock />
         </div>
-        <Input
-          type="datetime-local"
-          value={dayjs(start).format(DATE_FORMAT)}
-          onChange={(e) => {
-            onStartChange?.(dayjs(e.target.value, DATE_FORMAT).toDate());
+        <DateRangePicker
+          start={start}
+          end={end}
+          onChange={(range) => {
+            onStartChange?.(range.start);
+            onEndChange?.(range.end);
           }}
         />
       </div>
-      <div className="flex pt-2">
-        <div className="w-1/6 min-h-[1px] shrink-0" />
-        <Input
-          type="datetime-local"
-          value={dayjs(end).format(DATE_FORMAT)}
-          onChange={(e) => {
-            onEndChange?.(dayjs(e.target.value, DATE_FORMAT).toDate());
-          }}
-        />
-      </div>
+
       <div className="flex justify-end mt-4">
         <Button
           t="highlight"
@@ -167,7 +156,7 @@ export const CreateTaskPopper = ({
 
   return createPortal(
     <div
-      className="bg-white rounded drop-shadow py-4 px-4 z-50"
+      className="bg-white rounded drop-shadow py-4 px-4 z-50 transition"
       ref={setContainer}
       {...popper.attributes.popper}
       style={popper.styles.popper}

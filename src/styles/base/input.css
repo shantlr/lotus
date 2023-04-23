@@ -1,0 +1,9 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  .input-default {
+    @apply border-2 hover:border-highlight-light active:border-highlight focus:border-highlight rounded cursor-pointer hover:shadow;
+  }
+}

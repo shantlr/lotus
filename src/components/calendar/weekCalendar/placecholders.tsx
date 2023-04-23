@@ -61,7 +61,7 @@ export const WeekCalendarPlaceholders = ({
   slotProps?: ComponentProps<typeof SlotPlaceholder>;
 }) => {
   return (
-    <div className="w-full flex flex-grow">
+    <div className="w-full flex flex-grow pb-2">
       {week.days.map((d) => (
         <div className="flex-grow relative" key={d.key}>
           <DayHourSlots

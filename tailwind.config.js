@@ -9,6 +9,7 @@ module.exports = {
         1: '1px',
       },
       colors: {
+        'highlight-light': colors.rose[200],
         highlight: colors.rose[300],
         'highlight-!': colors.rose[400],
         'highlight-deep': colors.rose[600],

@@ -1,11 +1,13 @@
 import { ActionItem } from '@/components/base/button';
-import { signOut } from 'next-auth/react';
+import { signOut, useSession } from 'next-auth/react';
 
 export const UserMenu = () => {
+  const { data: session } = useSession();
   return (
-    <div className="w-[120px]">
+    <div className="w-[160px]">
+      <div className="mb-2">{session?.user?.name}</div>
       <ActionItem
-        noBg
+        // t="ghost"
         className="px-4 py rounded"
         onClick={() => {
           signOut();

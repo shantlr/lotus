@@ -7,6 +7,8 @@ const STYLE = {
   ghost: 'button-ghost',
   light: 'button-light',
   danger: 'button-danger',
+  'white-ghost': 'button-white-ghost',
+  'white-ghost-light': 'button-white-ghost-light',
 };
 
 export const ActionItem = ({

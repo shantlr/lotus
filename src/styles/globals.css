@@ -3,6 +3,7 @@
 @tailwind utilities;
 
 @import './base/button.css';
+@import './base/input.css';
 
 html,
 body,
