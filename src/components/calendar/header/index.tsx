@@ -86,7 +86,7 @@ export const CalendarHeader = ({
         </Button>
         <ButtonPopper
           className={classNames(
-            'h-[22px] w-[140px] text-sm border-2 border-transparent',
+            'h-[22px] w-[140px] text-sm border-2 border-transparent select-none',
             {
               'text-highlight':
                 selectedDateRange.start.valueOf() <= Date.now() &&

@@ -54,8 +54,10 @@ const DayItem = ({
   return (
     <div
       className={classNames(
-        'h-[28px] flex items-center justify-center text-sm select-none',
+        'h-[28px] flex items-center justify-center text-sm select-none border',
         {
+          'border-highlight': isStart || isEnd,
+          'border-transparent': !isStart && !isEnd,
           'text-highlight': today,
           'cursor-pointer': !disabled,
           'cursor-disabled text-gray-300': disabled,
@@ -176,7 +178,7 @@ export const DatePicker = ({
 
         <ActionItem
           t="light"
-          className="bg-transparent transition rounded w-[120px] text-center text-xs mx-2"
+          className="bg-transparent transition rounded w-[120px] text-center text-xs mx-2 select-none"
           onClick={() => {
             setSelectMonthYear(!selectMonthYear);
           }}

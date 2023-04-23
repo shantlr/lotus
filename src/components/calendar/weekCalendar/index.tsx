@@ -201,6 +201,8 @@ export const WeekCalendar = ({
                   {h}h
                 </div>
               ))}
+              {/* Bottom padding */}
+              <div className="h-2 w-full" />
             </div>
           </div>
 
