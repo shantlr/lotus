@@ -68,6 +68,10 @@ export const Popper = ({
   );
 
   useEffect(() => {
+    if (!show) {
+      return;
+    }
+
     const listener = (e: MouseEvent) => {
       if (e.defaultPrevented) {
         return;
@@ -83,7 +87,7 @@ export const Popper = ({
     return () => {
       window.removeEventListener('click', listener);
     };
-  }, [containerRef, onClose, popperRef]);
+  }, [containerRef, onClose, popperRef, show]);
 
   return (
     <>

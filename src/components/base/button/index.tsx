@@ -14,12 +14,20 @@ const STYLE = {
 export const ActionItem = ({
   t,
   className,
+  active,
+  disabled,
   ...props
-}: { t?: keyof typeof STYLE } & ComponentProps<'div'>) => {
+}: {
+  t?: keyof typeof STYLE;
+  active?: boolean;
+  disabled?: boolean;
+} & ComponentProps<'div'>) => {
   return (
     <div
       className={classNames(
         t && t in STYLE ? STYLE[t] : STYLE.default,
+        active && 'active',
+        disabled && 'disabled',
         className
       )}
       role="button"

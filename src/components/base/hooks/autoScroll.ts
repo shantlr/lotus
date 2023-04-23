@@ -12,6 +12,9 @@ export const useAutoScrollOnMount = (
     const elem = containerRef.current.querySelector(
       activeSeletor
     ) as HTMLElement;
+    if (!elem) {
+      return;
+    }
     containerRef.current.scroll({
       top: elem.offsetTop - containerRef.current.offsetTop,
     });

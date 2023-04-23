@@ -3,6 +3,7 @@ import dayjs, { Dayjs } from 'dayjs';
 import { padStart, range } from 'lodash';
 import { useMemo, useRef, useState } from 'react';
 import { useAutoScrollOnMount } from '../hooks/autoScroll';
+import { ActionItem } from '../button';
 
 const SelectHour = ({
   time,
@@ -37,7 +38,7 @@ const SelectHour = ({
         .set('minute', minutes)
         .valueOf();
       return {
-        disabled: min && timestamp < min,
+        disabled: Boolean(min && timestamp < min),
         hour,
         minutes,
         formatted: `${padStart(hour.toString(), 2, '0')}:${padStart(
@@ -49,7 +50,7 @@ const SelectHour = ({
     });
   }, [inputMin, time]);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
-  useAutoScrollOnMount(scrollContainerRef, '.selected');
+  useAutoScrollOnMount(scrollContainerRef, '.active');
 
   return (
     <div
@@ -58,17 +59,15 @@ const SelectHour = ({
         e.preventDefault();
       }}
     >
-      <div
-        ref={scrollContainerRef}
-        className="overflow-auto grow border-r-2 border-gray-200"
-      >
+      <div ref={scrollContainerRef} className="overflow-auto grow">
         {slots.map((s) => (
-          <div
+          <ActionItem
             key={s.formatted}
-            className={classNames('transition hover:bg-gray-100', {
+            t="white-ghost-light"
+            active={s.hour === selected.hour && s.minutes === selected.minutes}
+            disabled={s.disabled}
+            className={classNames({
               'text-gray-400 cursor-default': s.disabled,
-              'selected bg-gray-200':
-                s.hour === selected.hour && s.minutes === selected.minutes,
             })}
             onClick={(e) => {
               if (s.disabled) {
@@ -86,7 +85,7 @@ const SelectHour = ({
             }}
           >
             {s.formatted}
-          </div>
+          </ActionItem>
         ))}
       </div>
     </div>

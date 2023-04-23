@@ -6,22 +6,40 @@
   .button-default {
     @apply bg-default-600 hover:bg-default-500 active:bg-default-700 text-white disabled:text-gray-100 disabled:bg-default-300;
   }
+  .button-default.active {
+    @apply bg-default-700;
+  }
 
   .button-highlight {
     @apply bg-highlight hover:bg-highlight-! active:bg-highlight-deep text-white disabled:text-gray-300 disabled:bg-gray-400;
   }
+  .button-highlight.active {
+    @apply bg-highlight-deep;
+  }
   .button-danger {
     @apply text-white bg-red-600 hover:bg-red-500 active:bg-red-700 disabled:bg-red-800;
+  }
+  .button-danger.actve {
+    @apply bg-red-700;
   }
 
   .button-light {
     @apply bg-gray-300 hover:bg-gray-100 active:bg-gray-200;
+  }
+  .button-light.active {
+    @apply bg-gray-200;
   }
 
   .button-ghost {
     @apply button-default bg-transparent;
   }
   .button-white-ghost-light {
-    @apply button-light bg-transparent text-gray-800 hover:text-gray-800;
+    @apply button-light bg-transparent text-gray-800;
+  }
+  .button-white-ghost-light.active {
+    @apply bg-gray-200 hover:bg-gray-100;
+  }
+  .button-white-ghost-light.disabled {
+    @apply text-gray-400 hover:bg-transparent;
   }
 }

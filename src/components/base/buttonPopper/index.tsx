@@ -1,7 +1,6 @@
-import { ComponentProps, ReactNode, useEffect, useState } from 'react';
+import { ComponentProps, ReactNode, useState } from 'react';
 import { Button } from '../button';
-import { usePopper } from 'react-popper';
-import { createPortal } from 'react-dom';
+import { Popper, PopperBody } from '../popper';
 
 export const ButtonPopper = ({
   onClick,
@@ -11,72 +10,47 @@ export const ButtonPopper = ({
   popperContent: ReactNode;
 } & ComponentProps<typeof Button>) => {
   const [show, setShow] = useState(false);
-  const [container, setContainer] = useState<HTMLElement | null>();
-  const [popperRef, setPopperRef] = useState<HTMLElement | null>();
-  const popper = usePopper(container, popperRef, {
-    strategy: 'absolute',
-    modifiers: [
-      {
-        name: 'offset',
-        options: {
-          offset: [0, 10],
-        },
-      },
-      {
-        name: 'preventOverflow',
-        options: {
-          boundary: document.body,
-          padding: 10,
-          altAxis: true,
-        },
-      },
-    ],
-  });
-
-  useEffect(() => {
-    if (!show) {
-      return;
-    }
-
-    const listener = (e: MouseEvent) => {
-      if (
-        !container?.contains(e.target as HTMLElement) &&
-        !popperRef?.contains(e.target as HTMLElement)
-      ) {
-        setShow(false);
-      }
-    };
-    window.addEventListener('click', listener);
-    return () => {
-      window.removeEventListener('click', listener);
-    };
-  }, [container, popperRef, show]);
 
   return (
-    <>
+    <Popper
+      show={show}
+      onClose={setShow}
+      options={{
+        modifiers: [
+          {
+            name: 'offset',
+            options: {
+              offset: [0, 10],
+            },
+          },
+          {
+            name: 'preventOverflow',
+            options: {
+              boundary: document.body,
+              padding: 10,
+              altAxis: true,
+            },
+          },
+        ],
+      }}
+      popper={
+        <PopperBody
+          className="bg-white p-2"
+          onClick={(e) => {
+            e.preventDefault();
+          }}
+        >
+          {popperContent}
+        </PopperBody>
+      }
+    >
       <Button
-        ref={setContainer}
         onClick={(e) => {
           setShow(!show);
           onClick?.(e);
         }}
         {...props}
       />
-      {show &&
-        createPortal(
-          <div
-            className="rounded bg-white p-2 shadow z-50"
-            {...popper.attributes.popper}
-            style={popper.styles.popper}
-            ref={setPopperRef}
-            onClick={(e) => {
-              e.preventDefault();
-            }}
-          >
-            {popperContent}
-          </div>,
-          document.body
-        )}
-    </>
+    </Popper>
   );
 };

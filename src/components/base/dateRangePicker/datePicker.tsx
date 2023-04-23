@@ -5,6 +5,7 @@ import isoWeek from 'dayjs/plugin/isoWeek';
 import { range } from 'lodash';
 import { ComponentProps, useEffect, useMemo, useRef, useState } from 'react';
 import { FaCaretLeft, FaCaretRight } from 'react-icons/fa';
+import { MonthYearPicker } from './monthYearPicker';
 
 dayjs.extend(isoWeek);
 
@@ -157,6 +158,8 @@ export const DatePicker = ({
     };
   }, [hovered, onHover]);
 
+  const [selectMonthYear, setSelectMonthYear] = useState(false);
+
   return (
     <div className={className}>
       {/* Month selector */}
@@ -174,6 +177,9 @@ export const DatePicker = ({
         <ActionItem
           t="light"
           className="bg-transparent transition rounded w-[120px] text-center text-xs mx-2"
+          onClick={() => {
+            setSelectMonthYear(!selectMonthYear);
+          }}
         >
           {dayjs(refMonth).format('MMMM YYYY')}
         </ActionItem>
@@ -188,55 +194,75 @@ export const DatePicker = ({
         </Button>
       </div>
 
-      {/* Days header */}
-      <div className="grid grid-cols-7">
-        {headers.map((h, idx) => (
-          <div
-            key={idx}
-            className="flex items-center justify-center text-sm border-b border-gray-300 mb-2 select-none"
-          >
-            {h}
+      {selectMonthYear && (
+        <MonthYearPicker
+          value={refMonth}
+          className="max-h-[169px]"
+          onChange={(date) => setRefMonth(dayjs(date))}
+          onClose={(e) => {
+            e.preventDefault();
+            setSelectMonthYear(false);
+          }}
+        />
+      )}
+      {!selectMonthYear && (
+        <>
+          {/* Days header */}
+          <div className="grid grid-cols-7">
+            {headers.map((h, idx) => (
+              <div
+                key={idx}
+                className="flex items-center justify-center text-sm border-b border-gray-300 mb-2 select-none"
+              >
+                {h}
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
 
-      {/* Days */}
-      <div className="grid grid-cols-7" ref={daysContainerRef}>
-        {days.map((r) => (
-          <DayItem
-            key={r.start}
-            disabled={r.disabled}
-            today={r.today}
-            isSelected={
-              selectedTimestamp &&
-              selectedTimestamp.start <= r.start &&
-              r.end <= selectedTimestamp.end
-            }
-            isHovered={
-              hovered && hovered?.start <= r.start && hovered?.end >= r.start
-            }
-            isStart={
-              selectedTimestamp?.start === r.start || hovered?.start === r.start
-            }
-            isEnd={selectedTimestamp?.end === r.end || hovered?.end === r.end}
-            onClick={() => {
-              if (r.disabled) {
-                return;
-              }
-              onSelect?.(new Date(r.start));
-            }}
-            onMouseEnter={() => {
-              if (r.disabled) {
-                onHover?.(null);
-                return;
-              }
-              onHover?.(new Date(r.start));
-            }}
-          >
-            {r.dateOfMonth}
-          </DayItem>
-        ))}
-      </div>
+          {/* Days */}
+          <div className="grid grid-cols-7" ref={daysContainerRef}>
+            {days.map((r) => (
+              <DayItem
+                key={r.start}
+                disabled={r.disabled}
+                today={r.today}
+                isSelected={
+                  selectedTimestamp &&
+                  selectedTimestamp.start <= r.start &&
+                  r.end <= selectedTimestamp.end
+                }
+                isHovered={
+                  hovered &&
+                  hovered?.start <= r.start &&
+                  hovered?.end >= r.start
+                }
+                isStart={
+                  selectedTimestamp?.start === r.start ||
+                  hovered?.start === r.start
+                }
+                isEnd={
+                  selectedTimestamp?.end === r.end || hovered?.end === r.end
+                }
+                onClick={() => {
+                  if (r.disabled) {
+                    return;
+                  }
+                  onSelect?.(new Date(r.start));
+                }}
+                onMouseEnter={() => {
+                  if (r.disabled) {
+                    onHover?.(null);
+                    return;
+                  }
+                  onHover?.(new Date(r.start));
+                }}
+              >
+                {r.dateOfMonth}
+              </DayItem>
+            ))}
+          </div>
+        </>
+      )}
     </div>
   );
 };
