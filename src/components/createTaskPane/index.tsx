@@ -1,5 +1,4 @@
 import { graphql } from '@/gql/__generated/client';
-import dayjs from 'dayjs';
 import { useMemo, useState } from 'react';
 import { FaRegClock, FaTimes } from 'react-icons/fa';
 import { useMutation } from 'urql';
@@ -19,8 +18,6 @@ const CREATE_TASK = graphql(`
     }
   }
 `);
-
-const DATE_FORMAT = 'YYYY-MM-DDTHH:mm';
 
 export const CreateTaskPaneForm = ({
   start,
@@ -160,9 +157,6 @@ export const CreateTaskPopper = ({
       ref={setContainer}
       {...popper.attributes.popper}
       style={popper.styles.popper}
-      onClick={(e) => {
-        e.preventDefault();
-      }}
     >
       <CreateTaskPaneForm
         title={title}

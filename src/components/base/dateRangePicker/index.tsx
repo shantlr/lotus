@@ -1,6 +1,5 @@
-import classNames from 'classnames';
 import dayjs from 'dayjs';
-import { useCallback, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Popper, PopperBody } from '../popper';
 import { DatePicker } from './datePicker';
 import { HourPicker } from './hourPicker';
@@ -170,10 +169,10 @@ export const DateRangePicker = ({
           setShow(!show);
         }}
       >
-        <div className="text-sm input-default px-4">
+        <div className="text-sm input-default px-4 select-none">
           {dayjs(start).format('DD/MM/YYYY HH:mm')}
         </div>
-        <div className="mt-2 text-sm input-default px-4">
+        <div className="mt-2 text-sm input-default px-4 select-none">
           {dayjs(end).format('DD/MM/YYYY HH:mm')}
         </div>
       </div>
