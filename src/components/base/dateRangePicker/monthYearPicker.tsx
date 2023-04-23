@@ -1,9 +1,10 @@
 import classNames from 'classnames';
 import dayjs, { Dayjs } from 'dayjs';
-import { range } from 'lodash';
+import { last, range } from 'lodash';
 import { ActionItem, Button } from '../button';
-import { MouseEvent, useMemo, useRef, useState } from 'react';
+import { MouseEvent, useCallback, useMemo, useRef, useState } from 'react';
 import { useAutoScrollOnMount } from '../hooks/autoScroll';
+import { useInfiniteScroll } from '../hooks/useInfiniteScroll';
 
 export const MonthYearPicker = ({
   value,
@@ -37,6 +38,17 @@ export const MonthYearPicker = ({
   useAutoScrollOnMount(yearRef, '.active');
   const monthRef = useRef<HTMLDivElement>(null);
   useAutoScrollOnMount(monthRef, '.active');
+
+  useInfiniteScroll(yearRef, {
+    onLoadNext: useCallback(() => {
+      const y = last(years) as number;
+      setYears([...years, ...range(1, 30).map((d) => d + y)]);
+    }, [years]),
+    onLoadPrev: useCallback(() => {
+      const y = years[0] as number;
+      setYears([...range(30, 1).map((d) => y - d), ...years]);
+    }, [years]),
+  });
 
   return (
     <div className={classNames('flex flex-col overflow-hidden', className)}>

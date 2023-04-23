@@ -151,7 +151,6 @@ export const DatePicker = ({
         e.y > box.y + box.height
       ) {
         onHover?.(null);
-        // setHoveredDateRange(null);
       }
     };
     window.addEventListener('mousemove', listener);
