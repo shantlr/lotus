@@ -34,12 +34,14 @@ export const MonthYearPicker = ({
   });
 
   const yearRef = useRef<HTMLDivElement>(null);
-  useAutoScrollOnMount(yearRef, '.selected');
+  useAutoScrollOnMount(yearRef, '.active');
+  const monthRef = useRef<HTMLDivElement>(null);
+  useAutoScrollOnMount(monthRef, '.active');
 
   return (
     <div className={classNames('flex flex-col overflow-hidden', className)}>
       <div className={classNames('flex grow overflow-hidden')}>
-        <div className="overflow-auto w-full grow">
+        <div ref={monthRef} className="overflow-auto w-full grow">
           {range(0, 12).map((idx) => (
             <ActionItem
               t="white-ghost-light"
@@ -62,7 +64,6 @@ export const MonthYearPicker = ({
               t="white-ghost-light"
               active={y === selectedYear}
               className={classNames('rounded text-sm px-2 select-none', {
-                selected: y === selectedYear,
                 'text-highlight': y === current.year,
               })}
               key={y}
