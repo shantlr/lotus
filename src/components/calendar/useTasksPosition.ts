@@ -10,6 +10,9 @@ export type SlotSpacing = {
   hourSlotPaddingRight?: number;
 };
 
+/**
+ * Split tasks that are multi days from single day tasks
+ */
 export const usePartitionTasks = <T extends { start?: Date; end?: Date }>({
   tasks,
   currentRangeStart,
@@ -59,7 +62,7 @@ export const usePositionedTasks = ({
   taskMinHeight: number;
   spacing: SlotSpacing;
 }) => {
-  // map tasks
+  // map tasks with meta and group them by days
   const tasksByDay = useMemo(() => {
     const rangeStart = dayjs(currentRangeStart);
     const rangeEnd = dayjs(currentRangeEnd);
@@ -112,12 +115,15 @@ export const usePositionedTasks = ({
     if (!hourSlotWidth) {
       return [];
     }
-    // Note: Adapt top and height for each day
+    // Adapt top and height for each day
     return flatMap(tasksByDay, (dayTasks) => {
       type Slot = {
         top: number;
         height: number;
         tasks: typeof dayTasks;
+        /**
+         * one task size = slotWidth / divider
+         */
         divider: number;
       };
       const slots: Slot[] = [];
@@ -146,7 +152,10 @@ export const usePositionedTasks = ({
           top: number;
           height: number;
           width: number;
+          // actual left
           left: number;
+          // left relative to slot
+          slotLeft: number;
         }
       > = {};
       slots.forEach((slot) => {
@@ -159,7 +168,6 @@ export const usePositionedTasks = ({
           },
         ];
         const widthDivider = Math.max(...slot.tasks.map((t) => t.divider));
-
         slot.tasks.forEach((t, i) => {
           const {
             task,
@@ -194,6 +202,7 @@ export const usePositionedTasks = ({
             top,
             height,
             width: width,
+            slotLeft: left,
             left: leftOffset * hourSlotWidth + left,
           };
         });
@@ -214,18 +223,6 @@ export const usePositionedTasks = ({
   ]);
 };
 
-function createSlot<
-  T extends { usedSlots: {}[] },
-  Slot extends { top: number; height: number; tasks?: T[] }
->(slot: Slot, task?: T) {
-  if (task) {
-    slot.tasks = slot?.tasks?.concat(task) ?? [task];
-  }
-  slot.tasks?.forEach((t) => {
-    t.usedSlots.push(slot);
-  });
-  return slot as Omit<Slot, 'tasks'> & { tasks: T[] };
-}
 export function pushTaskIntoSlots<
   T extends {
     top: number;
@@ -340,6 +337,19 @@ export function pushTaskIntoSlots<
   }
 }
 
+function createSlot<
+  T extends { usedSlots: {}[] },
+  Slot extends { top: number; height: number; tasks?: T[] }
+>(slot: Slot, task?: T) {
+  if (task) {
+    slot.tasks = slot?.tasks?.concat(task) ?? [task];
+  }
+  slot.tasks?.forEach((t) => {
+    t.usedSlots.push(slot);
+  });
+  return slot as Omit<Slot, 'tasks'> & { tasks: T[] };
+}
+
 function pickSpaceLeft(
   spaces: { left: number; width: number }[],
   item: { maxWidth: number },
@@ -366,27 +376,27 @@ function pickSpaceLeft(
 }
 function claimSpaceLeft(
   spaces: { left: number; width: number }[],
-  item: { width: number; left: number }
+  item: { width: number; slotLeft: number }
 ) {
   for (let i = 0; i < spaces.length; i += 1) {
     const space = spaces[i];
-    if (item.left > space.left + space.width) {
+    if (item.slotLeft > space.left + space.width) {
       continue;
     }
-    if (item.left + item.width < space.left) {
+    if (item.slotLeft + item.width < space.left) {
       return;
     }
-    if (item.left > space.left) {
+    if (item.slotLeft > space.left) {
       spaces.splice(i, 0, {
         left: space.left,
-        width: item.left - space.left,
+        width: item.slotLeft - space.left,
       });
-      space.width -= item.left - space.left;
-      space.left = item.left;
+      space.width -= item.slotLeft - space.left;
+      space.left = item.slotLeft;
       continue;
     }
-    if (item.left + item.width < space.left + space.width) {
-      const delta = item.left + item.width - space.left;
+    if (item.slotLeft + item.width < space.left + space.width) {
+      const delta = item.slotLeft + item.width - space.left;
       space.left += delta;
       space.width -= delta;
       return;
