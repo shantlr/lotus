@@ -190,7 +190,12 @@ export const WeekCalendar = ({
               {range(0, 24).map((h) => (
                 <div
                   style={{ height: HOUR_SLOT_HEIGHT }}
-                  className={`text-center w-full hover:bg-gray-800 hour-block-${h} border-r-2 border-gray-700 text-sm`}
+                  className={classNames(
+                    `text-center w-full hover:bg-gray-800 hour-block-${h} border-r-2 border-gray-700 text-sm`,
+                    {
+                      'text-highlight': new Date().getHours() === h,
+                    }
+                  )}
                   key={h}
                 >
                   {h}h
