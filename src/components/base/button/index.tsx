@@ -1,5 +1,6 @@
 import classNames from 'classnames';
 import { ComponentProps, ForwardedRef, forwardRef } from 'react';
+import { Spinner } from '../spinner';
 
 const STYLE = {
   highlight: 'button-highlight',
@@ -41,11 +42,14 @@ export const Button = forwardRef(
   (
     {
       className,
+      loading,
       round,
       t,
+      children,
       ...props
     }: {
       t?: keyof typeof STYLE;
+      loading?: boolean;
       round?: boolean;
     } & ComponentProps<'button'>,
     ref: ForwardedRef<HTMLButtonElement>
@@ -54,7 +58,9 @@ export const Button = forwardRef(
       <button
         ref={ref}
         className={classNames(
-          `transition disabled:cursor-not-allowed ${STYLE[t || 'default']}`,
+          `transition disabled:cursor-not-allowed ${
+            STYLE[t || 'default']
+          } flex items-center`,
           {
             'rounded px-2 py-1': !round,
             'rounded-full px-2 py-2': round,
@@ -62,7 +68,10 @@ export const Button = forwardRef(
           className
         )}
         {...props}
-      />
+      >
+        {loading && <Spinner className="inline-block mr-2 text-sm" />}
+        {children}
+      </button>
     );
   }
 );

@@ -60,8 +60,8 @@ export const CreateTaskPaneForm = ({
           <FaTimes />
         </Button>
       </div>
-      <div className="flex pt-2">
-        <div className="w-[30px] min-h-[1px] shrink-0 flex items-center">
+      <div className="flex items-start pt-2">
+        <div className="w-[30px] pt-[4px] min-h-[1px] shrink-0 flex items-center">
           <FaRegClock />
         </div>
         <DateRangePicker
