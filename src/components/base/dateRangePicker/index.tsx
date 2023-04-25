@@ -64,7 +64,15 @@ const Picker = ({
               setEnd?.(dayjs(end).add(diff, 'day').toDate());
             }}
           />
-          <HourPicker time={start} onChange={setStart} />
+          <HourPicker
+            time={start}
+            onChange={(date) => {
+              setStart(date);
+              if (dayjs(date).isAfter(dayjs(end))) {
+                setEnd(dayjs(date).add(15, 'minute').toDate());
+              }
+            }}
+          />
         </div>
         <div className="ml-4">
           {/* Right picker allow to change duration */}

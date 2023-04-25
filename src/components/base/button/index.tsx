@@ -60,7 +60,7 @@ export const Button = forwardRef(
         className={classNames(
           `transition disabled:cursor-not-allowed ${
             STYLE[t || 'default']
-          } flex items-center`,
+          } flex items-center justify-center`,
           {
             'rounded px-2 py-1': !round,
             'rounded-full px-2 py-2': round,
