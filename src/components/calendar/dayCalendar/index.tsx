@@ -31,10 +31,11 @@ export const DayCalendar = ({
   const input = useMemo(
     () => ({
       start: dayjs(selectedStart).startOf('day').toDate(),
-      end: dayjs(selectedStart).startOf('day').toDate(),
+      end: dayjs(selectedStart).endOf('day').toDate(),
     }),
     [selectedStart]
   );
+
   const [{ data }] = useQuery({
     query: QUERY_TASKS,
     variables: {
@@ -68,6 +69,7 @@ export const DayCalendar = ({
     }),
     [selectedStart]
   );
+
   const [fulldayTask, tasks] = usePartitionTasks({
     tasks: data?.tasks,
     start: selectedDateRange.start,

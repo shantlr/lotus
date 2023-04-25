@@ -13,12 +13,16 @@ export const usePartitionTasks = <T extends { start?: Date; end?: Date }>({
   start: Dayjs;
   end: Dayjs;
 }) => {
-  return partition(tasks, (t) => {
-    return (
-      dayjs(t.start).valueOf() <= start.valueOf() &&
-      dayjs(t.end).valueOf() >= end.valueOf()
-    );
-  });
+  return useMemo(
+    () =>
+      partition(tasks, (t) => {
+        return (
+          dayjs(t.start).valueOf() <= start.valueOf() &&
+          dayjs(t.end).valueOf() >= end.valueOf()
+        );
+      }),
+    [end, start, tasks]
+  );
 };
 
 export const useHeightSizedTasks = ({
@@ -96,7 +100,7 @@ export const usePositionedTasks = (
       return;
     }
 
-    const taskWithElems: (typeof tasks[number] & {
+    const taskWithElems: ((typeof tasks)[number] & {
       width: number;
       left: number;
       elem: HTMLElement;
