@@ -44,7 +44,7 @@ const UserItem = () => {
 
 export const MainLayoutTopBar = () => {
   return (
-    <div className="w-full flex h-[48px] items-center border-b border-gray-800">
+    <div className="shrink-0 w-full flex h-[48px] items-center border-b border-gray-800">
       <div className="w-[50px] shrink-0"></div>
       <div className="flex grow-1 space-x-2 w-full">
         <MenuItem href="/planning">

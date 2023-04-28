@@ -11,6 +11,9 @@ extend type Mutation {
 input GetTasksInput {
   start: DateTime
   end: DateTime
+
+  order: Order
+  size: Int
 }
 
 input CreateTaskInput {
@@ -32,4 +35,9 @@ type Task {
   title: String!
   start: DateTime
   end: DateTime
+}
+
+enum Order {
+  ASC
+  DESC
 }

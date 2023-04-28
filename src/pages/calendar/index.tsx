@@ -69,7 +69,6 @@ export default function CalendarPage({ type }: { type?: CalendarType }) {
   return (
     <MainLayout>
       <Calendar
-        type={type ?? 'week'}
         createTaskSelectedStart={createTask?.start}
         createTaskSelectedEnd={createTask?.end}
         onCreateTask={onOpenCreateTask}
