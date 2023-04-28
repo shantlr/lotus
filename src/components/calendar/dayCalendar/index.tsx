@@ -138,6 +138,7 @@ export const DayCalendar = ({
               className={classNames('hour-slot ', {
                 'border-t-2 border-t-gray-700 rounded-tr': h === 0,
                 'rounded-br': h === 23,
+                'border-b-dashed': h < slots.length - 1,
               })}
               data-slot-start={s.start.valueOf()}
               data-slot-end={s.end.valueOf()}

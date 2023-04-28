@@ -5,6 +5,21 @@
 @import './base/button.css';
 @import './base/input.css';
 
+@layer utilities {
+  .border-b-dashed {
+    border-bottom-style: dashed;
+  }
+  .border-r-dashed {
+    border-right-style: dashed;
+  }
+  .border-l-dashed {
+    border-left-style: dashed;
+  }
+  .border-t-dashed {
+    border-top-style: dashed;
+  }
+}
+
 html,
 body,
 body > #__next {

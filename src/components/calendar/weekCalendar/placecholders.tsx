@@ -23,6 +23,9 @@ const DayHourSlots = ({
     selectedEnd,
     selectedStart,
   });
+
+  const hour = new Date().getHours();
+
   return (
     <>
       {slots.map((h, idx) => (
@@ -35,6 +38,12 @@ const DayHourSlots = ({
           {...slotProps}
           className={classNames('hour-slot', {
             'border-r-2': idx === slots.length - 1,
+            'border-b-dashed': idx < slots.length - 1,
+            // 'border-b-highlight border-b-dashed':
+            //   h.start.get('hour') === hour || h.end.get('hour') === hour,
+            // 'border-r-highlight border-r-dashed':
+            //   h.start.isSame(dayjs(), 'd') ||
+            //   h.start.add(1, 'd').isSame(dayjs(), 'd'),
           })}
         />
       ))}

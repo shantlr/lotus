@@ -181,7 +181,7 @@ export const WeekCalendar = ({
           key={selectedWeek.key}
           className="relative h-full w-full flex overflow-auto pr-4"
         >
-          {/* Hour header */}
+          {/* Hour left header */}
           <div
             style={{ width: HOUR_SLOT_HEADER_WIDTH }}
             className={`flex shrink-0`}
