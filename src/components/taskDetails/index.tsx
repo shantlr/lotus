@@ -95,7 +95,7 @@ export const TaskDetails = ({
         <input className="px-2 m-auto flex-grow outline-none" {...title} />
         {onClose && (
           <IconButton
-            className="ml-2"
+            className="ml-2 mr-2"
             icon={FaTimes}
             onClick={() => onClose()}
           />
@@ -103,7 +103,7 @@ export const TaskDetails = ({
       </div>
 
       <DateRangePicker
-        className="mt-2"
+        className="mt-2 mr-2"
         start={task.start}
         end={task.end}
         onChange={(range) => {
@@ -112,14 +112,15 @@ export const TaskDetails = ({
           });
         }}
       >
-        {({ show, setShow }) => (
+        {({ className, show, setShow }) => (
           <div
             className={classNames(
-              'mt-2 px-2 text-sm text-slate-400 select-none transition rounded border-2 hover:border-highlight-light cursor-pointer',
+              'px-2 text-sm text-slate-400 select-none transition rounded border-2 hover:border-highlight-light cursor-pointer',
               {
                 'border-transparent': !show,
                 'border-highlight': show,
-              }
+              },
+              className
             )}
             onClick={() => {
               setShow(!show);
@@ -132,7 +133,7 @@ export const TaskDetails = ({
       </DateRangePicker>
       {/* <div className="text-sm text-slate-400">{formattedDate}</div> */}
 
-      <div className="pt-4">
+      <div className="px-2 pt-4">
         <Button
           t="danger"
           className="py-2 px-8"
