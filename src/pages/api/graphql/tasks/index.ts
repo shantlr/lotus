@@ -3,6 +3,7 @@ import { prisma } from '@/lib/prisma';
 import { Prisma } from '@prisma/client';
 import { GraphqlContext } from '../types';
 import { UnauthenticatedError, UnauthorizedError } from '../util';
+import { pickBy } from 'lodash';
 
 export const resolvers: Resolvers<GraphqlContext> = {
   Query: {
@@ -82,6 +83,30 @@ export const resolvers: Resolvers<GraphqlContext> = {
       return {
         task,
       };
+    },
+    updateTask: async (
+      root,
+      { input: { id, title, startDate, endDate } },
+      { currentSession }
+    ) => {
+      if (!currentSession?.user) {
+        throw new UnauthenticatedError();
+      }
+      const task = await prisma.task.findFirst({
+        where: {
+          id,
+        },
+      });
+      if (!task) {
+        throw new Error('INVALID_TASK');
+      }
+
+      const res = await prisma.task.update({
+        where: { id },
+        data: pickBy({ title, start: startDate, end: endDate }),
+        select: { id: true, start: true, end: true, title: true },
+      });
+      return res;
     },
     deleteTask: async (root, { input: { id } }, { currentSession }) => {
       if (!currentSession?.user) {

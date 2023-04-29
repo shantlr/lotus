@@ -5,10 +5,24 @@ import dayjs from 'dayjs';
 import { graphql } from '@/gql/__generated/client';
 import { useMutation, useQuery } from 'urql';
 import { QUERY_TASK_DETAIL } from './query';
+import { Input } from '../base/input';
+import { IconButton } from '../base/iconButton';
+import { useOnBlurChange } from '../base/hooks/useOnBlurChange';
 
 const DELETE_TASK_MUTATION = graphql(`
   mutation DeleteTask($input: DeleteTaskInput!) {
     deleteTask(input: $input)
+  }
+`);
+
+const UPDATE_TASK_MUT = graphql(`
+  mutation UpdateTask($input: UpdateTaskInput!) {
+    updateTask(input: $input) {
+      id
+      title
+      start
+      end
+    }
   }
 `);
 
@@ -58,6 +72,16 @@ export const TaskDetails = ({
   }, [task?.end, task?.start]);
 
   const [{ fetching }, deleteTask] = useMutation(DELETE_TASK_MUTATION);
+  const [{}, updateTask] = useMutation(UPDATE_TASK_MUT);
+  const title = useOnBlurChange(
+    task?.title,
+    (val) => {
+      if (val && task) {
+        updateTask({ input: { id: task.id, title: val } });
+      }
+    },
+    { blurOnEnter: true }
+  );
 
   if (!task) {
     return null;
@@ -66,10 +90,11 @@ export const TaskDetails = ({
   return (
     <div className="min-w-[200px] bg-white rounded p-2 text-slate-500">
       <div className="flex items-center justify-center">
-        <div className="m-auto flex-grow">{task.title}</div>
+        <Input t="ghost" className="m-auto flex-grow" {...title} />
         {onClose && (
-          <FaTimes
-            className="cursor-pointer hover:text-slate-300 transition"
+          <IconButton
+            className="ml-2"
+            icon={FaTimes}
             onClick={() => onClose()}
           />
         )}

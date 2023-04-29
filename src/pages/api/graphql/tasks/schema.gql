@@ -5,6 +5,7 @@ extend type Query {
 
 extend type Mutation {
   createTask(input: CreateTaskInput!): TaskCreated!
+  updateTask(input: UpdateTaskInput!): Task!
   deleteTask(input: DeleteTaskInput!): Boolean
 }
 
@@ -20,6 +21,13 @@ input CreateTaskInput {
   title: String!
   startDate: DateTime!
   endDate: DateTime!
+}
+
+input UpdateTaskInput {
+  id: ID!
+  title: String
+  startDate: DateTime
+  endDate: DateTime
 }
 
 input DeleteTaskInput {
