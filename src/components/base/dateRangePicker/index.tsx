@@ -1,9 +1,10 @@
 import dayjs from 'dayjs';
-import { useMemo, useState } from 'react';
+import { ReactElement, ReactNode, useMemo, useState } from 'react';
 import { Popper, PopperBody } from '../popper';
 import { DatePicker } from './datePicker';
 import { HourPicker } from './hourPicker';
 import { Button } from '../button';
+import classNames from 'classnames';
 
 const Picker = ({
   start: initialStart,
@@ -134,13 +135,23 @@ const Picker = ({
 };
 
 export const DateRangePicker = ({
+  className,
   start,
   end,
   onChange,
+  children,
 }: {
+  className?: string;
   start?: Date | number;
   end?: Date | number;
   onChange?: (range: { start: Date; end: Date }) => void;
+  children?:
+    | ReactNode
+    | ((arg: {
+        className?: string;
+        show: boolean;
+        setShow: (value: boolean) => void;
+      }) => ReactElement);
 }) => {
   const [show, setShow] = useState(false);
 
@@ -171,19 +182,30 @@ export const DateRangePicker = ({
         </PopperBody>
       }
     >
-      <div
-        className="w-full"
-        onClick={() => {
-          setShow(!show);
-        }}
-      >
-        <div className="text-sm input-default px-4 select-none">
-          {dayjs(start).format('DD/MM/YYYY HH:mm')}
+      {children && typeof children !== 'function' ? (
+        <div
+          className={classNames(className, 'w-full')}
+          onClick={() => setShow(!show)}
+        >
+          {children}
         </div>
-        <div className="mt-2 text-sm input-default px-4 select-none">
-          {dayjs(end).format('DD/MM/YYYY HH:mm')}
+      ) : typeof children === 'function' ? (
+        children({ className, show, setShow })
+      ) : (
+        <div
+          className={classNames('w-full', className)}
+          onClick={() => {
+            setShow(!show);
+          }}
+        >
+          <div className="text-sm input-default px-4 select-none">
+            {dayjs(start).format('DD/MM/YYYY HH:mm')}
+          </div>
+          <div className="mt-2 text-sm input-default px-4 select-none">
+            {dayjs(end).format('DD/MM/YYYY HH:mm')}
+          </div>
         </div>
-      </div>
+      )}
     </Popper>
   );
 };

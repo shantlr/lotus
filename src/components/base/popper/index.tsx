@@ -78,6 +78,7 @@ export const Popper = ({
       }
 
       const target = e.target as HTMLElement;
+      console.log(e.target, e.currentTarget);
       if (!containerRef?.contains(target) && !popperRef?.contains(target)) {
         onClose?.(false);
       }

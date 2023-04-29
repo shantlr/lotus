@@ -1,10 +1,9 @@
 import { classed } from '@/components/base/classed';
+import { Popper } from '@/components/base/popper';
 import { TaskDetails } from '@/components/taskDetails';
 import { CalendarTasksQuery } from '@/gql/__generated/client/graphql';
 import classNames from 'classnames';
-import { ComponentProps, useEffect, useState } from 'react';
-import { createPortal } from 'react-dom';
-import { usePopper } from 'react-popper';
+import { ComponentProps, useState } from 'react';
 
 const Base = classed(
   'div',
@@ -16,68 +15,34 @@ export const BaseTaskItem = ({
   ...props
 }: {
   taskId: string;
-} & ComponentProps<typeof BaseTaskItem>) => {
+} & ComponentProps<typeof Base>) => {
   const [show, setShow] = useState(false);
-  const [containerRef, setContainerRef] = useState<HTMLElement | null>(null);
-  const [popupRef, setPopupRef] = useState<HTMLElement | null>(null);
-  const [popupArrow, setPopupArrow] = useState<HTMLElement | null>(null);
-
-  const popper = usePopper(containerRef, popupRef, {
-    strategy: 'absolute',
-    modifiers: [
-      { name: 'offset', options: { offset: [0, 10] } },
-      // { name: 'arrow', options: { element: popupArrow, padding: 5 } },
-    ],
-  });
-
-  useEffect(() => {
-    if (!show) {
-      return;
-    }
-
-    const listener = (e: MouseEvent) => {
-      if (
-        containerRef &&
-        popupRef &&
-        !containerRef.contains(e.target as HTMLElement) &&
-        !popupRef?.contains(e.target as HTMLElement)
-      ) {
-        setShow(false);
-      }
-    };
-
-    window.addEventListener('click', listener);
-    return () => window.removeEventListener('click', listener);
-  }, [containerRef, popupRef, show]);
 
   return (
-    <>
+    <Popper
+      show={show}
+      options={{
+        modifiers: [
+          {
+            name: 'offset',
+            options: { offset: [0, 10] },
+          },
+        ],
+      }}
+      popper={
+        <div className="shadow-xl z-50">
+          <TaskDetails taskId={taskId} onClose={() => setShow(false)} />
+        </div>
+      }
+    >
       <Base
-        ref={setContainerRef}
         onClick={(e) => {
           e.preventDefault();
           setShow(!show);
         }}
         {...props}
       />
-      {show &&
-        createPortal(
-          <div
-            className="shadow-xl z-50"
-            style={popper.styles.popper}
-            {...popper.attributes.popper}
-            ref={setPopupRef}
-          >
-            <div
-              ref={setPopupArrow}
-              data-popper-arrow
-              style={popper.styles.arrow}
-            />
-            <TaskDetails taskId={taskId} onClose={() => setShow(false)} />
-          </div>,
-          document.body
-        )}
-    </>
+    </Popper>
   );
 };
 
@@ -87,7 +52,7 @@ export const CalendarTask = ({
   ...props
 }: {
   task: CalendarTasksQuery['tasks'][number];
-} & ComponentProps<typeof BaseTaskItem>) => {
+} & Omit<ComponentProps<typeof BaseTaskItem>, 'taskId'>) => {
   return (
     <BaseTaskItem
       taskId={task.id}
@@ -105,7 +70,7 @@ export const AnchoredTaskItem = ({
   ...props
 }: {
   task: CalendarTasksQuery['tasks'][number];
-} & ComponentProps<typeof BaseTaskItem>) => {
+} & Omit<ComponentProps<typeof BaseTaskItem>, 'taskId'>) => {
   return (
     <BaseTaskItem
       taskId={task.id}

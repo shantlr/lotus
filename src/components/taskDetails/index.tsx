@@ -1,13 +1,14 @@
-import { forwardRef, useMemo } from 'react';
+import { useMemo } from 'react';
 import { Button } from '../base/button';
 import { FaTimes, FaTrash } from 'react-icons/fa';
 import dayjs from 'dayjs';
 import { graphql } from '@/gql/__generated/client';
 import { useMutation, useQuery } from 'urql';
 import { QUERY_TASK_DETAIL } from './query';
-import { Input } from '../base/input';
 import { IconButton } from '../base/iconButton';
 import { useOnBlurChange } from '../base/hooks/useOnBlurChange';
+import { DateRangePicker } from '../base/dateRangePicker';
+import classNames from 'classnames';
 
 const DELETE_TASK_MUTATION = graphql(`
   mutation DeleteTask($input: DeleteTaskInput!) {
@@ -71,7 +72,8 @@ export const TaskDetails = ({
     )}`;
   }, [task?.end, task?.start]);
 
-  const [{ fetching }, deleteTask] = useMutation(DELETE_TASK_MUTATION);
+  const [{ fetching: deleting }, deleteTask] =
+    useMutation(DELETE_TASK_MUTATION);
   const [{}, updateTask] = useMutation(UPDATE_TASK_MUT);
   const title = useOnBlurChange(
     task?.title,
@@ -90,7 +92,7 @@ export const TaskDetails = ({
   return (
     <div className="min-w-[200px] bg-white rounded p-2 text-slate-500">
       <div className="flex items-center justify-center">
-        <Input t="ghost" className="m-auto flex-grow" {...title} />
+        <input className="px-2 m-auto flex-grow outline-none" {...title} />
         {onClose && (
           <IconButton
             className="ml-2"
@@ -99,12 +101,42 @@ export const TaskDetails = ({
           />
         )}
       </div>
-      <div className="text-sm text-slate-400">{formattedDate}</div>
+
+      <DateRangePicker
+        className="mt-2"
+        start={task.start}
+        end={task.end}
+        onChange={(range) => {
+          updateTask({
+            input: { id: task.id, startDate: range.start, endDate: range.end },
+          });
+        }}
+      >
+        {({ show, setShow }) => (
+          <div
+            className={classNames(
+              'mt-2 px-2 text-sm text-slate-400 select-none transition rounded border-2 hover:border-highlight-light cursor-pointer',
+              {
+                'border-transparent': !show,
+                'border-highlight': show,
+              }
+            )}
+            onClick={() => {
+              setShow(!show);
+              console.log('azeazea');
+            }}
+          >
+            {formattedDate}
+          </div>
+        )}
+      </DateRangePicker>
+      {/* <div className="text-sm text-slate-400">{formattedDate}</div> */}
 
       <div className="pt-4">
         <Button
           t="danger"
           className="py-2 px-8"
+          loading={deleting}
           onClick={() => {
             deleteTask({
               input: {
