@@ -8,9 +8,9 @@ const config: CodegenConfig = {
     'src/gql/__generated/client/': {
       preset: 'client',
     },
-    // './graphql.schema.json': {
-    //   plugins: ['introspection'],
-    // },
+    'src/gql/__generated/client/graphcache.ts': {
+      plugins: ['typescript', 'typescript-urql-graphcache'],
+    },
     'src/gql/__generated/typeDefs.ts': {
       plugins: ['src/gql/plugins/typescript-typedefs.js'],
       config: {

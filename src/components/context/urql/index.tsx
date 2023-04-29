@@ -1,16 +1,27 @@
 import { ReactElement } from 'react';
 import { createClient, fetchExchange, Provider } from 'urql';
 import { cacheExchange } from '@urql/exchange-graphcache';
+import { GraphCacheConfig } from '@/gql/__generated/client/graphcache';
+import { omit, pickBy } from 'lodash';
 
 const client = createClient({
   url: '/api/graphql',
   exchanges: [
-    cacheExchange({
+    cacheExchange<GraphCacheConfig>({
       resolvers: {
         Query: {
           task(parent, args, cache, info) {
             return { __typename: 'Task', id: args.id };
           },
+        },
+      },
+      optimistic: {
+        updateTask(args, cache, info) {
+          return {
+            __typename: 'Task',
+            id: args.input.id,
+            ...pickBy(omit(args.input, 'id')),
+          };
         },
       },
       updates: {

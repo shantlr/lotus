@@ -80,7 +80,7 @@ export const TaskDetails = ({
         updateTask({ input: { id: task.id, title: val } });
       }
     },
-    { blurOnEnter: true }
+    { blurOnEnter: true, escapeCancel: true }
   );
 
   if (!task) {
