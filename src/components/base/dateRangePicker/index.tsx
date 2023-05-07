@@ -184,7 +184,7 @@ export const DateRangePicker = ({
     >
       {children && typeof children !== 'function' ? (
         <div
-          className={classNames(className, 'w-full')}
+          className={classNames(className, 'group w-full')}
           onClick={() => setShow(!show)}
         >
           {children}
@@ -193,15 +193,29 @@ export const DateRangePicker = ({
         children({ className, show, setShow })
       ) : (
         <div
-          className={classNames('w-full', className)}
+          className={classNames('group w-full', className)}
           onClick={() => {
             setShow(!show);
           }}
         >
-          <div className="text-sm input-default px-4 select-none">
+          <div
+            className={classNames(
+              'text-xs input-default-idle group-hover:input-default-hover group-active:input-default-focus group-focus-within:input-default-focus px-4 select-none',
+              {
+                'input-default-focus': show,
+              }
+            )}
+          >
             {dayjs(start).format('DD/MM/YYYY HH:mm')}
           </div>
-          <div className="mt-2 text-sm input-default px-4 select-none">
+          <div
+            className={classNames(
+              'mt-1 text-xs input-default-idle group-hover:input-default-hover group-active:input-default-focus group-focus-within:input-default-focus px-4 select-none',
+              {
+                'input-default-focus': show,
+              }
+            )}
+          >
             {dayjs(end).format('DD/MM/YYYY HH:mm')}
           </div>
         </div>
