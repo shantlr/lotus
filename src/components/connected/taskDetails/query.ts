@@ -7,6 +7,11 @@ export const QUERY_TASK_DETAIL = graphql(`
       title
       start
       end
+      labels {
+        id
+        name
+        color
+      }
     }
   }
 `);

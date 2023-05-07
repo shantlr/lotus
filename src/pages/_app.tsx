@@ -16,9 +16,7 @@ export default function App({
     return (
       <SessionProvider session={session}>
         <UrqlProvider>
-          <Themed>
-            <Component {...pageProps} />
-          </Themed>
+          <Component {...pageProps} />
         </UrqlProvider>
       </SessionProvider>
     );
@@ -28,9 +26,7 @@ export default function App({
     <SessionProvider session={session}>
       <UrqlProvider>
         <Authenticated>
-          <Themed>
-            <Component {...pageProps} />
-          </Themed>
+          <Component {...pageProps} />
         </Authenticated>
       </UrqlProvider>
     </SessionProvider>

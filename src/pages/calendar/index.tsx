@@ -1,6 +1,6 @@
-import { Calendar } from '@/components/calendar';
-import { CalendarType } from '@/components/calendar/types';
-import { CreateTaskPopper } from '@/components/createTaskPane';
+import { Calendar } from '@/components/connected/calendar';
+import { CalendarType } from '@/components/connected/calendar/types';
+import { CreateTaskPopper } from '@/components/connected/createTaskPane';
 import { MainLayout } from '@/layout/main';
 import { omit } from 'lodash';
 import { useRouter } from 'next/router';

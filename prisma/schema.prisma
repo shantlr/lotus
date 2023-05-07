@@ -50,8 +50,9 @@ model User {
   accounts      Account[]
   sessions      Session[]
   tasks         Task[]
-  taskLabels    TaskLabel[]
-  taskLabelSettings UserTaskLabelSettings[]
+  labels    Label[]
+  labelSettings UserLabelSettings[]
+  taskLabels UserTaskLabel[]
 
   @@map("users")
 }
@@ -76,9 +77,11 @@ model Task {
   creator User @relation(fields: [creator_id], references: [id], onDelete: Cascade)
 
   created_at DateTime @default(now())
+
+  userLabels UserTaskLabel[]
 }
 
-model TaskLabel {
+model Label {
   id String @id @default(cuid())
   name String
 
@@ -89,17 +92,33 @@ model TaskLabel {
   creator User @relation(fields: [creator_id], references: [id], onDelete: Cascade)
   created_at DateTime @default(now())
 
-  userSettings UserTaskLabelSettings[]
+  userSettings UserLabelSettings[]
+  userTaskLabels UserTaskLabel[]
 }
-model UserTaskLabelSettings {
+
+model UserLabelSettings {
   // Hex color
   color String
+  secondary_color String
 
   user_id String
   user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
   task_label_id String
-  task_label TaskLabel @relation(fields: [task_label_id], references: [id], onDelete: Cascade)
+  task_label Label @relation(fields: [task_label_id], references: [id], onDelete: Cascade)
 
   @@unique([user_id, task_label_id])
+}
+
+model UserTaskLabel {
+  user_id String
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  task_id String
+  task Task @relation(fields: [task_id], references: [id], onDelete: Cascade)
+
+  label_id String
+  label Label @relation(fields: [label_id], references: [id], onDelete: Cascade)
+
+  @@unique([task_id, label_id, user_id])
 }

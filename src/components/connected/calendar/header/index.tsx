@@ -1,13 +1,12 @@
 import { useMemo } from 'react';
-import { Button } from '../../base/button';
-import { ButtonPopper } from '../../base/buttonPopper';
+import { Button } from '../../../base/button';
+import { ButtonPopper } from '../../../base/buttonPopper';
 import { CalendarType, OnCreateTask } from '../types';
 import dayjs from 'dayjs';
 import isoWeek from 'dayjs/plugin/isoWeek';
 import { FaCaretLeft, FaCaretRight, FaPlus } from 'react-icons/fa';
 import classNames from 'classnames';
 import { SelectDateRange } from './dateRange';
-import { LabelSelector } from './labelSelector';
 
 dayjs.extend(isoWeek);
 
@@ -195,8 +194,6 @@ export const CalendarHeader = ({
         >
           <FaPlus />
         </Button>
-
-        <LabelSelector className="ml-8" />
       </div>
     </div>
   );

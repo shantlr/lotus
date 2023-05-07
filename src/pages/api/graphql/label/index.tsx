@@ -5,26 +5,34 @@ import { prisma } from '@/lib/prisma';
 
 export const resolvers: Resolvers<GraphqlContext> = {
   Query: {
-    taskLabels(root, {}, { currentSession }) {
+    labels(root, {}, { currentSession }) {
       if (!currentSession?.user) {
         throw new UnauthenticatedError();
       }
 
-      return prisma.taskLabel.findMany({
+      return prisma.label.findMany({
         where: {
           creator_id: currentSession.user.id,
         },
       });
     },
   },
-  TaskLabel: {
+  Label: {
     color: async (root, {}, { currentSession }) => {
-      const settings = await prisma.userTaskLabelSettings.findFirst({
+      const settings = await prisma.userLabelSettings.findFirst({
         where: {
           user_id: currentSession.user?.id,
         },
       });
       return settings?.color || null;
+    },
+    secondaryColor: async (root, {}, { currentSession }) => {
+      const settings = await prisma.userLabelSettings.findFirst({
+        where: {
+          user_id: currentSession.user?.id,
+        },
+      });
+      return settings?.secondary_color || null;
     },
   },
 };

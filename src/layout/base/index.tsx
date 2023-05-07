@@ -1,3 +1,4 @@
+import { Themed } from '@/components/base/themed';
 import Head from 'next/head';
 import { ReactNode } from 'react';
 
@@ -11,7 +12,7 @@ export const LayoutBase = ({ children }: { children?: ReactNode }) => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <main className="flex flex-col overflow-hidden w-full h-full">
+      <main className="flex flex-col overflow-hidden w-full h-full bg-slate-900 text-white">
         {children}
       </main>
     </>

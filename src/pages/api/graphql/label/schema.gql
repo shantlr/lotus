@@ -1,0 +1,15 @@
+extend type Query {
+  labels(input: GetLabelsInput): [Label!]!
+}
+
+type Label {
+  id: ID!
+  name: String!
+
+  color: String
+  secondaryColor: String
+}
+
+input GetLabelsInput {
+  assignable: Boolean
+}

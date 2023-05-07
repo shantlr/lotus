@@ -19,6 +19,7 @@ input GetTasksInput {
 
 input CreateTaskInput {
   title: String!
+  labelIds: [String!]!
   startDate: DateTime!
   endDate: DateTime!
 }
@@ -41,8 +42,10 @@ type TaskCreated {
 type Task {
   id: ID!
   title: String!
-  start: DateTime
-  end: DateTime
+  start: DateTime!
+  end: DateTime!
+
+  labels: [Label!]!
 }
 
 enum Order {

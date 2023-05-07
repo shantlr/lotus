@@ -200,7 +200,7 @@ export const DateRangePicker = ({
         >
           <div
             className={classNames(
-              'text-xs input-default-idle group-hover:input-default-hover group-active:input-default-focus group-focus-within:input-default-focus px-4 select-none',
+              'text-xs input-default-idle group-hover:input-default-hover group-active:input-default-focus group-focus-within:input-default-focus px-4 select-none transition',
               {
                 'input-default-focus': show,
               }
@@ -210,7 +210,7 @@ export const DateRangePicker = ({
           </div>
           <div
             className={classNames(
-              'mt-1 text-xs input-default-idle group-hover:input-default-hover group-active:input-default-focus group-focus-within:input-default-focus px-4 select-none',
+              'mt-1 text-xs input-default-idle group-hover:input-default-hover group-active:input-default-focus group-focus-within:input-default-focus px-4 select-none transition',
               {
                 'input-default-focus': show,
               }

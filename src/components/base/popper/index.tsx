@@ -18,7 +18,10 @@ export const PopperBody = forwardRef<HTMLDivElement, ComponentProps<'div'>>(
     <div
       ref={ref}
       {...props}
-      className={classNames('z-50 shadow-2xl rounded', props.className)}
+      className={classNames(
+        'z-50 shadow-lg shadow-gray-800/30 rounded',
+        props.className
+      )}
     />
   )
 );
@@ -78,7 +81,6 @@ export const Popper = ({
       }
 
       const target = e.target as HTMLElement;
-      console.log(e.target, e.currentTarget);
       if (!containerRef?.contains(target) && !popperRef?.contains(target)) {
         onClose?.(false);
       }

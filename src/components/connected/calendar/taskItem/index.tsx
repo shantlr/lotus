@@ -1,6 +1,6 @@
 import { classed } from '@/components/base/classed';
 import { Popper } from '@/components/base/popper';
-import { TaskDetails } from '@/components/taskDetails';
+import { TaskDetails } from '@/components/connected/taskDetails';
 import { CalendarTasksQuery } from '@/gql/__generated/client/graphql';
 import classNames from 'classnames';
 import { ComponentProps, useState } from 'react';

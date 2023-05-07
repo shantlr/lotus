@@ -2,6 +2,8 @@ import NextAuth, { AuthOptions } from 'next-auth';
 import GoogleProvider from 'next-auth/providers/google';
 import { PrismaAdapter } from '@next-auth/prisma-adapter';
 import { prisma } from '@/lib/prisma';
+import { LABEL_COLORS, getRandomLabelColor } from '@/lib/label';
+import { random } from 'lodash';
 
 declare module 'next-auth' {
   interface Session {
@@ -24,15 +26,17 @@ export const authOptions: AuthOptions = {
   ],
   events: {
     createUser: async ({ user }) => {
+      const color = getRandomLabelColor();
       // Init calendar
-      await prisma.taskLabel.create({
+      await prisma.label.create({
         data: {
           name: 'Calendar',
           assignable: true,
           creator_id: user.id,
           userSettings: {
             create: {
-              color: '',
+              color: color.bg,
+              secondary_color: color.outline,
               user_id: user.id,
             },
           },

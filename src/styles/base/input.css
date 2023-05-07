@@ -3,6 +3,9 @@
 @tailwind utilities;
 
 @layer components {
+  .input-default {
+    @apply input-default-idle input-default-interactive;
+  }
   .input-default-idle {
     @apply border-2 border-gray-200 rounded cursor-pointer;
   }
@@ -14,9 +17,6 @@
   }
   .input-default-interactive {
     @apply hover:input-default-hover active:input-default-focus focus:input-default-focus;
-  }
-  .input-default {
-    @apply input-default-idle input-default-interactive;
   }
 
   .input {

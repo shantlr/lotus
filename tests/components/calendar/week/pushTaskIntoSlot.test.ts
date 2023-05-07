@@ -1,4 +1,4 @@
-import { pushTaskIntoSlots } from '@/components/calendar/useTasksPosition';
+import { pushTaskIntoSlots } from '@/components/connected/calendar/useTasksPosition';
 import dayjs from 'dayjs';
 
 describe('components', () => {

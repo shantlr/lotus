@@ -1,14 +1,15 @@
 import { useMemo } from 'react';
-import { Button } from '../base/button';
+import { Button } from '../../base/button';
 import { FaTimes, FaTrash } from 'react-icons/fa';
 import dayjs from 'dayjs';
 import { graphql } from '@/gql/__generated/client';
 import { useMutation, useQuery } from 'urql';
 import { QUERY_TASK_DETAIL } from './query';
-import { IconButton } from '../base/iconButton';
-import { useOnBlurChange } from '../base/hooks/useOnBlurChange';
-import { DateRangePicker } from '../base/dateRangePicker';
+import { IconButton } from '../../base/iconButton';
+import { useOnBlurChange } from '../../base/hooks/useOnBlurChange';
+import { DateRangePicker } from '../../base/dateRangePicker';
 import classNames from 'classnames';
+import { SelectLabels } from '../selectTaskLabels';
 
 const DELETE_TASK_MUTATION = graphql(`
   mutation DeleteTask($input: DeleteTaskInput!) {
@@ -85,6 +86,8 @@ export const TaskDetails = ({
     { blurOnEnter: true, escapeCancel: true }
   );
 
+  const labelIds = useMemo(() => task?.labels.map((l) => l.id), [task?.labels]);
+
   if (!task) {
     return null;
   }
@@ -131,7 +134,8 @@ export const TaskDetails = ({
           </div>
         )}
       </DateRangePicker>
-      {/* <div className="text-sm text-slate-400">{formattedDate}</div> */}
+
+      <SelectLabels className="mt-2 h-[24px] w-full" value={labelIds} />
 
       <div className="px-2 pt-4">
         <Button

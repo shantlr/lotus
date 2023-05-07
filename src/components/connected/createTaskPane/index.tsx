@@ -1,12 +1,13 @@
 import { graphql } from '@/gql/__generated/client';
 import { useMemo, useState } from 'react';
-import { FaRegClock, FaTimes } from 'react-icons/fa';
-import { useMutation } from 'urql';
-import { Button } from '../base/button';
-import { Input } from '../base/input';
+import { FaRegCalendarPlus, FaRegClock, FaTimes } from 'react-icons/fa';
+import { useMutation, useQuery } from 'urql';
+import { Button } from '../../base/button';
+import { Input } from '../../base/input';
 import { usePopper } from 'react-popper';
 import { createPortal } from 'react-dom';
-import { DateRangePicker } from '../base/dateRangePicker';
+import { DateRangePicker } from '../../base/dateRangePicker';
+import { SelectLabels } from '../selectTaskLabels';
 
 const CREATE_TASK = graphql(`
   mutation CreateTask($input: CreateTaskInput!) {
@@ -23,19 +24,24 @@ export const CreateTaskPaneForm = ({
   start,
   title,
   end,
+  labelIds,
+
   onClose,
   onTitleChange,
   onEndChange,
   onStartChange,
+  onLabelsChange,
   onSubmit,
 }: {
   title?: string;
   start?: Date | number;
   end?: Date | number;
+  labelIds?: string[];
   onClose?: () => void;
   onTitleChange?: (title: string) => void;
   onStartChange?: (date: Date) => void;
   onEndChange?: (date: Date) => void;
+  onLabelsChange?: (labelIds: string[]) => void;
   onSubmit?: (value: { title: string; start: Date; end: Date }) => void;
 }) => {
   return (
@@ -60,6 +66,7 @@ export const CreateTaskPaneForm = ({
           <FaTimes />
         </Button>
       </div>
+
       <div className="flex items-start pt-2">
         <div className="w-[30px] pt-[4px] min-h-[1px] shrink-0 flex items-center">
           <FaRegClock />
@@ -74,10 +81,29 @@ export const CreateTaskPaneForm = ({
         />
       </div>
 
+      <div className="flex items-start pt-2">
+        <div className="w-[30px] pt-[4px] min-h-[1px] shrink-0 flex items-center">
+          <FaRegCalendarPlus />
+        </div>
+        <SelectLabels
+          baseContainerClassName="h-[32px] flex items-center input-default w-full flex px-2 overflow-x-auto"
+          showContainerClassName="input-default-focus"
+          labelClassName="text-xs my-1 px-2 bg-gray-400 rounded select-none"
+          value={labelIds}
+          assignable
+          onChange={onLabelsChange}
+          onDefault={(v) => {
+            if (v.length) {
+              onLabelsChange?.(v.slice(0, 1).map((v) => v.id));
+            }
+          }}
+        />
+      </div>
+
       <div className="flex justify-end mt-4">
         <Button
           t="highlight"
-          disabled={!title || !start || !end}
+          disabled={!title || !start || !end || !labelIds?.length}
           className="mt-2"
           onClick={async () => {
             if (title && start && end) {
@@ -99,10 +125,11 @@ export const CreateTaskPaneForm = ({
 export const CreateTaskPopper = ({
   start,
   end,
-  parentElem,
-  onClose,
   onStartChange,
   onEndChange,
+
+  parentElem,
+  onClose,
 }: {
   start?: Date | number;
   end?: Date | number;
@@ -155,6 +182,7 @@ export const CreateTaskPopper = ({
   });
 
   const [title, setTitle] = useState('');
+  const [labelIds, setLabelIds] = useState<string[]>();
   const [{}, createTask] = useMutation(CREATE_TASK);
 
   return createPortal(
@@ -172,12 +200,15 @@ export const CreateTaskPopper = ({
         start={start}
         end={end}
         onClose={onClose}
+        labelIds={labelIds}
+        onLabelsChange={setLabelIds}
         onSubmit={(form) =>
           createTask({
             input: {
               title: form.title,
               startDate: form.start,
               endDate: form.end,
+              labelIds: labelIds as string[],
             },
           })
         }
