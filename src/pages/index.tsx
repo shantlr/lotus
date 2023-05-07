@@ -1,20 +1,30 @@
-import Head from 'next/head';
-import { SideBar } from '@/components/sideBar';
+import { Button } from '@/components/base/button';
+import { LayoutWithTopBar } from '@/layout/withTopBar';
+import { signIn, useSession } from 'next-auth/react';
 
 export default function HomePage() {
+  const { status } = useSession();
+
   return (
-    <>
-      <Head>
-        <title>Lotus</title>
-        <meta name="description" content="Lotus" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-      <main className="w-full h-full">
-        <>
-          <SideBar />
-        </>
-      </main>
-    </>
+    <LayoutWithTopBar
+      topBar={
+        <div className="h-full w-full flex items-center justify-end px-4">
+          {status === 'authenticated' && <Button>Open App</Button>}
+          {status === 'unauthenticated' && (
+            <Button
+              onClick={() => {
+                signIn('google');
+              }}
+            >
+              Sign in
+            </Button>
+          )}
+        </div>
+      }
+    >
+      <div className="w-full h-[200px] flex justify-center items-center">
+        Welcome to Lotus
+      </div>
+    </LayoutWithTopBar>
   );
 }

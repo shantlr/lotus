@@ -1,14 +1,34 @@
-import { signIn, useSession } from 'next-auth/react';
-import { ReactElement } from 'react';
+import { Spinner } from '@/components/base/spinner';
+import { LayoutBase } from '@/layout/base';
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/router';
+import { ReactElement, useEffect } from 'react';
 
 export const Authenticated = ({ children }: { children?: ReactElement }) => {
-  const { data: session } = useSession();
+  const { status, data: session } = useSession();
+  const router = useRouter();
 
-  if (!session) {
+  useEffect(() => {
+    if (status === 'loading') {
+      return;
+    }
+    if (!session) {
+      router.replace({
+        pathname: `/`,
+        query: {
+          si_r: router.route,
+        },
+      });
+    }
+  }, [router, session, status]);
+
+  if (!session || !children) {
     return (
-      <div>
-        <button onClick={() => signIn('google')}>Sign in</button>
-      </div>
+      <LayoutBase>
+        <div className="w-full h-full flex justify-center items-center">
+          <Spinner />
+        </div>
+      </LayoutBase>
     );
   }
 
