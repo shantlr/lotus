@@ -58,9 +58,8 @@ export const Button = forwardRef(
       <button
         ref={ref}
         className={classNames(
-          `transition disabled:cursor-not-allowed ${
-            STYLE[t || 'default']
-          } flex items-center justify-center`,
+          `transition disabled:cursor-not-allowed flex items-center justify-center`,
+          (t && STYLE[t]) || STYLE.default,
           {
             'rounded px-2 py-1': !round,
             'rounded-full px-2 py-2': round,
@@ -76,3 +75,41 @@ export const Button = forwardRef(
   }
 );
 Button.displayName = 'Button';
+
+export const ButtonLink = forwardRef(
+  (
+    {
+      className,
+      loading,
+      round,
+      t,
+      children,
+      ...props
+    }: {
+      t?: keyof typeof STYLE;
+      loading?: boolean;
+      round?: boolean;
+    } & ComponentProps<'a'>,
+    ref: ForwardedRef<HTMLAnchorElement>
+  ) => {
+    return (
+      <a
+        ref={ref}
+        className={classNames(
+          `transition disabled:cursor-not-allowed flex items-center justify-center`,
+          (t && STYLE[t]) || STYLE.default,
+          {
+            'rounded px-2 py-1': !round,
+            'rounded-full px-2 py-2': round,
+          },
+          className
+        )}
+        {...props}
+      >
+        {loading && <Spinner className="inline-block mr-2 text-sm" />}
+        {children}
+      </a>
+    );
+  }
+);
+ButtonLink.displayName = 'ButtonLink';

@@ -46,9 +46,12 @@ model User {
   email         String?   @unique
   emailVerified DateTime? @map("email_verified")
   image         String?
+
   accounts      Account[]
   sessions      Session[]
   tasks         Task[]
+  taskLabels    TaskLabel[]
+  taskLabelSettings UserTaskLabelSettings[]
 
   @@map("users")
 }
@@ -73,4 +76,30 @@ model Task {
   creator User @relation(fields: [creator_id], references: [id], onDelete: Cascade)
 
   created_at DateTime @default(now())
+}
+
+model TaskLabel {
+  id String @id @default(cuid())
+  name String
+
+  // If user can assign label manually to event
+  assignable Boolean
+
+  creator_id String
+  creator User @relation(fields: [creator_id], references: [id], onDelete: Cascade)
+  created_at DateTime @default(now())
+
+  userSettings UserTaskLabelSettings[]
+}
+model UserTaskLabelSettings {
+  // Hex color
+  color String
+
+  user_id String
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  task_label_id String
+  task_label TaskLabel @relation(fields: [task_label_id], references: [id], onDelete: Cascade)
+
+  @@unique([user_id, task_label_id])
 }

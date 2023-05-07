@@ -22,6 +22,24 @@ export const authOptions: AuthOptions = {
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
     }),
   ],
+  events: {
+    createUser: async ({ user }) => {
+      // Init calendar
+      await prisma.taskLabel.create({
+        data: {
+          name: 'Calendar',
+          assignable: true,
+          creator_id: user.id,
+          userSettings: {
+            create: {
+              color: '',
+              user_id: user.id,
+            },
+          },
+        },
+      });
+    },
+  },
   callbacks: {
     session: ({ session, user }) => {
       if (session?.user) {

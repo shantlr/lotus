@@ -11,7 +11,8 @@ import { resolvers as scalarResolvers } from 'graphql-scalars';
 import { authOptions } from '../auth/[...nextauth]';
 import { GraphqlContext } from './types';
 
-import { resolvers as tasks } from './tasks';
+import { resolvers as tasks } from './task';
+import { resolvers as taskLabels } from './taskLabel';
 import { pick } from 'lodash';
 
 export const config = {
@@ -28,7 +29,12 @@ const baseResolvers: Resolvers<GraphqlContext> = {
 };
 
 const schema = makeExecutableSchema({
-  resolvers: [baseResolvers, pick(scalarResolvers, 'DateTime'), tasks],
+  resolvers: [
+    baseResolvers,
+    pick(scalarResolvers, 'DateTime'),
+    tasks,
+    taskLabels,
+  ],
   typeDefs: typeDefs,
 });
 

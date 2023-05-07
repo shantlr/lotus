@@ -1,4 +1,4 @@
-import { Button } from '@/components/base/button';
+import { Button, ButtonLink } from '@/components/base/button';
 import { LayoutWithTopBar } from '@/layout/withTopBar';
 import { signIn, useSession } from 'next-auth/react';
 
@@ -9,7 +9,9 @@ export default function HomePage() {
     <LayoutWithTopBar
       topBar={
         <div className="h-full w-full flex items-center justify-end px-4">
-          {status === 'authenticated' && <Button>Open App</Button>}
+          {status === 'authenticated' && (
+            <ButtonLink href="/calendar">Open App</ButtonLink>
+          )}
           {status === 'unauthenticated' && (
             <Button
               onClick={() => {

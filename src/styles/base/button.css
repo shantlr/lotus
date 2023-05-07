@@ -33,6 +33,10 @@
   .button-ghost {
     @apply button-default bg-transparent;
   }
+  .button-white-ghost {
+    @apply hover:bg-default-400 active:bg-default-500 text-gray-800;
+  }
+
   .button-white-ghost-light {
     @apply button-light bg-transparent text-gray-800;
   }
