@@ -7,6 +7,8 @@ export const QUERY_TASKS = graphql(`
       title
       start
       end
+      color
+      secondaryColor
     }
   }
 `);

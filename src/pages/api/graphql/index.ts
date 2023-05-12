@@ -22,14 +22,8 @@ export const config = {
   },
 };
 
-const baseResolvers: Resolvers<GraphqlContext> = {
-  Query: {
-    greetings: () => 'Hello...',
-  },
-};
-
 const schema = makeExecutableSchema({
-  resolvers: [baseResolvers, pick(scalarResolvers, 'DateTime'), task, label],
+  resolvers: [pick(scalarResolvers, 'DateTime'), task, label],
   typeDefs: typeDefs,
 });
 

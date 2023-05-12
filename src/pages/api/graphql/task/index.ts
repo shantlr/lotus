@@ -4,6 +4,7 @@ import { Prisma } from '@prisma/client';
 import { GraphqlContext } from '../types';
 import { UnauthenticatedError, UnauthorizedError } from '../util';
 import { pickBy } from 'lodash';
+import { diff } from '@/lib/utils/diff';
 
 export const resolvers: Resolvers<GraphqlContext> = {
   Query: {
@@ -109,10 +110,10 @@ export const resolvers: Resolvers<GraphqlContext> = {
     },
     updateTask: async (
       root,
-      { input: { id, title, startDate, endDate } },
-      { currentSession }
+      { input: { id, title, startDate, endDate, labelIds } },
+      { currentSession: { user } }
     ) => {
-      if (!currentSession?.user) {
+      if (!user) {
         throw new UnauthenticatedError();
       }
       const task = await prisma.task.findFirst({
@@ -124,12 +125,55 @@ export const resolvers: Resolvers<GraphqlContext> = {
         throw new Error('INVALID_TASK');
       }
 
-      const res = await prisma.task.update({
-        where: { id },
-        data: pickBy({ title, start: startDate, end: endDate }),
-        select: { id: true, start: true, end: true, title: true },
+      // TODO: transaction
+      if (!title && !startDate && !endDate && !labelIds?.length) {
+        return task;
+      }
+
+      return prisma.$transaction(async (p) => {
+        //#region Labels
+        if (labelIds?.length) {
+          const existings = await p.userTaskLabel.findMany({
+            where: { task_id: task.id, user_id: user.id },
+          });
+          const { deleted, created } = diff(
+            existings.map((e) => e.label_id),
+            labelIds
+          );
+          if (deleted.length) {
+            await p.userTaskLabel.deleteMany({
+              where: {
+                label_id: {
+                  in: deleted,
+                },
+                task_id: task.id,
+                user_id: user.id,
+              },
+            });
+          }
+          if (created.length) {
+            await p.userTaskLabel.createMany({
+              data: created.map((c) => ({
+                task_id: task.id,
+                user_id: user.id,
+                label_id: c,
+              })),
+            });
+          }
+        }
+        //#endregion
+
+        const update = pickBy({ title, start: startDate, end: endDate });
+        if (Object.keys(update).length) {
+          const res = await prisma.task.update({
+            where: { id },
+            data: pickBy({ title, start: startDate, end: endDate }),
+            select: { id: true, start: true, end: true, title: true },
+          });
+          return res;
+        }
+        return task;
       });
-      return res;
     },
     deleteTask: async (root, { input: { id } }, { currentSession }) => {
       if (!currentSession?.user) {
@@ -166,6 +210,48 @@ export const resolvers: Resolvers<GraphqlContext> = {
           },
         },
       });
+    },
+    color: async (task, args, { currentSession }) => {
+      const settings = await prisma.userTaskLabel.findFirst({
+        where: {
+          task_id: task.id,
+          user_id: currentSession.user?.id,
+        },
+        include: {
+          label: {
+            include: {
+              userSettings: {
+                take: 1,
+                where: {
+                  user_id: currentSession.user?.id,
+                },
+              },
+            },
+          },
+        },
+      });
+      return settings?.label.userSettings[0].color;
+    },
+    secondaryColor: async (task, args, { currentSession }) => {
+      const settings = await prisma.userTaskLabel.findFirst({
+        where: {
+          task_id: task.id,
+          user_id: currentSession.user?.id,
+        },
+        include: {
+          label: {
+            include: {
+              userSettings: {
+                take: 1,
+                where: {
+                  user_id: currentSession.user?.id,
+                },
+              },
+            },
+          },
+        },
+      });
+      return settings?.label.userSettings[0].secondary_color;
     },
   },
 };

@@ -2,12 +2,14 @@ import { ActionItem } from '@/components/base/button';
 import { Checkbox } from '@/components/base/checkbox';
 import { IconButton } from '@/components/base/iconButton';
 import { Popper, PopperBody } from '@/components/base/popper';
+import { Slider } from '@/components/base/slider';
 import { graphql } from '@/gql/__generated/client';
 import { GetLabelsQuery } from '@/gql/__generated/client/graphql';
 import classNames from 'classnames';
 import { useEffect, useMemo, useState } from 'react';
 import { FaPlusCircle } from 'react-icons/fa';
 import { useQuery } from 'urql';
+import { CreateLabel } from './createLabel';
 
 export const TASK_LABELS_QUERY = graphql(`
   query GetLabels($input: GetLabelsInput) {
@@ -28,7 +30,7 @@ export const SelectLabels = ({
 
   className,
   showContainerClassName = '',
-  baseContainerClassName = 'h-full flex items-center px-2 border border-transparent border-dashed hover:border-gray-400 rounded cursor-pointer transition max-overflow',
+  baseContainerClassName = 'h-full flex items-center space-x-1 px-2 border border-transparent border-dashed hover:border-gray-400 hover:shadow rounded cursor-pointer transition max-overflow',
   assignable,
 
   labelClassName = 'border rounded px-2 text-xs bg-gray-800 select-none text-white',
@@ -65,6 +67,14 @@ export const SelectLabels = ({
     }
   }, [data?.labels, onDefault, value]);
 
+  const [state, setState] = useState<'list' | 'add'>('list');
+
+  useEffect(() => {
+    if (!show) {
+      setState('list');
+    }
+  }, [show]);
+
   return (
     <Popper
       show={show}
@@ -73,7 +83,7 @@ export const SelectLabels = ({
           {
             name: 'offset',
             options: {
-              offset: [0, 10],
+              offset: [0, 5],
             },
           },
         ],
@@ -81,36 +91,64 @@ export const SelectLabels = ({
       onClose={setShow}
       popper={
         <PopperBody className="bg-white p-2">
-          <div className="flex">
-            {data?.labels?.map((label) => (
-              <ActionItem
-                t="white-ghost"
-                className="flex items-center text-sm px-2 rounded transition"
-                key={label.id}
-                onClick={() => {
-                  if (!onChange) {
-                    return;
-                  }
+          <Slider width={240} value={state}>
+            <div className="flex" key="list">
+              <div className="grow space-y-2">
+                {data?.labels?.map((label) => (
+                  <ActionItem
+                    t="white-ghost"
+                    className={classNames(
+                      'flex text-white hover:opacity-100 border-2 grow items-center text-sm px-2 rounded transition',
+                      {
+                        'opacity-30': !value?.includes(label.id),
+                      }
+                    )}
+                    style={{
+                      background: label.color || undefined,
+                      borderColor: label.secondaryColor || undefined,
+                    }}
+                    key={label.id}
+                    onClick={() => {
+                      if (!onChange) {
+                        return;
+                      }
 
-                  if (!value?.includes(label.id)) {
-                    onChange([...(value || []), label.id]);
-                  } else {
-                    onChange(value.filter((v) => v !== label.id));
-                  }
-                }}
-              >
-                <Checkbox
-                  className="mr-2 pointer-events-none"
-                  checked={value?.includes(label.id) ?? false}
-                  onChange={() => {}}
+                      if (!value?.includes(label.id)) {
+                        onChange([...(value || []), label.id]);
+                      } else {
+                        onChange(value.filter((v) => v !== label.id));
+                      }
+                    }}
+                  >
+                    <Checkbox
+                      className="mr-2 pointer-events-none"
+                      checked={value?.includes(label.id) ?? false}
+                      onChange={() => {}}
+                    />
+                    <span className="select-none">{label.name}</span>
+                  </ActionItem>
+                ))}
+              </div>
+              <div className="h-[20px] ml-2 flex items-center justify-end ">
+                <IconButton
+                  icon={FaPlusCircle}
+                  onClick={() => {
+                    setState('add');
+                  }}
                 />
-                <span className="select-none">{label.name}</span>
-              </ActionItem>
-            ))}
-            <div className="h-[20px] ml-2 flex items-center justify-end float-right">
-              <IconButton icon={FaPlusCircle} />
+              </div>
             </div>
-          </div>
+            <CreateLabel
+              key="add"
+              onCancel={() => {
+                setState('list');
+              }}
+              onCreated={(label) => {
+                onChange?.([...(value || []), label.id]);
+                setState('list');
+              }}
+            />
+          </Slider>
         </PopperBody>
       }
     >

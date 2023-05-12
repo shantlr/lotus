@@ -24,6 +24,11 @@ const UPDATE_TASK_MUT = graphql(`
       title
       start
       end
+      labels {
+        id
+      }
+      color
+      secondaryColor
     }
   }
 `);
@@ -127,7 +132,6 @@ export const TaskDetails = ({
             )}
             onClick={() => {
               setShow(!show);
-              console.log('azeazea');
             }}
           >
             {formattedDate}
@@ -135,7 +139,21 @@ export const TaskDetails = ({
         )}
       </DateRangePicker>
 
-      <SelectLabels className="mt-2 h-[24px] w-full" value={labelIds} />
+      <SelectLabels
+        className="mt-2 h-[24px] w-full"
+        value={labelIds}
+        onChange={(nextLabelIds) => {
+          if (!nextLabelIds.length) {
+            return;
+          }
+          updateTask({
+            input: {
+              id: task.id,
+              labelIds: nextLabelIds,
+            },
+          });
+        }}
+      />
 
       <div className="px-2 pt-4">
         <Button

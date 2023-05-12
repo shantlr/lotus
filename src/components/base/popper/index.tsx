@@ -22,6 +22,11 @@ export const PopperBody = forwardRef<HTMLDivElement, ComponentProps<'div'>>(
         'z-50 shadow-lg shadow-gray-800/30 rounded',
         props.className
       )}
+      onClick={(e) => {
+        // else, parent popper may close because of nested popper
+        e.stopPropagation();
+        props.onClick?.(e);
+      }}
     />
   )
 );
@@ -38,7 +43,7 @@ export const Popper = ({
   popper: ReactElement;
   children: ReactElement;
   options?: Options;
-  onClose?: (v: boolean) => void;
+  onClose?: (v: false) => void;
 }) => {
   const [containerRef, setContainerRef] = useState<HTMLElement | null>(null);
   const [popperRef, setPopperRef] = useState<HTMLElement | null>(null);
@@ -75,20 +80,31 @@ export const Popper = ({
       return;
     }
 
-    const listener = (e: MouseEvent) => {
+    const clickListener = (e: MouseEvent) => {
       if (e.defaultPrevented) {
         return;
       }
-
       const target = e.target as HTMLElement;
       if (!containerRef?.contains(target) && !popperRef?.contains(target)) {
         onClose?.(false);
       }
     };
 
-    window.addEventListener('click', listener);
+    const keyListener = (e: KeyboardEvent) => {
+      if (e.defaultPrevented) {
+        return;
+      }
+      if (e.code === 'Escape') {
+        onClose?.(false);
+        e.preventDefault();
+      }
+    };
+
+    window.addEventListener('click', clickListener);
+    window.addEventListener('keyup', keyListener);
     return () => {
-      window.removeEventListener('click', listener);
+      window.removeEventListener('click', clickListener);
+      window.removeEventListener('keyup', keyListener);
     };
   }, [containerRef, onClose, popperRef, show]);
 

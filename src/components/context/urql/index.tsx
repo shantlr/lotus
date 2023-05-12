@@ -17,10 +17,16 @@ const client = createClient({
       },
       optimistic: {
         updateTask(args, cache, info) {
+          const up = pickBy(omit(args.input, ['id', 'labelIds']));
+          if (args.input.labelIds) {
+            up.labels = args.input.labelIds.map((id) => ({
+              id,
+            }));
+          }
           return {
             __typename: 'Task',
             id: args.input.id,
-            ...pickBy(omit(args.input, 'id')),
+            ...up,
           };
         },
       },
@@ -29,6 +35,13 @@ const client = createClient({
           createTask: (result, args, cache, info) => {
             cache.inspectFields('Query').forEach((q) => {
               if (q.fieldName === 'tasks') {
+                cache.invalidate('Query', q.fieldName, q.arguments);
+              }
+            });
+          },
+          createLabel: (result, args, cache, info) => {
+            cache.inspectFields('Query').forEach((q) => {
+              if (q.fieldName === 'labels') {
                 cache.invalidate('Query', q.fieldName, q.arguments);
               }
             });

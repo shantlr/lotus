@@ -1,5 +1,10 @@
 extend type Query {
   labels(input: GetLabelsInput): [Label!]!
+
+  labelColors: [LabelColors!]!
+}
+extend type Mutation {
+  createLabel(input: CreateLabelInput!): Label!
 }
 
 type Label {
@@ -10,6 +15,17 @@ type Label {
   secondaryColor: String
 }
 
+type LabelColors {
+  id: ID!
+  main: String!
+  outline: String!
+}
+
 input GetLabelsInput {
   assignable: Boolean
+}
+
+input CreateLabelInput {
+  name: String!
+  color: ID!
 }

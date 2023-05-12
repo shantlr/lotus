@@ -7,7 +7,7 @@ import { ComponentProps, useState } from 'react';
 
 const Base = classed(
   'div',
-  'overflow-hidden task-item bg-gray-500 cursor-pointer hover:bg-gray-400 transition drop-shadow'
+  'border-2 overflow-hidden task-item bg-gray-500 cursor-pointer hover:bg-gray-400 transition drop-shadow'
 );
 
 export const BaseTaskItem = ({
@@ -34,10 +34,10 @@ export const BaseTaskItem = ({
           <TaskDetails taskId={taskId} onClose={() => setShow(false)} />
         </div>
       }
+      onClose={setShow}
     >
       <Base
         onClick={(e) => {
-          e.preventDefault();
           setShow(!show);
         }}
         {...props}
@@ -56,8 +56,13 @@ export const CalendarTask = ({
   return (
     <BaseTaskItem
       taskId={task.id}
-      className={classNames('rounded', className)}
       {...props}
+      style={{
+        ...(props.style || null),
+        background: task.color || undefined,
+        borderColor: task.secondaryColor || undefined,
+      }}
+      className={classNames('rounded', className)}
     >
       {task.title}
     </BaseTaskItem>

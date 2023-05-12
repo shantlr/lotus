@@ -29,6 +29,7 @@ input UpdateTaskInput {
   title: String
   startDate: DateTime
   endDate: DateTime
+  labelIds: [ID!]
 }
 
 input DeleteTaskInput {
@@ -46,6 +47,9 @@ type Task {
   end: DateTime!
 
   labels: [Label!]!
+
+  color: String
+  secondaryColor: String
 }
 
 enum Order {
