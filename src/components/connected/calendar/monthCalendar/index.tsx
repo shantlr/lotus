@@ -1,4 +1,5 @@
 export const MonthCalendar = ({}: {
+  labelIds?: string[];
   createTaskSelectedStart?: Date | number;
   createTaskSelectedEnd?: Date | number;
 

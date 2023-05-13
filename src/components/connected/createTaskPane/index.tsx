@@ -86,7 +86,7 @@ export const CreateTaskPaneForm = ({
           <FaRegCalendarPlus />
         </div>
         <SelectLabels
-          baseContainerClassName="h-[32px] flex items-center input-default w-full flex px-2 overflow-x-auto space-x-1"
+          baseContainerClassName="flex items-center input-default w-full flex px-2 overflow-x-auto space-x-1"
           showContainerClassName="input-default-focus"
           labelClassName="text-xs my-1 px-2 bg-gray-400 rounded select-none border-2 text-white"
           value={labelIds}

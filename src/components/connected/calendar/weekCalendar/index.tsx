@@ -52,11 +52,13 @@ export const WeekCalendar = ({
   createTaskSelectedStart,
   createTaskSelectedEnd,
   onCreateTask,
+  labelIds,
 }: {
   selectedStart: Date;
   createTaskSelectedStart?: Date | number;
   createTaskSelectedEnd?: Date | number;
   onCreateTask?: OnCreateTask;
+  labelIds?: string[] | null;
 }) => {
   const selectedWeek = useMemo(() => {
     return mapWeekRange(dayjs(selectedStart));
@@ -77,6 +79,7 @@ export const WeekCalendar = ({
       input: {
         start: currenteDateRange.start,
         end: currenteDateRange.end,
+        labelIds,
       },
     },
   });

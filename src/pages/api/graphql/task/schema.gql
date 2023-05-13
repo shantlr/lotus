@@ -12,6 +12,7 @@ extend type Mutation {
 input GetTasksInput {
   start: DateTime
   end: DateTime
+  labelIds: [ID!]
 
   order: Order
   size: Int

@@ -7,6 +7,7 @@ import isoWeek from 'dayjs/plugin/isoWeek';
 import { FaCaretLeft, FaCaretRight, FaPlus } from 'react-icons/fa';
 import classNames from 'classnames';
 import { SelectDateRange } from './dateRange';
+import { SelectLabels } from '../../selectTaskLabels';
 
 dayjs.extend(isoWeek);
 
@@ -16,12 +17,17 @@ export const CalendarHeader = ({
   setSelectedStart,
   setType,
   onCreateTask,
+
+  labelIds,
+  onChangeLabelIds,
 }: {
   selectedStart: Date;
   setSelectedStart: (date: Date) => void;
   type: CalendarType;
   setType: (type: CalendarType) => void;
   onCreateTask?: OnCreateTask;
+  labelIds?: string[] | null;
+  onChangeLabelIds: (labelIds: string[] | null) => void;
 }) => {
   const formatted = useMemo(() => {
     if (type === 'day') {
@@ -194,6 +200,20 @@ export const CalendarHeader = ({
         >
           <FaPlus />
         </Button>
+
+        <SelectLabels
+          placeholder="All"
+          className="ml-8 min-w-[10em]"
+          size="sm"
+          value={labelIds}
+          onChange={(e) => {
+            if (!e.length) {
+              onChangeLabelIds?.(null);
+            } else {
+              onChangeLabelIds(e);
+            }
+          }}
+        />
       </div>
     </div>
   );

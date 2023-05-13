@@ -21,19 +21,22 @@ export const DayCalendar = ({
   createTaskSelectedStart,
   createTaskSelectedEnd,
   onCreateTask,
+  labelIds,
 }: {
   selectedStart: Date;
   createTaskSelectedStart?: Date | number;
   createTaskSelectedEnd?: Date | number;
   onSetSelectedStart?: Date;
   onCreateTask?: OnCreateTask;
+  labelIds?: string[] | null;
 }) => {
   const input = useMemo(
     () => ({
       start: dayjs(selectedStart).startOf('day').toDate(),
       end: dayjs(selectedStart).endOf('day').toDate(),
+      labelIds,
     }),
-    [selectedStart]
+    [labelIds, selectedStart]
   );
 
   const [{ data }] = useQuery({

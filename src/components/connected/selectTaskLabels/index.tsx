@@ -27,6 +27,7 @@ export const SelectLabels = ({
   value,
   onChange,
   onDefault,
+  placeholder = 'Select labels',
   loading,
   size = 'md',
 
@@ -37,8 +38,9 @@ export const SelectLabels = ({
 
   labelClassName = 'border rounded px-2 text-xs bg-gray-800 select-none text-white',
 }: {
-  value?: string[];
+  value?: string[] | null;
   size?: Size;
+  placeholder?: string;
   onChange?: (value: string[]) => void;
   onDefault?: (labels: GetLabelsQuery['labels']) => void;
   loading?: boolean;
@@ -174,7 +176,7 @@ export const SelectLabels = ({
           </div>
         ))}
         {!selected.length && (
-          <span className="text-xs2 text-gray-400">Select labels</span>
+          <span className="text-xs2 text-gray-400">{placeholder}</span>
         )}
       </div>
     </Popper>

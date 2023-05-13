@@ -38,6 +38,7 @@ export const Calendar = ({
 }) => {
   const [type, setType] = useState<CalendarType>('week');
   const [selectedStart, setSelectedStart] = useState<Date>(() => new Date());
+  const [labelIds, setLabelIds] = useState<string[] | null>(null);
 
   return (
     <div
@@ -52,6 +53,8 @@ export const Calendar = ({
         type={type}
         setType={setType}
         onCreateTask={onCreateTask}
+        labelIds={labelIds}
+        onChangeLabelIds={setLabelIds}
       />
 
       {type === 'day' && (
@@ -60,6 +63,7 @@ export const Calendar = ({
           createTaskSelectedStart={createTaskSelectedStart}
           createTaskSelectedEnd={createTaskSelectedEnd}
           onCreateTask={onCreateTask}
+          labelIds={labelIds}
         />
       )}
       {type === 'week' && (
@@ -68,6 +72,7 @@ export const Calendar = ({
           createTaskSelectedStart={createTaskSelectedStart}
           createTaskSelectedEnd={createTaskSelectedEnd}
           onCreateTask={onCreateTask}
+          labelIds={labelIds}
         />
       )}
       {type === 'month' && (
@@ -75,6 +80,7 @@ export const Calendar = ({
           createTaskSelectedStart={createTaskSelectedStart}
           createTaskSelectedEnd={createTaskSelectedEnd}
           onCreateTask={onCreateTask}
+          labelIds={labelIds}
         />
       )}
     </div>

@@ -24,13 +24,13 @@ export const resolvers: Resolvers<GraphqlContext> = {
 
       return task;
     },
-    tasks: async (root, { input }, context) => {
-      if (!context.currentSession?.user) {
+    tasks: async (root, { input }, { currentSession: { user } }) => {
+      if (!user) {
         return [];
       }
       const conds: Prisma.TaskWhereInput[] = [
         {
-          creator_id: context.currentSession.user.id,
+          creator_id: user.id,
         },
       ];
       if (input?.start) {
@@ -44,6 +44,18 @@ export const resolvers: Resolvers<GraphqlContext> = {
         conds.push({
           start: {
             lt: input.end,
+          },
+        });
+      }
+      if (input?.labelIds?.length) {
+        conds.push({
+          userLabels: {
+            some: {
+              user_id: user.id,
+              label_id: {
+                in: input.labelIds,
+              },
+            },
           },
         });
       }

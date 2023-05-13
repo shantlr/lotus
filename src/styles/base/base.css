@@ -4,6 +4,7 @@
 
 @layer components {
   .item-sm {
+    @apply text-sm;
     height: 24px;
   }
   .item-md {
