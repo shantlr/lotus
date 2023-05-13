@@ -18,3 +18,9 @@ const CORE = {
 };
 
 export const BASE_STYLES = merge(cloneDeep(CORE), {});
+
+export const SIZES = {
+  sm: 'item-sm',
+  md: 'item-md',
+};
+export type Size = keyof typeof SIZES;

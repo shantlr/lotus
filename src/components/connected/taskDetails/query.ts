@@ -15,3 +15,25 @@ export const QUERY_TASK_DETAIL = graphql(`
     }
   }
 `);
+
+export const DELETE_TASK_MUTATION = graphql(`
+  mutation DeleteTask($input: DeleteTaskInput!) {
+    deleteTask(input: $input)
+  }
+`);
+
+export const UPDATE_TASK_MUT = graphql(`
+  mutation UpdateTask($input: UpdateTaskInput!) {
+    updateTask(input: $input) {
+      id
+      title
+      start
+      end
+      labels {
+        id
+      }
+      color
+      secondaryColor
+    }
+  }
+`);

@@ -10,6 +10,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { FaPlusCircle } from 'react-icons/fa';
 import { useQuery } from 'urql';
 import { CreateLabel } from './createLabel';
+import { SIZES, Size } from '@/components/base/styles';
 
 export const TASK_LABELS_QUERY = graphql(`
   query GetLabels($input: GetLabelsInput) {
@@ -27,15 +28,17 @@ export const SelectLabels = ({
   onChange,
   onDefault,
   loading,
+  size = 'md',
 
   className,
   showContainerClassName = '',
-  baseContainerClassName = 'h-full flex items-center space-x-1 px-2 border border-transparent border-dashed hover:border-gray-400 hover:shadow rounded cursor-pointer transition max-overflow',
+  baseContainerClassName = 'input-default flex items-center space-x-1 px-2 border-transparent hover:shadow rounded cursor-pointer transition max-overflow',
   assignable,
 
   labelClassName = 'border rounded px-2 text-xs bg-gray-800 select-none text-white',
 }: {
   value?: string[];
+  size?: Size;
   onChange?: (value: string[]) => void;
   onDefault?: (labels: GetLabelsQuery['labels']) => void;
   loading?: boolean;
@@ -153,7 +156,7 @@ export const SelectLabels = ({
       }
     >
       <div
-        className={classNames(baseContainerClassName, className, {
+        className={classNames(baseContainerClassName, className, SIZES[size], {
           [showContainerClassName]: show,
         })}
         onClick={() => !loading && setShow(!show)}
@@ -171,7 +174,7 @@ export const SelectLabels = ({
           </div>
         ))}
         {!selected.length && (
-          <span className="text-xs text-gray-400">Select labels</span>
+          <span className="text-xs2 text-gray-400">Select labels</span>
         )}
       </div>
     </Popper>

@@ -2,36 +2,17 @@ import { useMemo } from 'react';
 import { Button } from '../../base/button';
 import { FaTimes, FaTrash } from 'react-icons/fa';
 import dayjs from 'dayjs';
-import { graphql } from '@/gql/__generated/client';
 import { useMutation, useQuery } from 'urql';
-import { QUERY_TASK_DETAIL } from './query';
+import {
+  DELETE_TASK_MUTATION,
+  QUERY_TASK_DETAIL,
+  UPDATE_TASK_MUT,
+} from './query';
 import { IconButton } from '../../base/iconButton';
 import { useOnBlurChange } from '../../base/hooks/useOnBlurChange';
 import { DateRangePicker } from '../../base/dateRangePicker';
 import classNames from 'classnames';
 import { SelectLabels } from '../selectTaskLabels';
-
-const DELETE_TASK_MUTATION = graphql(`
-  mutation DeleteTask($input: DeleteTaskInput!) {
-    deleteTask(input: $input)
-  }
-`);
-
-const UPDATE_TASK_MUT = graphql(`
-  mutation UpdateTask($input: UpdateTaskInput!) {
-    updateTask(input: $input) {
-      id
-      title
-      start
-      end
-      labels {
-        id
-      }
-      color
-      secondaryColor
-    }
-  }
-`);
 
 export const TaskDetails = ({
   taskId,
@@ -140,7 +121,8 @@ export const TaskDetails = ({
       </DateRangePicker>
 
       <SelectLabels
-        className="mt-2 h-[24px] w-full"
+        className="mt-2 w-full"
+        size="sm"
         value={labelIds}
         onChange={(nextLabelIds) => {
           if (!nextLabelIds.length) {

@@ -4,6 +4,7 @@
 
 @import './base/button.css';
 @import './base/input.css';
+@import './base/base.css';
 
 @layer utilities {
   .border-b-dashed {
