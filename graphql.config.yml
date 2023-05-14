@@ -1,2 +1,0 @@
-schema: 'src/pages/api/graphql/**/*.gql'
-# documents: 'src/**/*.graphql'

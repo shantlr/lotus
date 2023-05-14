@@ -1,3 +1,24 @@
 {
-  "extends": "next/core-web-vitals"
+  "extends": "next/core-web-vitals",
+  "overrides": [
+    {
+      "files": ["*.tsx", "*.ts"],
+      "processor": "@graphql-eslint/graphql",
+      "parserOptions": {
+        "schema": "src/gql/__generated/schema.graphql"
+      }
+    },
+    {
+      "files": ["*.graphql", "*.gql"],
+      "parser": "@graphql-eslint/eslint-plugin",
+      "plugins": ["@graphql-eslint"],
+      "rules": {
+        "@graphql-eslint/known-type-names": "error"
+      },
+      "parserOptions": {
+        "operations": ["src/**/*.ts", "src/**/*.tsx"],
+        "schema": "src/gql/__generated/schema.graphql"
+      }
+    }
+  ]
 }

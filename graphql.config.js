@@ -1,10 +1,15 @@
-import type { CodegenConfig } from '@graphql-codegen/cli';
-
-const config: CodegenConfig = {
+/**
+ * @type {import("@graphql-codegen/cli").CodegenConfig}
+ */
+const config = {
   overwrite: true,
+  watch: true,
   schema: ['src/gql/schema/**/*.graphql', 'src/pages/api/graphql/**/*.gql'],
   documents: ['src/**/*.tsx', 'src/**/*.ts'],
   generates: {
+    './src/gql/__generated/schema.graphql': {
+      plugins: ['schema-ast'],
+    },
     'src/gql/__generated/client/': {
       preset: 'client',
     },
@@ -30,5 +35,4 @@ const config: CodegenConfig = {
     },
   },
 };
-
-export default config;
+module.exports = config;
