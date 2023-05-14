@@ -7,10 +7,12 @@ import { graphql } from '@/gql/__generated/client';
 import { GetLabelsQuery } from '@/gql/__generated/client/graphql';
 import classNames from 'classnames';
 import { useEffect, useMemo, useState } from 'react';
-import { FaPlusCircle } from 'react-icons/fa';
+import { FaPen, FaPlusCircle } from 'react-icons/fa';
 import { useQuery } from 'urql';
 import { CreateLabel } from './createLabel';
 import { SIZES, Size } from '@/components/base/styles';
+import { Spinner } from '@/components/base/spinner';
+import { EditLabel } from './editLabel';
 
 export const TASK_LABELS_QUERY = graphql(`
   query GetLabels($input: GetLabelsInput) {
@@ -72,7 +74,8 @@ export const SelectLabels = ({
     }
   }, [data?.labels, onDefault, value]);
 
-  const [state, setState] = useState<'list' | 'add'>('list');
+  const [state, setState] = useState<'list' | 'add' | 'edit'>('list');
+  const [labelToEdit, setLabelToEdit] = useState<string>();
 
   useEffect(() => {
     if (!show) {
@@ -130,7 +133,15 @@ export const SelectLabels = ({
                       checked={value?.includes(label.id) ?? false}
                       onChange={() => {}}
                     />
-                    <span className="select-none">{label.name}</span>
+                    <span className="grow select-none">{label.name}</span>
+                    <IconButton
+                      icon={FaPen}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setLabelToEdit(label.id);
+                        setState('edit');
+                      }}
+                    />
                   </ActionItem>
                 ))}
               </div>
@@ -153,6 +164,19 @@ export const SelectLabels = ({
                 setState('list');
               }}
             />
+            {labelToEdit && (
+              <EditLabel
+                key="edit"
+                labelId={labelToEdit}
+                onCancel={() => {
+                  setState('list');
+                  setLabelToEdit(undefined);
+                }}
+                onDone={() => {
+                  setState('list');
+                }}
+              />
+            )}
           </Slider>
         </PopperBody>
       }
@@ -163,6 +187,7 @@ export const SelectLabels = ({
         })}
         onClick={() => !loading && setShow(!show)}
       >
+        {fetching && <Spinner />}
         {selected.map((label) => (
           <div
             style={{
@@ -176,7 +201,9 @@ export const SelectLabels = ({
           </div>
         ))}
         {!selected.length && (
-          <span className="text-xs2 text-gray-400">{placeholder}</span>
+          <span className="text-xs2 text-gray-400 select-none">
+            {placeholder}
+          </span>
         )}
       </div>
     </Popper>

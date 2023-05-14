@@ -1,10 +1,13 @@
 extend type Query {
   labels(input: GetLabelsInput): [Label!]!
+  label(id: ID!): Label
 
   labelColors: [LabelColors!]!
 }
 extend type Mutation {
   createLabel(input: CreateLabelInput!): Label!
+  updatLabel(input: UpdateLabelInput!): Label
+  deleteLabel(input: DeletLabelInput!): Boolean
 }
 
 type Label {
@@ -28,4 +31,15 @@ input GetLabelsInput {
 input CreateLabelInput {
   name: String!
   color: ID!
+}
+
+input UpdateLabelInput {
+  id: ID!
+
+  name: String
+  color: ID
+}
+
+input DeletLabelInput {
+  id: ID!
 }

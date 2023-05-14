@@ -18,6 +18,22 @@ export const resolvers: Resolvers<GraphqlContext> = {
         },
       });
     },
+    label: async (root, { id }, { currentSession: { user } }) => {
+      if (!user) {
+        return null;
+      }
+
+      return prisma.label.findFirst({
+        where: {
+          id,
+          userSettings: {
+            some: {
+              user_id: user.id,
+            },
+          },
+        },
+      });
+    },
     labelColors: () => {
       return map(LABEL_COLORS, (c, id) => ({
         id,
@@ -56,6 +72,78 @@ export const resolvers: Resolvers<GraphqlContext> = {
         },
       });
       return label;
+    },
+    updatLabel: async (
+      root,
+      { input: { id, ...update } },
+      { currentSession: { user } }
+    ) => {
+      if (!user) {
+        throw new UnauthenticatedError();
+      }
+
+      const label = await prisma.label.findFirst({ where: { id } });
+      if (!label) {
+        throw new Error('INVALID_LABEL');
+      }
+      if (label.creator_id !== user.id) {
+        throw new UnauthorizedError();
+      }
+
+      if (update.name && update.name !== label.name) {
+        await prisma.label.update({
+          where: { id },
+          data: { name: update.name },
+        });
+      }
+      if (update.color) {
+        if (!(update.color in LABEL_COLORS)) {
+          throw new Error('INVALID_COLOR');
+        }
+        await prisma.userLabelSettings.update({
+          where: {
+            user_id_task_label_id: {
+              user_id: user.id,
+              task_label_id: id,
+            },
+          },
+          data: {
+            color: LABEL_COLORS[update.color as keyof typeof LABEL_COLORS].bg,
+            secondary_color:
+              LABEL_COLORS[update.color as keyof typeof LABEL_COLORS].outline,
+          },
+        });
+      }
+
+      return await prisma.label.findFirst({ where: { id } });
+    },
+    deleteLabel: async (
+      root,
+      { input: { id } },
+      { currentSession: { user } }
+    ) => {
+      if (!user) {
+        throw new UnauthenticatedError();
+      }
+
+      const label = await prisma.label.findFirst({
+        where: {
+          id,
+        },
+      });
+      if (!label) {
+        throw new Error('INVALID_LABEL');
+      }
+      if (label?.creator_id !== user.id) {
+        throw new UnauthorizedError();
+      }
+
+      await prisma.label.delete({
+        where: {
+          id,
+        },
+      });
+      return true;
     },
   },
   Label: {

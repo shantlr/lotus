@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import { ReactElement, ReactNode, isValidElement, useMemo } from 'react';
+import { ReactElement, ReactNode, isValidElement } from 'react';
 
 export const Slider = ({
   width = 200,
@@ -12,9 +12,11 @@ export const Slider = ({
   children: ReactNode;
   value?: string;
 }) => {
-  const steps: ReactElement[] = Array.isArray(children) ? children : [children];
+  const steps: ReactElement[] = (
+    Array.isArray(children) ? children : [children]
+  ).filter((c) => isValidElement(c));
 
-  let activeIdx = steps.findIndex((s) => s.key === value);
+  let activeIdx = steps.findIndex((s) => s?.key === value);
   if (activeIdx === -1) {
     activeIdx = 0;
   }
