@@ -21,7 +21,6 @@ export const resolvers: Resolvers<GraphqlContext> = {
       if (task?.creator_id !== context.currentSession.user.id) {
         throw new UnauthorizedError();
       }
-
       return task;
     },
     tasks: async (root, { input }, { currentSession: { user } }) => {
@@ -180,7 +179,6 @@ export const resolvers: Resolvers<GraphqlContext> = {
           const res = await prisma.task.update({
             where: { id },
             data: pickBy({ title, start: startDate, end: endDate }),
-            select: { id: true, start: true, end: true, title: true },
           });
           return res;
         }
@@ -223,11 +221,11 @@ export const resolvers: Resolvers<GraphqlContext> = {
         },
       });
     },
-    color: async (task, args, { currentSession }) => {
+    color: async (task, args, { currentSession: { user } }) => {
       const settings = await prisma.userTaskLabel.findFirst({
         where: {
           task_id: task.id,
-          user_id: currentSession.user?.id,
+          user_id: user?.id,
         },
         include: {
           label: {
@@ -235,20 +233,23 @@ export const resolvers: Resolvers<GraphqlContext> = {
               userSettings: {
                 take: 1,
                 where: {
-                  user_id: currentSession.user?.id,
+                  user_id: user?.id,
                 },
               },
             },
           },
         },
       });
+      if (!settings) {
+        throw new Error('MISSING_LABEL_SETTINGS');
+      }
       return settings?.label.userSettings[0].color;
     },
-    secondaryColor: async (task, args, { currentSession }) => {
+    secondaryColor: async (task, args, { currentSession: { user } }) => {
       const settings = await prisma.userTaskLabel.findFirst({
         where: {
           task_id: task.id,
-          user_id: currentSession.user?.id,
+          user_id: user?.id,
         },
         include: {
           label: {
@@ -256,13 +257,16 @@ export const resolvers: Resolvers<GraphqlContext> = {
               userSettings: {
                 take: 1,
                 where: {
-                  user_id: currentSession.user?.id,
+                  user_id: user?.id,
                 },
               },
             },
           },
         },
       });
+      if (!settings) {
+        throw new Error('MISSING_LABEL_SETTINGS');
+      }
       return settings?.label.userSettings[0].secondary_color;
     },
   },

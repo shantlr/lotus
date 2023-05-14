@@ -30,6 +30,9 @@ const config = {
         scalars: {
           DateTime: 'Date',
         },
+        mappers: {
+          Task: '../../lib/prisma#TaskModel',
+        },
       },
       plugins: ['typescript', 'typescript-resolvers'],
     },
