@@ -7,10 +7,11 @@ export const UserMenu = () => {
     <div className="w-[160px]">
       <div className="mb-2">{session?.user?.name}</div>
       <ActionItem
-        // t="ghost"
         className="px-4 py rounded"
         onClick={() => {
-          signOut();
+          signOut({
+            callbackUrl: '/',
+          });
         }}
       >
         Logout

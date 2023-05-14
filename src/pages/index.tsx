@@ -15,7 +15,12 @@ export default function HomePage() {
           {status === 'unauthenticated' && (
             <Button
               onClick={() => {
-                signIn('google');
+                const u = new URLSearchParams(window.location.search);
+                signIn('google', {
+                  callbackUrl: u.get('si_r')?.startsWith('/')
+                    ? (u.get('si_r') as string)
+                    : '/calendar/week',
+                });
               }}
             >
               Sign in
