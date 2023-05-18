@@ -1,4 +1,4 @@
-import classNames from 'classnames';
+import clsx from 'clsx';
 import dayjs, { Dayjs } from 'dayjs';
 import { last, range } from 'lodash';
 import { ActionItem, Button } from '../button';
@@ -51,14 +51,14 @@ export const MonthYearPicker = ({
   });
 
   return (
-    <div className={classNames('flex flex-col overflow-hidden', className)}>
-      <div className={classNames('flex grow overflow-hidden')}>
+    <div className={clsx('flex flex-col overflow-hidden', className)}>
+      <div className={clsx('flex grow overflow-hidden')}>
         <div ref={monthRef} className="overflow-auto w-full grow">
           {range(0, 12).map((idx) => (
             <ActionItem
               t="white-ghost-light"
               active={idx === selectedMonth}
-              className={classNames('rounded px-2 text-sm select-none', {
+              className={clsx('rounded px-2 text-sm select-none', {
                 'text-highlight': idx === current.month,
               })}
               key={idx}
@@ -75,7 +75,7 @@ export const MonthYearPicker = ({
             <ActionItem
               t="white-ghost-light"
               active={y === selectedYear}
-              className={classNames('rounded text-sm px-2 select-none', {
+              className={clsx('rounded text-sm px-2 select-none', {
                 'text-highlight': y === current.year,
               })}
               key={y}

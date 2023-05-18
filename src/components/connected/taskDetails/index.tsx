@@ -11,7 +11,7 @@ import {
 import { IconButton } from '../../base/iconButton';
 import { useOnBlurChange } from '../../base/hooks/useOnBlurChange';
 import { DateRangePicker } from '../../base/dateRangePicker';
-import classNames from 'classnames';
+import clsx from 'clsx';
 import { SelectLabels } from '../selectTaskLabels';
 
 export const TaskDetails = ({
@@ -103,7 +103,7 @@ export const TaskDetails = ({
       >
         {({ className, show, setShow }) => (
           <div
-            className={classNames(
+            className={clsx(
               'px-2 text-sm text-slate-400 select-none transition rounded border-2 hover:border-highlight-light cursor-pointer',
               {
                 'border-transparent': !show,

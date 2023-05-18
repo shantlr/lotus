@@ -1,11 +1,9 @@
-import classNames from 'classnames';
+import clsx from 'clsx';
 import { ComponentProps, forwardRef } from 'react';
 
 export const BaseInput = forwardRef<HTMLInputElement, ComponentProps<'input'>>(
   ({ className, ...props }, ref) => {
-    return (
-      <input ref={ref} className={classNames('input', className)} {...props} />
-    );
+    return <input ref={ref} className={clsx('input', className)} {...props} />;
   }
 );
 BaseInput.displayName = 'BaseInput';
@@ -18,7 +16,7 @@ export const Input = forwardRef<
     <BaseInput
       // @ts-ignore
       ref={ref}
-      className={classNames(className, {
+      className={clsx(className, {
         'border-transparent px-0': t === 'ghost',
       })}
       {...props}

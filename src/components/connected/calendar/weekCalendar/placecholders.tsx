@@ -2,7 +2,7 @@ import dayjs, { Dayjs } from 'dayjs';
 import { useHourSlots } from '../useHourSlots';
 import { HOUR_SLOT_HEIGHT } from './constants';
 import { OnCreateTask } from '../types';
-import classNames from 'classnames';
+import clsx from 'clsx';
 import { SlotPlaceholder } from '../slot';
 import { ComponentProps } from 'react';
 
@@ -36,7 +36,7 @@ const DayHourSlots = ({
           data-slot-start={h.start.valueOf()}
           data-slot-end={h.end.valueOf()}
           {...slotProps}
-          className={classNames('hour-slot', {
+          className={clsx('hour-slot', {
             'border-r-2': idx === slots.length - 1,
             'border-b-dashed': idx < slots.length - 1,
             // 'border-b-highlight border-b-dashed':

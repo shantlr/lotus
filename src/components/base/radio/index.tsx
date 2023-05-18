@@ -1,6 +1,6 @@
 import { ReactNode, useMemo } from 'react';
 import { isEqual } from 'lodash';
-import classNames from 'classnames';
+import clsx from 'clsx';
 import Link from 'next/link';
 
 type Option<Value> = {
@@ -31,7 +31,7 @@ export function RadioGroup<Value>({
       {options.map((opt, index) => {
         const res = (
           <div
-            className={classNames(
+            className={clsx(
               'px-4 py-1 transition hover:bg-gray-500 cursor-pointer',
               {
                 'rounded-l-sm': index === 0,

@@ -1,4 +1,4 @@
-import classNames from 'classnames';
+import clsx from 'clsx';
 import { ComponentProps, createElement, forwardRef } from 'react';
 
 export function classed<T extends keyof JSX.IntrinsicElements>(
@@ -9,7 +9,7 @@ export function classed<T extends keyof JSX.IntrinsicElements>(
   return forwardRef((props: ComponentProps<T>, ref) => {
     return createElement(elemType, {
       ...props,
-      className: classNames(className, props.className),
+      className: clsx(className, props.className),
       ref,
     });
   });

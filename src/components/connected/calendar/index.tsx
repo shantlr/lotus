@@ -1,4 +1,4 @@
-import classNames from 'classnames';
+import clsx from 'clsx';
 import { DayCalendar } from './dayCalendar';
 import { MonthCalendar } from './monthCalendar';
 import { WeekCalendar } from './weekCalendar';
@@ -42,10 +42,7 @@ export const Calendar = ({
 
   return (
     <div
-      className={classNames(
-        'flex flex-col w-full h-full overflow-hidden',
-        className
-      )}
+      className={clsx('flex flex-col w-full h-full overflow-hidden', className)}
     >
       <CalendarHeader
         selectedStart={selectedStart}

@@ -1,4 +1,4 @@
-import classNames from 'classnames';
+import clsx from 'clsx';
 import { ReactElement, ReactNode, isValidElement } from 'react';
 
 export const Slider = ({
@@ -23,12 +23,12 @@ export const Slider = ({
 
   return (
     <div
-      className={classNames('h-full flex overflow-x-hidden', className)}
+      className={clsx('h-full flex overflow-x-hidden', className)}
       style={{ width }}
     >
       {steps.map((s, idx) => (
         <div
-          className={classNames('transition relative w-full shrink-0', {
+          className={clsx('transition relative w-full shrink-0', {
             'opacity-0': activeIdx !== idx,
           })}
           style={{ transform: `translate(-${100 * activeIdx}%, 0)` }}

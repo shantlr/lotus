@@ -1,4 +1,4 @@
-import classNames from 'classnames';
+import clsx from 'clsx';
 import {
   ComponentProps,
   ReactElement,
@@ -18,7 +18,7 @@ export const PopperBody = forwardRef<HTMLDivElement, ComponentProps<'div'>>(
     <div
       ref={ref}
       {...props}
-      className={classNames(
+      className={clsx(
         'z-50 shadow-lg shadow-gray-800/30 rounded',
         props.className
       )}

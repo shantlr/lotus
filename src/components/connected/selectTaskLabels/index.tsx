@@ -5,7 +5,7 @@ import { Popper, PopperBody } from '@/components/base/popper';
 import { Slider } from '@/components/base/slider';
 import { graphql } from '@/gql/__generated/client';
 import { GetLabelsQuery } from '@/gql/__generated/client/graphql';
-import classNames from 'classnames';
+import clsx from 'clsx';
 import { useEffect, useMemo, useState } from 'react';
 import { FaPen, FaPlusCircle } from 'react-icons/fa';
 import { useQuery } from 'urql';
@@ -105,7 +105,7 @@ export const SelectLabels = ({
                 {data?.labels?.map((label) => (
                   <ActionItem
                     t="white-ghost"
-                    className={classNames(
+                    className={clsx(
                       'flex text-white hover:opacity-100 border-2 grow items-center text-sm px-2 rounded transition',
                       {
                         'opacity-30': !value?.includes(label.id),
@@ -182,7 +182,7 @@ export const SelectLabels = ({
       }
     >
       <div
-        className={classNames(baseContainerClassName, className, SIZES[size], {
+        className={clsx(baseContainerClassName, className, SIZES[size], {
           [showContainerClassName]: show,
         })}
         onClick={() => !loading && setShow(!show)}

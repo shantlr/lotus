@@ -1,6 +1,6 @@
 import { ActionItem } from '@/components/base/button';
 import { ButtonPopper } from '@/components/base/buttonPopper';
-import classNames from 'classnames';
+import clsx from 'clsx';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
@@ -18,7 +18,7 @@ const MenuItem = ({
     <Link href={href}>
       <ActionItem
         t={router.pathname.startsWith(href) ? 'default' : 'ghost'}
-        className={classNames('px-4 py-2 rounded transition', className)}
+        className={clsx('px-4 py-2 rounded transition', className)}
         {...props}
       ></ActionItem>
     </Link>

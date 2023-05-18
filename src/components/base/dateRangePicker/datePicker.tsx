@@ -1,5 +1,5 @@
 import { ActionItem, Button } from '@/components/base/button';
-import classNames from 'classnames';
+import clsx from 'clsx';
 import dayjs, { Dayjs } from 'dayjs';
 import isoWeek from 'dayjs/plugin/isoWeek';
 import { range } from 'lodash';
@@ -53,7 +53,7 @@ const DayItem = ({
 } & ComponentProps<'div'>) => {
   return (
     <div
-      className={classNames(
+      className={clsx(
         'h-[28px] flex items-center justify-center text-sm select-none border',
         {
           'border-highlight': isStart || isEnd,

@@ -4,7 +4,7 @@ import { Popper, PopperBody } from '../popper';
 import { DatePicker } from './datePicker';
 import { HourPicker } from './hourPicker';
 import { Button } from '../button';
-import classNames from 'classnames';
+import clsx from 'clsx';
 
 const Picker = ({
   start: initialStart,
@@ -184,7 +184,7 @@ export const DateRangePicker = ({
     >
       {children && typeof children !== 'function' ? (
         <div
-          className={classNames(className, 'group w-full')}
+          className={clsx(className, 'group w-full')}
           onClick={() => setShow(!show)}
         >
           {children}
@@ -193,13 +193,13 @@ export const DateRangePicker = ({
         children({ className, show, setShow })
       ) : (
         <div
-          className={classNames('group w-full', className)}
+          className={clsx('group w-full', className)}
           onClick={() => {
             setShow(!show);
           }}
         >
           <div
-            className={classNames(
+            className={clsx(
               'text-xs input-default-idle group-hover:input-default-hover group-active:input-default-focus group-focus-within:input-default-focus px-4 select-none transition',
               {
                 'input-default-focus': show,
@@ -209,7 +209,7 @@ export const DateRangePicker = ({
             {dayjs(start).format('DD/MM/YYYY HH:mm')}
           </div>
           <div
-            className={classNames(
+            className={clsx(
               'mt-1 text-xs input-default-idle group-hover:input-default-hover group-active:input-default-focus group-focus-within:input-default-focus px-4 select-none transition',
               {
                 'input-default-focus': show,

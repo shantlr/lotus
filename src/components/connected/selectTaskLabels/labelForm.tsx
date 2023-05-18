@@ -2,7 +2,7 @@ import { Button } from '@/components/base/button';
 import { IconButton } from '@/components/base/iconButton';
 import { Input } from '@/components/base/input';
 import { graphql } from '@/gql/__generated/client';
-import classNames from 'classnames';
+import clsx from 'clsx';
 import { random } from 'lodash';
 import { useEffect, useState } from 'react';
 import { FaArrowLeft } from 'react-icons/fa';
@@ -41,11 +41,11 @@ const ColorPicker = ({
   }, [autoPick, data?.labelColors, onChange, value]);
 
   return (
-    <div className={classNames('flex space-x-1', className)}>
+    <div className={clsx('flex space-x-1', className)}>
       {data?.labelColors.map((c) => (
         <div
           key={c.id}
-          className={classNames(
+          className={clsx(
             'w-[15px] h-[15px] rounded cursor-pointer border-2 hover:opacity-100',
             {
               'opacity-30': c.id !== value,

@@ -1,5 +1,5 @@
 import { useObserveWidth } from '@/components/base/hooks';
-import classNames from 'classnames';
+import clsx from 'clsx';
 import dayjs, { Dayjs } from 'dayjs';
 import isoWeek from 'dayjs/plugin/isoWeek';
 import { first, last, range } from 'lodash';
@@ -128,16 +128,13 @@ export const WeekCalendar = ({
           />
           {selectedWeek.days.map((d, idx) => (
             <div
-              className={classNames(
-                'w-full flex-grow border-r-2 border-gray-700',
-                {
-                  'border-r-2': idx === selectedWeek.days.length - 1,
-                }
-              )}
+              className={clsx('w-full flex-grow border-r-2 border-gray-700', {
+                'border-r-2': idx === selectedWeek.days.length - 1,
+              })}
               key={d.key}
             >
               <div
-                className={classNames('text-sm text-center', {
+                className={clsx('text-sm text-center', {
                   'text-rose-300': d.key === dayjs().format(DATE_FORMAT),
                 })}
               >
@@ -149,7 +146,7 @@ export const WeekCalendar = ({
 
         {anchoredTasks.length > 0 && (
           <div
-            className={classNames('relative space-y-1', {
+            className={clsx('relative space-y-1', {
               'py-1': anchoredTasks.length > 0,
             })}
           >
@@ -193,7 +190,7 @@ export const WeekCalendar = ({
               {range(0, 24).map((h) => (
                 <div
                   style={{ height: HOUR_SLOT_HEIGHT }}
-                  className={classNames(
+                  className={clsx(
                     `text-center w-full hover:bg-gray-800 hour-block-${h} border-r-2 border-gray-700 text-sm`,
                     {
                       'text-highlight': new Date().getHours() === h,

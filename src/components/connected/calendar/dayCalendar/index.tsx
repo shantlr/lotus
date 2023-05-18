@@ -1,4 +1,4 @@
-import classNames from 'classnames';
+import clsx from 'clsx';
 import dayjs from 'dayjs';
 import { useLayoutEffect, useMemo, useState } from 'react';
 import { useQuery } from 'urql';
@@ -105,7 +105,7 @@ export const DayCalendar = ({
   return (
     <div className="flex flex-col overflow-hidden w-full h-full">
       <div
-        className={classNames('space-y-1', {
+        className={clsx('space-y-1', {
           'pb-2': fulldayTask.length > 0,
         })}
       >
@@ -127,7 +127,7 @@ export const DayCalendar = ({
             {/* Left hour header */}
             <div
               style={{ width: HEADER_HOUR_WIDTH }}
-              className={classNames(
+              className={clsx(
                 'text-center text-sm border-r-2 border-r-gray-500',
                 {
                   'text-rose-300': h === new Date().getHours(),
@@ -138,7 +138,7 @@ export const DayCalendar = ({
             {/* Slot placeholder */}
             <SlotPlaceholder
               selected={Boolean(s.selected)}
-              className={classNames('hour-slot ', {
+              className={clsx('hour-slot ', {
                 'border-t-2 border-t-gray-700 rounded-tr': h === 0,
                 'rounded-br': h === 23,
                 'border-b-dashed': h < slots.length - 1,
@@ -165,7 +165,7 @@ export const DayCalendar = ({
               <CalendarTask
                 key={task.id}
                 id={task.id}
-                className={classNames(
+                className={clsx(
                   'task-item whitespace-pre-line overflow-hidden break-all absolute px-4 py-1',
                   {
                     'border-dashed border-t-white border-t-[1px]':

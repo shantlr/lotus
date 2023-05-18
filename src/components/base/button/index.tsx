@@ -1,4 +1,4 @@
-import classNames from 'classnames';
+import clsx from 'clsx';
 import { ComponentProps, ForwardedRef, forwardRef } from 'react';
 import { Spinner } from '../spinner';
 
@@ -25,7 +25,7 @@ export const ActionItem = ({
 } & ComponentProps<'div'>) => {
   return (
     <div
-      className={classNames(
+      className={clsx(
         t && t in STYLE ? STYLE[t] : STYLE.default,
         active && 'active',
         disabled && 'disabled',
@@ -57,7 +57,7 @@ export const Button = forwardRef(
     return (
       <button
         ref={ref}
-        className={classNames(
+        className={clsx(
           `transition disabled:cursor-not-allowed flex items-center justify-center`,
           (t && STYLE[t]) || STYLE.default,
           {
@@ -95,7 +95,7 @@ export const ButtonLink = forwardRef(
     return (
       <a
         ref={ref}
-        className={classNames(
+        className={clsx(
           `transition disabled:cursor-not-allowed flex items-center justify-center`,
           (t && STYLE[t]) || STYLE.default,
           {

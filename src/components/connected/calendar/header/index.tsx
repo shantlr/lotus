@@ -5,7 +5,7 @@ import { CalendarType, OnCreateTask } from '../types';
 import dayjs from 'dayjs';
 import isoWeek from 'dayjs/plugin/isoWeek';
 import { FaCaretLeft, FaCaretRight, FaPlus } from 'react-icons/fa';
-import classNames from 'classnames';
+import clsx from 'clsx';
 import { SelectDateRange } from './dateRange';
 import { SelectLabels } from '../../selectTaskLabels';
 
@@ -91,7 +91,7 @@ export const CalendarHeader = ({
           <FaCaretLeft />
         </Button>
         <ButtonPopper
-          className={classNames(
+          className={clsx(
             'h-[22px] w-[140px] text-sm border-2 border-transparent select-none',
             {
               'text-highlight':

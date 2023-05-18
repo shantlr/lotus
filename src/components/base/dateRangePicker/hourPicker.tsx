@@ -1,4 +1,4 @@
-import classNames from 'classnames';
+import clsx from 'clsx';
 import dayjs, { Dayjs } from 'dayjs';
 import { padStart, range } from 'lodash';
 import { useMemo, useRef, useState } from 'react';
@@ -66,7 +66,7 @@ const SelectHour = ({
             t="white-ghost-light"
             active={s.hour === selected.hour && s.minutes === selected.minutes}
             disabled={s.disabled}
-            className={classNames({
+            className={clsx({
               'text-gray-400 cursor-default': s.disabled,
             })}
             onClick={(e) => {

@@ -1,4 +1,4 @@
-import classNames from 'classnames';
+import clsx from 'clsx';
 import { ComponentProps } from 'react';
 
 export const SlotPlaceholder = ({
@@ -8,7 +8,7 @@ export const SlotPlaceholder = ({
 }: { selected?: boolean } & ComponentProps<'div'>) => {
   return (
     <div
-      className={classNames(
+      className={clsx(
         'border-b-2 border-r-2 border-gray-700 w-full h-full hover:bg-gray-800 cursor-pointer transition',
         {
           'bg-gray-800': selected,
