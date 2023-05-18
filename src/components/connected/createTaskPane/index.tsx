@@ -1,5 +1,5 @@
 import { graphql } from '@/gql/__generated/client';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { FaRegCalendarPlus, FaRegClock, FaTimes } from 'react-icons/fa';
 import { useMutation } from 'urql';
 import { Button } from '../../base/button';
@@ -184,6 +184,20 @@ export const CreateTaskPopper = ({
   const [title, setTitle] = useState('');
   const [labelIds, setLabelIds] = useState<string[]>();
   const [{}, createTask] = useMutation(CREATE_TASK);
+
+  useEffect(() => {
+    const listener = (e: KeyboardEvent) => {
+      if (e.code === 'Escape') {
+        e.stopPropagation();
+        onClose?.();
+      }
+    };
+
+    window.addEventListener('keyup', listener);
+    return () => {
+      window.removeEventListener('keyup', listener);
+    };
+  }, [onClose]);
 
   return createPortal(
     <div
