@@ -154,16 +154,6 @@ export const SelectLabels = ({
                 />
               </div>
             </div>
-            <CreateLabel
-              key="add"
-              onCancel={() => {
-                setState('list');
-              }}
-              onCreated={(label) => {
-                onChange?.([...(value || []), label.id]);
-                setState('list');
-              }}
-            />
             {labelToEdit && (
               <EditLabel
                 key="edit"
@@ -177,6 +167,16 @@ export const SelectLabels = ({
                 }}
               />
             )}
+            <CreateLabel
+              key="add"
+              onCancel={() => {
+                setState('list');
+              }}
+              onCreated={(label) => {
+                onChange?.([...(value || []), label.id]);
+                setState('list');
+              }}
+            />
           </Slider>
         </PopperBody>
       }

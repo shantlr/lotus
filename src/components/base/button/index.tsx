@@ -1,6 +1,8 @@
 import clsx from 'clsx';
 import { ComponentProps, ForwardedRef, forwardRef } from 'react';
 import { Spinner } from '../spinner';
+import Link from 'next/link';
+import { Url } from 'next/dist/shared/lib/router/router';
 
 const STYLE = {
   highlight: 'button-highlight',
@@ -89,12 +91,13 @@ export const ButtonLink = forwardRef(
       t?: keyof typeof STYLE;
       loading?: boolean;
       round?: boolean;
-    } & ComponentProps<'a'>,
+      href: Url;
+    } & Omit<ComponentProps<'a'>, 'href'>,
     ref: ForwardedRef<HTMLAnchorElement>
   ) => {
     return (
-      <a
-        ref={ref}
+      <Link
+        ref={ref as any}
         className={clsx(
           `transition disabled:cursor-not-allowed flex items-center justify-center`,
           (t && STYLE[t]) || STYLE.default,
@@ -108,7 +111,7 @@ export const ButtonLink = forwardRef(
       >
         {loading && <Spinner className="inline-block mr-2 text-sm" />}
         {children}
-      </a>
+      </Link>
     );
   }
 );

@@ -1,9 +1,10 @@
 import NextAuth, { AuthOptions } from 'next-auth';
 import GoogleProvider from 'next-auth/providers/google';
+import AdProvider from 'next-auth/providers/azure-ad';
 import { PrismaAdapter } from '@next-auth/prisma-adapter';
 import { prisma } from '@/lib/prisma';
-import { LABEL_COLORS, getRandomLabelColor } from '@/lib/label';
-import { random } from 'lodash';
+import { getRandomLabelColor } from '@/lib/label';
+import { Provider } from 'next-auth/providers';
 
 declare module 'next-auth' {
   interface Session {
@@ -16,14 +17,33 @@ declare module 'next-auth' {
   }
 }
 
+const providers: Provider[] = [
+  GoogleProvider({
+    clientId: process.env.GOOGLE_CLIENT_ID,
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+  }),
+];
+
+if (process.env.AAD_ENABLED) {
+  if (process.env.AAD_CLIENT_ID && process.env.AAD_CLIENT_SECRET) {
+    providers.push(
+      AdProvider({
+        clientId: process.env.AAD_CLIENT_ID,
+        // NOTE: TENANT_ID should only be provided if user should be defined in tenant
+        tenantId: process.env.AAD_TENANT_ID,
+        clientSecret: process.env.AAD_CLIENT_SECRET,
+      })
+    );
+  } else {
+    console.warn(
+      `Azure Active Directory enabled but AAD_CLIENT_ID and/or AAD_CLIENT_SECRET not provided`
+    );
+  }
+}
+
 export const authOptions: AuthOptions = {
   adapter: PrismaAdapter(prisma),
-  providers: [
-    GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    }),
-  ],
+  providers,
   events: {
     createUser: async ({ user }) => {
       const color = getRandomLabelColor();

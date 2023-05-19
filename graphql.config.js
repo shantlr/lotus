@@ -32,6 +32,7 @@ const config = {
         },
         mappers: {
           Task: '../../lib/prisma#TaskModel',
+          Account: '../../lib/prisma#Account',
         },
       },
       plugins: ['typescript', 'typescript-resolvers'],

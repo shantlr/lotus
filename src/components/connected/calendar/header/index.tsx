@@ -64,6 +64,7 @@ export const CalendarHeader = ({
     <div className="flex py-2 border-b border-gray-800">
       <div className="w-[50px]"></div>
       <div className="flex items-center">
+        {/* prev date */}
         <Button
           className="h-[22px] mr-2"
           onClick={() => {
@@ -90,6 +91,8 @@ export const CalendarHeader = ({
         >
           <FaCaretLeft />
         </Button>
+
+        {/* date range */}
         <ButtonPopper
           className={clsx(
             'h-[22px] w-[140px] text-sm border-2 border-transparent select-none',
@@ -116,6 +119,8 @@ export const CalendarHeader = ({
         >
           {formatted}
         </ButtonPopper>
+
+        {/* next date */}
         <Button
           className="h-[22px] ml-2"
           onClick={() => {
@@ -137,6 +142,7 @@ export const CalendarHeader = ({
           <FaCaretRight />
         </Button>
 
+        {/* new event */}
         <Button
           t="highlight"
           round

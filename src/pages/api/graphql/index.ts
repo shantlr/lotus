@@ -13,6 +13,7 @@ import { GraphqlContext } from './types';
 
 import { resolvers as task } from './task';
 import { resolvers as label } from './label';
+import { resolvers as user } from './user';
 import { pick } from 'lodash';
 
 export const config = {
@@ -23,7 +24,7 @@ export const config = {
 };
 
 const schema = makeExecutableSchema({
-  resolvers: [pick(scalarResolvers, 'DateTime'), task, label],
+  resolvers: [pick(scalarResolvers, 'DateTime'), task, label, user],
   typeDefs: typeDefs,
 });
 
