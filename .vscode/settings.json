@@ -1,1 +1,9 @@
-{}
+{
+  "files.associations": {
+    "rush.json": "jsonc"
+  },
+  "eslint.workingDirectories": [
+    "./packages/lotus-app",
+    "./packages/lotus-prisma"
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "name": "lotus-prisma",
+  "version": "0.1.0",
+  "description": "",
+  "main": "build/main/index.js",
+  "scripts": {
+    "prepare": "prisma generate && tsc"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@prisma/client": "^4.14.1"
+  },
+  "devDependencies": {
+    "prisma": "^4.14.1",
+    "typescript": "5.0.4"
+  }
+}

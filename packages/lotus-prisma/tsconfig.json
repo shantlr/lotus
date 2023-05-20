@@ -1,0 +1,8 @@
+{
+  "compilerOptions": {
+    "target": "es5",
+    "skipLibCheck": true,
+    "outDir": "build/main",
+    "declaration": true
+  }
+}
