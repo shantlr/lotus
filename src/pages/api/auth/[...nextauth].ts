@@ -32,6 +32,11 @@ if (process.env.AAD_ENABLED) {
         // NOTE: TENANT_ID should only be provided if user should be defined in tenant
         tenantId: process.env.AAD_TENANT_ID,
         clientSecret: process.env.AAD_CLIENT_SECRET,
+        authorization: {
+          params: {
+            scope: 'openid,email,profile,Calendars.Read',
+          },
+        },
       })
     );
   } else {
