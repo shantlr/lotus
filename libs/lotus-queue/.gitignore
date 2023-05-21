@@ -1,0 +1,7 @@
+.rush/
+node_modules/
+build/
+
+.env
+.env*
+!.env.template

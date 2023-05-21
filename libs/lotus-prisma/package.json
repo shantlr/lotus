@@ -4,8 +4,13 @@
   "description": "",
   "main": "build/main/index.js",
   "scripts": {
-    "prepare": "prisma generate && tsc"
+    "prepare": "prisma generate --schema=./prisma/schema.prisma && tsc"
   },
+  "files": [
+    "build",
+    "src",
+    "prisma"
+  ],
   "keywords": [],
   "author": "",
   "license": "ISC",

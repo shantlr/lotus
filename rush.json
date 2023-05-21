@@ -334,12 +334,20 @@
   "projects": [
     {
       "packageName": "lotus-app",
-      "projectFolder": "packages/lotus-app"
+      "projectFolder": "services/lotus-app"
+    },
+    {
+      "packageName": "lotus-worker",
+      "projectFolder": "services/lotus-worker"
     },
     {
       "packageName": "lotus-prisma",
-      "projectFolder": "packages/lotus-prisma"
-    }
+      "projectFolder": "libs/lotus-prisma"
+    },
+    {
+      "packageName": "lotus-queue",
+      "projectFolder": "libs/lotus-queue"
+    },
     // {
     //   /**
     //    * The NPM package name of the project (must match package.json)

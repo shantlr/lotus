@@ -3,7 +3,9 @@
     "rush.json": "jsonc"
   },
   "eslint.workingDirectories": [
-    "./packages/lotus-app",
-    "./packages/lotus-prisma"
+    "./services/lotus-app",
+    "./services/lotus-worker",
+    "./libs/lotus-prisma",
+    "./libs/lotus-queue",
   ]
 }
