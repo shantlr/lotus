@@ -79,7 +79,13 @@ model Event {
   creator_id String
   creator User @relation(fields: [creator_id], references: [id], onDelete: Cascade)
 
+  // is event from external calendar
+  external_id String?
+  external_provider String?
+  external_provider_account_id String?
+
   created_at DateTime @default(now())
+  updated_at DateTime @default(now())
 
   userLabels UserEventLabel[]
 }
@@ -94,6 +100,10 @@ model Label {
   creator_id String
   creator User @relation(fields: [creator_id], references: [id], onDelete: Cascade)
   created_at DateTime @default(now())
+
+  external_id       String?
+  external_provider String?
+  external_provider_account_id String?
 
   userSettings UserLabelSettings[]
   userEventLabels UserEventLabel[]

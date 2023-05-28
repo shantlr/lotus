@@ -245,9 +245,12 @@ export const resolvers: Resolvers<GraphqlContext> = {
         },
       });
       if (!settings) {
+        console.warn(
+          `[gql.CalendarEvent.color] event '${event.id}' has no label`
+        );
         throw new Error('MISSING_LABEL_SETTINGS');
       }
-      return settings?.label.userSettings[0].color;
+      return settings.label.userSettings[0].color;
     },
     secondaryColor: async (event, args, { currentSession: { user } }) => {
       const settings = await prisma.userEventLabel.findFirst({
@@ -269,6 +272,9 @@ export const resolvers: Resolvers<GraphqlContext> = {
         },
       });
       if (!settings) {
+        console.warn(
+          `[gql.CalendarEvent.color] event '${event.id}' has no label`
+        );
         throw new Error('MISSING_LABEL_SETTINGS');
       }
       return settings?.label.userSettings[0].secondary_color;

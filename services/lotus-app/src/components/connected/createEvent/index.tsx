@@ -216,16 +216,17 @@ export const CreateCalendarEventPopper = ({
         onClose={onClose}
         labelIds={labelIds}
         onLabelsChange={setLabelIds}
-        onSubmit={(form) =>
-          createEvent({
+        onSubmit={async (form) => {
+          await createEvent({
             input: {
               title: form.title,
               startDate: form.start,
               endDate: form.end,
               labelIds: labelIds as string[],
             },
-          })
-        }
+          });
+          setTitle('');
+        }}
       />
     </div>,
     document.body

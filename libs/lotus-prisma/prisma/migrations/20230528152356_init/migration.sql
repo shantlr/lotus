@@ -20,7 +20,7 @@ CREATE TABLE "provider_account_id" (
 -- CreateTable
 CREATE TABLE "sessions" (
     "id" TEXT NOT NULL,
-    "sessionToken" TEXT NOT NULL,
+    "session_token" TEXT NOT NULL,
     "expires" TIMESTAMP(3) NOT NULL,
     "user_id" TEXT NOT NULL,
 
@@ -52,7 +52,11 @@ CREATE TABLE "Event" (
     "end" TIMESTAMP(3) NOT NULL,
     "title" TEXT NOT NULL,
     "creator_id" TEXT NOT NULL,
+    "external_id" TEXT,
+    "external_provider" TEXT,
+    "external_provider_account_id" TEXT,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "Event_pkey" PRIMARY KEY ("id")
 );
@@ -64,6 +68,9 @@ CREATE TABLE "Label" (
     "assignable" BOOLEAN NOT NULL,
     "creator_id" TEXT NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "external_id" TEXT,
+    "external_provider" TEXT,
+    "external_provider_account_id" TEXT,
 
     CONSTRAINT "Label_pkey" PRIMARY KEY ("id")
 );
@@ -87,7 +94,7 @@ CREATE TABLE "UserEventLabel" (
 CREATE UNIQUE INDEX "provider_account_id_provider_provider_account_id_key" ON "provider_account_id"("provider", "provider_account_id");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "sessions_sessionToken_key" ON "sessions"("sessionToken");
+CREATE UNIQUE INDEX "sessions_session_token_key" ON "sessions"("session_token");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "users_email_key" ON "users"("email");

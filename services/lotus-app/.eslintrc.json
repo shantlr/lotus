@@ -20,5 +20,10 @@
         "schema": "src/gql/__generated/schema.graphql"
       }
     }
-  ]
+  ],
+  "settings": {
+    "import/resolver": {
+      "typescript": {}
+    }
+  }
 }

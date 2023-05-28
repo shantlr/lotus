@@ -3,8 +3,8 @@ import GoogleProvider from 'next-auth/providers/google';
 import AdProvider from 'next-auth/providers/azure-ad';
 import { PrismaAdapter } from '@next-auth/prisma-adapter';
 import { prisma } from '@/lib/prisma';
-import { getRandomLabelColor } from '@/lib/label';
-import { Provider } from 'next-auth/providers';
+import { Provider } from 'next-auth/providers/index';
+import { getRandomLabelColor } from 'lotus-common/label';
 
 declare module 'next-auth' {
   interface Session {

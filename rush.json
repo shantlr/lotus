@@ -345,6 +345,10 @@
       "projectFolder": "libs/lotus-prisma"
     },
     {
+      "packageName": "lotus-common",
+      "projectFolder": "libs/lotus-common"
+    },
+    {
       "packageName": "lotus-queue",
       "projectFolder": "libs/lotus-queue"
     },

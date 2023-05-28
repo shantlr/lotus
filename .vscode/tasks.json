@@ -21,7 +21,15 @@
 			"label": "reset prisma db",
 			"problemMatcher": [],
 			"detail": ""
+		},
+		{
+			"type": "shell",
+			"command": "cd libs/lotus-common && rushx prepare",
+			"label": "build common",
+			"problemMatcher": [],
+			"detail": ""
 		}
+
 	],
 	"inputs": [{
 		"id": "name",

@@ -1,0 +1,37 @@
+{
+  "name": "lotus-common",
+  "version": "0.1.0",
+  "description": "",
+  "main": "build/main/index.js",
+  "types": "build/main/index.d.ts",
+  "exports": {
+    ".": "./build/main/index.js",
+    "./*": "./build/main/*/index.js"
+  },
+  "files": [
+    "build",
+    "src",
+    "README.md"
+  ],
+  "scripts": {
+    "prepare": "tsc"
+  },
+  "dependencies": {},
+  "peerDependencies": {
+    "lodash": "^4.17.21"
+  },
+  "devDependencies": {
+    "@types/lodash": "^4.14.195",
+    "lodash": "^4.17.21",
+    "typescript": "5.0.4",
+    "ts-node": "10.9.1",
+    "eslint": "8.41.0",
+    "eslint-plugin-import": "^2.27.5",
+    "prettier": "^2.8.8",
+    "@typescript-eslint/parser": "^5.59.6",
+    "@typescript-eslint/eslint-plugin": "^5.59.6"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

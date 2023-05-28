@@ -1,0 +1,5 @@
+build/
+.rush
+node_modules/
+.env
+.env.*

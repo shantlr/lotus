@@ -8,9 +8,11 @@
     "sourceMap": true,
     "outDir": "build/main",
     "declaration": true,
-    "moduleResolution": "node16",
-    "resolveJsonModule": true
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "jsx": "react",
+    "rootDir": "src"
   },
-  "include": ["src/**/*.ts", "test/**/*.ts", "env.d.ts"],
+  "include": ["src/**/*.ts"],
   "exclude": ["node_modules/"]
 }
