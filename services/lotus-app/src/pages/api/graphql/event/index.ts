@@ -3,8 +3,8 @@ import { prisma } from '@/lib/prisma';
 import { GraphqlContext } from '../types';
 import { UnauthenticatedError, UnauthorizedError } from '../util';
 import { pickBy } from 'lodash';
-import { diff } from '@/lib/utils/diff';
 import { Prisma } from 'lotus-prisma';
+import { diff } from 'lotus-common/utils';
 
 export const resolvers: Resolvers<GraphqlContext> = {
   Query: {
@@ -147,27 +147,27 @@ export const resolvers: Resolvers<GraphqlContext> = {
           const existings = await p.userEventLabel.findMany({
             where: { event_id: event.id, user_id: user.id },
           });
-          const { deleted, created } = diff(
+          const { missings, news } = diff(
             existings.map((e) => e.label_id),
             labelIds
           );
-          if (deleted.length) {
+          if (missings.length) {
             await p.userEventLabel.deleteMany({
               where: {
                 label_id: {
-                  in: deleted,
+                  in: missings,
                 },
                 event_id: event.id,
                 user_id: user.id,
               },
             });
           }
-          if (created.length) {
+          if (news.length) {
             await p.userEventLabel.createMany({
-              data: created.map((c) => ({
+              data: news.map((labelId) => ({
                 event_id: event.id,
                 user_id: user.id,
-                label_id: c,
+                label_id: labelId,
               })),
             });
           }
