@@ -1,4 +1,4 @@
-import { Queue, Worker } from 'bullmq';
+import { Worker } from 'bullmq';
 import { QUEUE_NAME, QueueJob } from 'lotus-queue';
 import { syncExternalCalendar } from './handlers/syncExternalCalendar';
 
@@ -33,16 +33,4 @@ worker.on('error', (err) => {
 });
 worker.on('completed', (job) => {
   console.log(`[job-completed] id='${job.id}' name='${job.name}'`);
-});
-
-const queue = new Queue<QueueJob>(QUEUE_NAME, {
-  connection: {
-    host: process.env.REDIS_HOST,
-    port: Number(process.env.REDIS_PORT),
-  },
-});
-
-void queue.add('sync', {
-  type: 'sync-external-calendar',
-  account_id: 'cli7tf630000h2szdnrbbatjf',
 });
