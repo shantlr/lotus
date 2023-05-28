@@ -46,10 +46,41 @@ if (process.env.AAD_ENABLED) {
   }
 }
 
+const adapter = PrismaAdapter(prisma);
 export const authOptions: AuthOptions = {
-  adapter: PrismaAdapter(prisma),
+  adapter,
   providers,
   events: {
+    async signIn({ user, account, profile }) {
+      // Update access token
+      if (account) {
+        try {
+          const userFromDatabase = await adapter.getUser(user.id);
+          if (userFromDatabase) {
+            await prisma.account.update({
+              where: {
+                provider_providerAccountId: {
+                  provider: account.provider,
+                  providerAccountId: account.providerAccountId,
+                },
+              },
+              data: {
+                access_token: account.access_token,
+                expires_at: account.expires_at,
+                id_token: account.id_token,
+                refresh_token: account.refresh_token,
+                session_state: account.session_state,
+                scope: account.scope,
+              },
+            });
+          }
+        } catch (err) {
+          if (err instanceof Error) {
+            console.error(err.message);
+          }
+        }
+      }
+    },
     createUser: async ({ user }) => {
       const color = getRandomLabelColor();
       // Init calendar
