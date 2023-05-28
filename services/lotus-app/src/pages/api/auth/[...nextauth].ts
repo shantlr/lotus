@@ -5,6 +5,7 @@ import { PrismaAdapter } from '@next-auth/prisma-adapter';
 import { prisma } from '@/lib/prisma';
 import { Provider } from 'next-auth/providers/index';
 import { getRandomLabelColor } from 'lotus-common/label';
+import { createSyncExternalCalendarJob } from '@/lib/queue';
 
 declare module 'next-auth' {
   interface Session {
@@ -74,6 +75,7 @@ export const authOptions: AuthOptions = {
               },
             });
           }
+          void createSyncExternalCalendarJob(account);
         } catch (err) {
           if (err instanceof Error) {
             console.error(err.message);
