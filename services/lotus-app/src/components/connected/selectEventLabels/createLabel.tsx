@@ -3,7 +3,7 @@ import { CreateLabelMutation } from '@/gql/__generated/client/graphql';
 import { useMutation } from 'urql';
 import { LabelForm, useLabelForm } from './labelForm';
 
-const CREATE_LABEL = graphql(`
+const CREATE_LABEL_MUTATION = graphql(`
   mutation CreateLabel($input: CreateLabelInput!) {
     createLabel(input: $input) {
       id
@@ -23,7 +23,7 @@ export const CreateLabel = ({
 }) => {
   const form = useLabelForm();
 
-  const [{ fetching }, createLabel] = useMutation(CREATE_LABEL);
+  const [{ fetching }, createLabel] = useMutation(CREATE_LABEL_MUTATION);
 
   return (
     <LabelForm

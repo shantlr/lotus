@@ -1,20 +1,20 @@
 import { useMemo } from 'react';
-import { Task } from '../useTasksPosition';
+import { Event } from '../useEventsPosition';
 import dayjs from 'dayjs';
 
-export const useAnchoredTasks = ({
-  tasks,
+export const useAnchoredEvents = ({
+  events,
   daySlotWidth,
   currentRangeEnd,
   currentRangeStart,
 }: {
-  tasks: Task[];
+  events: Event[];
   daySlotWidth?: number;
   currentRangeStart: Date;
   currentRangeEnd: Date;
 }) => {
   return useMemo(() => {
-    return tasks.map((t) => {
+    return events.map((t) => {
       const overflowBefore =
         new Date(t.start).valueOf() < currentRangeStart.valueOf();
       const overflowAfter =
@@ -23,10 +23,10 @@ export const useAnchoredTasks = ({
       const end = overflowAfter ? dayjs(currentRangeEnd) : dayjs(t.end);
 
       return {
-        task: t,
+        event: t,
         left: dayjs(start).diff(currentRangeStart, 'day') * (daySlotWidth || 0),
         width: end.diff(start, 'day') * (daySlotWidth || 0),
       };
     });
-  }, [currentRangeEnd, currentRangeStart, daySlotWidth, tasks]);
+  }, [currentRangeEnd, currentRangeStart, daySlotWidth, events]);
 };

@@ -102,9 +102,9 @@ export const resolvers: Resolvers<GraphqlContext> = {
         }
         await prisma.userLabelSettings.update({
           where: {
-            user_id_task_label_id: {
+            user_id_event_label_id: {
               user_id: user.id,
-              task_label_id: id,
+              event_label_id: id,
             },
           },
           data: {
@@ -151,7 +151,7 @@ export const resolvers: Resolvers<GraphqlContext> = {
       const settings = await prisma.userLabelSettings.findFirst({
         where: {
           user_id: currentSession.user?.id,
-          task_label_id: label.id,
+          event_label_id: label.id,
         },
       });
       return settings?.color || null;
@@ -160,7 +160,7 @@ export const resolvers: Resolvers<GraphqlContext> = {
       const settings = await prisma.userLabelSettings.findFirst({
         where: {
           user_id: currentSession.user?.id,
-          task_label_id: label.id,
+          event_label_id: label.id,
         },
       });
       return settings?.secondary_color || null;

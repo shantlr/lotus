@@ -1,0 +1,59 @@
+extend type Query {
+  calendarEvents(input: GetCalendarEventsInput): [CalendarEvent!]!
+  calendarEvent(id: ID!): CalendarEvent
+}
+
+extend type Mutation {
+  createCalendarEvent(input: CreateCalendarEventInput!): CalendarEventCreated!
+  updateCalendarEvent(input: UpdateCalendarEventInput!): CalendarEvent!
+  deleteCalendarEvent(input: DeleteCalendarEventInput!): Boolean
+}
+
+input GetCalendarEventsInput {
+  start: DateTime
+  end: DateTime
+  labelIds: [ID!]
+
+  order: Order
+  size: Int
+}
+
+input CreateCalendarEventInput {
+  title: String!
+  labelIds: [String!]!
+  startDate: DateTime!
+  endDate: DateTime!
+}
+
+input UpdateCalendarEventInput {
+  id: ID!
+  title: String
+  startDate: DateTime
+  endDate: DateTime
+  labelIds: [ID!]
+}
+
+input DeleteCalendarEventInput {
+  id: ID!
+}
+
+type CalendarEventCreated {
+  event: CalendarEvent!
+}
+
+type CalendarEvent {
+  id: ID!
+  title: String!
+  start: DateTime!
+  end: DateTime!
+
+  labels: [Label!]!
+
+  color: String
+  secondaryColor: String
+}
+
+enum Order {
+  ASC
+  DESC
+}

@@ -7,12 +7,12 @@ import { Input } from '../../base/input';
 import { usePopper } from 'react-popper';
 import { createPortal } from 'react-dom';
 import { DateRangePicker } from '../../base/dateRangePicker';
-import { SelectLabels } from '../selectTaskLabels';
+import { SelectLabels } from '../selectEventLabels';
 
-const CREATE_TASK = graphql(`
-  mutation CreateTask($input: CreateTaskInput!) {
-    createTask(input: $input) {
-      task {
+const CREATE_CAL_EVENT = graphql(`
+  mutation CreateCalendarEvent($input: CreateCalendarEventInput!) {
+    createCalendarEvent(input: $input) {
+      event {
         id
         title
       }
@@ -20,7 +20,7 @@ const CREATE_TASK = graphql(`
   }
 `);
 
-export const CreateTaskPaneForm = ({
+const CreateCalendarEventPaneForm = ({
   start,
   title,
   end,
@@ -54,7 +54,7 @@ export const CreateTaskPaneForm = ({
           onChange={(e) =>
             onTitleChange?.((e.target as HTMLInputElement).value)
           }
-          placeholder="Task title"
+          placeholder="Event title"
         />
         <Button
           round
@@ -115,14 +115,14 @@ export const CreateTaskPaneForm = ({
             }
           }}
         >
-          Create task
+          Create event
         </Button>
       </div>
     </div>
   );
 };
 
-export const CreateTaskPopper = ({
+export const CreateCalendarEventPopper = ({
   start,
   end,
   onStartChange,
@@ -183,7 +183,7 @@ export const CreateTaskPopper = ({
 
   const [title, setTitle] = useState('');
   const [labelIds, setLabelIds] = useState<string[]>();
-  const [{}, createTask] = useMutation(CREATE_TASK);
+  const [{}, createEvent] = useMutation(CREATE_CAL_EVENT);
 
   useEffect(() => {
     const listener = (e: KeyboardEvent) => {
@@ -206,7 +206,7 @@ export const CreateTaskPopper = ({
       {...popper.attributes.popper}
       style={popper.styles.popper}
     >
-      <CreateTaskPaneForm
+      <CreateCalendarEventPaneForm
         title={title}
         onTitleChange={setTitle}
         onStartChange={onStartChange}
@@ -217,7 +217,7 @@ export const CreateTaskPopper = ({
         labelIds={labelIds}
         onLabelsChange={setLabelIds}
         onSubmit={(form) =>
-          createTask({
+          createEvent({
             input: {
               title: form.title,
               startDate: form.start,

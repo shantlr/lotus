@@ -1,33 +1,30 @@
-import { CalendarTasksQuery } from '@/gql/__generated/client/graphql';
+import { GetCalendarEventsQuery } from '@/gql/__generated/client/graphql';
 import dayjs, { Dayjs } from 'dayjs';
 import { flatMap, groupBy, map, partition } from 'lodash';
 import { useMemo } from 'react';
 
-export type Task = CalendarTasksQuery['tasks'][number];
+export type Event = GetCalendarEventsQuery['calendarEvents'][number];
 export type SlotSpacing = {
-  collidingTasksXDivider?: number;
+  collidingEventsXDivider?: number;
   hourSlotPaddingBottom?: number;
   hourSlotPaddingRight?: number;
 };
 
 /**
- * Split tasks that are multi days from single day tasks
+ * Split events that are multi days from single day events
  */
-export const usePartitionTasks = <T extends { start?: Date; end?: Date }>({
-  tasks,
+export const usePartitionEvents = <T extends { start?: Date; end?: Date }>({
+  events,
   currentRangeStart,
   currentRangeEnd,
 }: {
-  tasks?: T[];
-  currentRangeStart: Date;
-  currentRangeEnd: Date;
+  events?: T[];
+  currentRangeStart: Date | Dayjs;
+  currentRangeEnd: Date | Dayjs;
 }) => {
   return useMemo(() => {
-    return partition(tasks, (t) => {
-      if (
-        dayjs(t.start).format('DD/MM/YYYY') ===
-        dayjs(t.end).format('DD/MM/YYYY')
-      ) {
+    return partition(events, (t) => {
+      if (dayjs(t.start).isSame(dayjs(t.end), 'day')) {
         return true;
       }
 
@@ -40,61 +37,61 @@ export const usePartitionTasks = <T extends { start?: Date; end?: Date }>({
           ? dayjs(currentRangeEnd)
           : dayjs(t.end);
 
-      return start.format('DD/MM/YYYY') === end.format('DD/MM/YYYY');
+      return start.isSame(end, 'day');
     });
-  }, [currentRangeEnd, currentRangeStart, tasks]);
+  }, [currentRangeEnd, currentRangeStart, events]);
 };
 
-export const usePositionedTasks = ({
-  tasks,
+export const usePositionedEvents = ({
+  events,
   hourSlotHeight,
   hourSlotWidth,
   currentRangeStart,
   currentRangeEnd,
-  taskMinHeight,
+  eventMinHeight,
   spacing,
 }: {
   currentRangeEnd: Date | Dayjs;
   currentRangeStart: Date | Dayjs;
-  tasks: Task[];
+  events: Event[];
   hourSlotHeight: number;
   hourSlotWidth?: number;
-  taskMinHeight: number;
+  eventMinHeight: number;
   spacing: SlotSpacing;
 }) => {
-  // map tasks with meta and group them by days
-  const tasksByDay = useMemo(() => {
+  // map events with meta and group them by days
+  const eventsByDay = useMemo(() => {
     const rangeStart = dayjs(currentRangeStart);
     const rangeEnd = dayjs(currentRangeEnd);
-    const mappedTasks = tasks.map((t) => {
-      const taskStart = dayjs(t.start);
-      const taskEnd = dayjs(t.end);
+    const mappedEvents = events.map((e) => {
+      const eventStart = dayjs(e.start);
+      const eventEnd = dayjs(e.end);
 
-      const overflowAfter = taskStart.valueOf() < rangeStart.valueOf();
-      const overflowBefore = taskEnd.valueOf() > rangeEnd.valueOf();
+      const overflowAfter = eventStart.valueOf() < rangeStart.valueOf();
+      const overflowBefore = eventEnd.valueOf() > rangeEnd.valueOf();
 
-      const start = overflowBefore ? rangeStart : taskStart;
-      const end = overflowAfter ? rangeEnd : taskEnd;
+      const start = overflowBefore ? rangeStart : eventStart;
+      const end = overflowAfter ? rangeEnd : eventEnd;
 
       return {
-        task: t,
+        event: e,
         start,
         end,
-        leftOffset: taskStart.diff(rangeStart, 'day'),
+        leftOffset: eventStart.diff(rangeStart, 'day'),
         overflowAfter,
         overflowBefore,
 
         // Note: top and height are deterministic
         top: (start.hour() + start.minute() / 60) * hourSlotHeight,
         height: Math.max(
-          taskMinHeight,
+          eventMinHeight,
           (end.diff(start, 'minute') / 60) * hourSlotHeight
         ),
 
         usedSlots: [] as {
           top: number;
           height: number;
-          tasks: any[];
+          events: any[];
           divider: number;
         }[],
 
@@ -102,13 +99,13 @@ export const usePositionedTasks = ({
       };
     });
 
-    return groupBy(mappedTasks, (t) => dayjs(t.start).format('DD/MM/YYYY'));
+    return groupBy(mappedEvents, (e) => dayjs(e.start).format('DD/MM/YYYY'));
   }, [
     currentRangeEnd,
     currentRangeStart,
     hourSlotHeight,
-    taskMinHeight,
-    tasks,
+    eventMinHeight,
+    events,
   ]);
 
   return useMemo(() => {
@@ -116,37 +113,37 @@ export const usePositionedTasks = ({
       return [];
     }
     // Adapt top and height for each day
-    return flatMap(tasksByDay, (dayTasks) => {
+    return flatMap(eventsByDay, (dayEvents) => {
       type Slot = {
         top: number;
         height: number;
-        tasks: typeof dayTasks;
+        events: typeof dayEvents;
         /**
-         * one task size = slotWidth / divider
+         * one event size = slotWidth / divider
          */
         divider: number;
       };
       const slots: Slot[] = [];
 
-      dayTasks.forEach((task) => {
-        pushTaskIntoSlots(slots, task);
+      dayEvents.forEach((event) => {
+        pushEventIntoSlots(slots, event);
       });
 
       // We have to compute divider multple times
-      dayTasks.forEach((d) => {
-        d.divider = Math.max(...d.usedSlots.map((s) => s.tasks.length));
+      dayEvents.forEach((d) => {
+        d.divider = Math.max(...d.usedSlots.map((s) => s.events.length));
       });
       slots.forEach((s) => {
-        s.divider = Math.max(...s.tasks.map((t) => t.divider));
+        s.divider = Math.max(...s.events.map((t) => t.divider));
       });
-      dayTasks.forEach((d) => {
+      dayEvents.forEach((d) => {
         d.divider = Math.max(...d.usedSlots.map((s) => s.divider));
       });
 
-      const taskMap: Record<
+      const eventMap: Record<
         string,
         {
-          task: Task;
+          event: Event;
           overflowBefore: boolean;
           overflowAfter: boolean;
           top: number;
@@ -167,27 +164,27 @@ export const usePositionedTasks = ({
             width: slotBaseWidth,
           },
         ];
-        const widthDivider = Math.max(...slot.tasks.map((t) => t.divider));
-        slot.tasks.forEach((t, i) => {
+        const widthDivider = Math.max(...slot.events.map((e) => e.divider));
+        slot.events.forEach((e, i) => {
           const {
-            task,
+            event,
             top,
             height,
             leftOffset,
             usedSlots,
             overflowAfter,
             overflowBefore,
-          } = t;
-          if (task.id in taskMap) {
-            claimSpaceLeft(spaceLeft, taskMap[task.id]);
+          } = e;
+          if (event.id in eventMap) {
+            claimSpaceLeft(spaceLeft, eventMap[event.id]);
             return;
           }
 
           const maxWidth = slotBaseWidth / widthDivider;
 
           const isLast = usedSlots.every((s) => {
-            const idx = s.tasks.indexOf(t);
-            return idx + 1 === s.tasks.length;
+            const idx = s.events.indexOf(e);
+            return idx + 1 === s.events.length;
           });
           const { left, width } = pickSpaceLeft(
             spaceLeft,
@@ -195,8 +192,8 @@ export const usePositionedTasks = ({
             !isLast
           );
 
-          taskMap[task.id] = {
-            task,
+          eventMap[event.id] = {
+            event,
             overflowAfter,
             overflowBefore,
             top,
@@ -208,30 +205,30 @@ export const usePositionedTasks = ({
         });
       });
 
-      return map(taskMap, (t) => ({
+      return map(eventMap, (t) => ({
         ...t,
         height: t.height - (spacing.hourSlotPaddingBottom || 0),
-        width: t.width - (spacing.collidingTasksXDivider || 0),
+        width: t.width - (spacing.collidingEventsXDivider || 0),
       }));
     });
   }, [
     hourSlotWidth,
-    spacing.collidingTasksXDivider,
+    spacing.collidingEventsXDivider,
     spacing.hourSlotPaddingBottom,
     spacing.hourSlotPaddingRight,
-    tasksByDay,
+    eventsByDay,
   ]);
 };
 
-export function pushTaskIntoSlots<
+export function pushEventIntoSlots<
   T extends {
     top: number;
     height: number;
-    usedSlots: { top: number; height: number; tasks: any[] }[];
+    usedSlots: { top: number; height: number; events: any[] }[];
   }
->(slots: { top: number; height: number; tasks: T[] }[], dayTask: T) {
-  let top = dayTask.top;
-  let end = dayTask.top + dayTask.height;
+>(slots: { top: number; height: number; events: T[] }[], dayEvent: T) {
+  let top = dayEvent.top;
+  let end = dayEvent.top + dayEvent.height;
 
   for (let i = 0; i < slots.length; i += 1) {
     if (top >= end) {
@@ -250,13 +247,13 @@ export function pushTaskIntoSlots<
             top,
             height: end - top,
           },
-          dayTask
+          dayEvent
         )
       );
       return;
     }
     if (top >= slot.top + slot.height) {
-      // task is after current slot
+      // event is after current slot
       continue;
     }
 
@@ -269,7 +266,7 @@ export function pushTaskIntoSlots<
             top,
             height: slot.top - top,
           },
-          dayTask
+          dayEvent
         )
       );
       top = slot.top;
@@ -282,7 +279,7 @@ export function pushTaskIntoSlots<
         createSlot({
           top: slot.top,
           height: top - slot.top,
-          tasks: slot.tasks,
+          events: slot.events,
         })
       );
       slot.height -= top - slot.top;
@@ -293,8 +290,8 @@ export function pushTaskIntoSlots<
     // same top
     if (end === slot.top + slot.height) {
       // same slot
-      slot.tasks = [...slot.tasks, dayTask];
-      dayTask.usedSlots.push(slot);
+      slot.events = [...slot.events, dayEvent];
+      dayEvent.usedSlots.push(slot);
       return;
     }
 
@@ -306,22 +303,22 @@ export function pushTaskIntoSlots<
           {
             top,
             height: end - top,
-            tasks: slot.tasks,
+            events: slot.events,
           },
-          dayTask
+          dayEvent
         )
       );
       slot.height -= end - slot.top;
       slot.top = end;
-      // => task fully merged
+      // => event fully merged
       return;
     }
 
     // end > slot end
     top = slot.top + slot.height;
-    slot.tasks = slot.tasks.concat(dayTask);
-    dayTask.usedSlots.push(slot);
-    // task not fully merged
+    slot.events = slot.events.concat(dayEvent);
+    dayEvent.usedSlots.push(slot);
+    // event not fully merged
   }
 
   if (top !== end) {
@@ -331,7 +328,7 @@ export function pushTaskIntoSlots<
           top,
           height: end - top,
         },
-        dayTask
+        dayEvent
       )
     );
   }
@@ -339,15 +336,15 @@ export function pushTaskIntoSlots<
 
 function createSlot<
   T extends { usedSlots: {}[] },
-  Slot extends { top: number; height: number; tasks?: T[] }
->(slot: Slot, task?: T) {
-  if (task) {
-    slot.tasks = slot?.tasks?.concat(task) ?? [task];
+  Slot extends { top: number; height: number; events?: T[] }
+>(slot: Slot, event?: T) {
+  if (event) {
+    slot.events = slot?.events?.concat(event) ?? [event];
   }
-  slot.tasks?.forEach((t) => {
+  slot.events?.forEach((t) => {
     t.usedSlots.push(slot);
   });
-  return slot as Omit<Slot, 'tasks'> & { tasks: T[] };
+  return slot as Omit<Slot, 'events'> & { events: T[] };
 }
 
 function pickSpaceLeft(

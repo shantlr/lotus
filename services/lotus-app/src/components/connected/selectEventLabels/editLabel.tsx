@@ -3,7 +3,7 @@ import { useMutation, useQuery } from 'urql';
 import { LabelForm, useLabelForm } from './labelForm';
 import { useMemo } from 'react';
 
-const GET_LABEL = graphql(`
+const GET_LABEL_QUERY = graphql(`
   query GetLabel($id: ID!) {
     label(id: $id) {
       id
@@ -19,7 +19,7 @@ const GET_LABEL = graphql(`
   }
 `);
 
-const UPDATE_LABEL = graphql(`
+const UPDATE_LABEL_MUTATION = graphql(`
   mutation UpdateLabel($input: UpdateLabelInput!) {
     updatLabel(input: $input) {
       id
@@ -40,7 +40,7 @@ export const EditLabel = ({
   onDone?: () => void;
 }) => {
   const [{ data }] = useQuery({
-    query: GET_LABEL,
+    query: GET_LABEL_QUERY,
     variables: {
       id: labelId,
     },
@@ -64,7 +64,7 @@ export const EditLabel = ({
 
   const form = useLabelForm(initialData);
 
-  const [{ fetching }, updateLabel] = useMutation(UPDATE_LABEL);
+  const [{ fetching }, updateLabel] = useMutation(UPDATE_LABEL_MUTATION);
 
   return (
     <LabelForm

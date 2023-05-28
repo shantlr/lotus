@@ -5,18 +5,18 @@ import isoWeek from 'dayjs/plugin/isoWeek';
 import { first, last, range } from 'lodash';
 import { useMemo, useState } from 'react';
 import { useQuery } from 'urql';
-import { QUERY_TASKS } from '../query';
-import { AnchoredTaskItem, CalendarTask } from '../taskItem';
-import { useAnchoredTasks } from './useAnchoredTasks';
+import { QUERY_CAL_EVENTS } from '../query';
+import { AnchoredEventItem, CalendarEvent } from '../eventItem';
+import { useAnchoredEvents } from './useAnchoredEvents';
 import {
   SlotSpacing,
-  usePartitionTasks,
-  usePositionedTasks,
-} from '../useTasksPosition';
+  usePartitionEvents,
+  usePositionedEvents,
+} from '../useEventsPosition';
 import { WeekCalendarPlaceholders } from './placecholders';
 import { HOUR_SLOT_HEADER_WIDTH, HOUR_SLOT_HEIGHT } from './constants';
-import { OnCreateTask } from '../types';
-import { useClickToCreateTask } from '../useClickToCreateTask';
+import { OnCreateEvent } from '../types';
+import { useClickToCreateEvent } from '../useClickToCreateEvent';
 
 dayjs.extend(isoWeek);
 
@@ -44,20 +44,20 @@ const mapWeekRange = (date: Dayjs) => {
 const SPACING: SlotSpacing = {
   hourSlotPaddingRight: 10,
   hourSlotPaddingBottom: 2,
-  collidingTasksXDivider: 2,
+  collidingEventsXDivider: 2,
 };
 
 export const WeekCalendar = ({
   selectedStart,
-  createTaskSelectedStart,
-  createTaskSelectedEnd,
-  onCreateTask,
+  createEventSelectedStart,
+  createEventSelectedEnd,
+  onCreateEvent,
   labelIds,
 }: {
   selectedStart: Date;
-  createTaskSelectedStart?: Date | number;
-  createTaskSelectedEnd?: Date | number;
-  onCreateTask?: OnCreateTask;
+  createEventSelectedStart?: Date | number;
+  createEventSelectedEnd?: Date | number;
+  onCreateEvent?: OnCreateEvent;
   labelIds?: string[] | null;
 }) => {
   const selectedWeek = useMemo(() => {
@@ -74,7 +74,7 @@ export const WeekCalendar = ({
   );
 
   const [{ data }] = useQuery({
-    query: QUERY_TASKS,
+    query: QUERY_CAL_EVENTS,
     variables: {
       input: {
         start: currenteDateRange.start,
@@ -84,37 +84,37 @@ export const WeekCalendar = ({
     },
   });
 
-  const [tasksContainer, setTasksContainer] = useState<HTMLDivElement | null>(
+  const [eventsContainer, setEventsContainer] = useState<HTMLDivElement | null>(
     null
   );
 
-  const [tasks, multiDayTasks] = usePartitionTasks({
-    tasks: data?.tasks,
+  const [events, multiDayEvents] = usePartitionEvents({
+    events: data?.calendarEvents,
     currentRangeEnd: currenteDateRange.end,
     currentRangeStart: currenteDateRange.start,
   });
-  const hourSlotWidth = useObserveWidth(tasksContainer, '.hour-slot');
+  const hourSlotWidth = useObserveWidth(eventsContainer, '.hour-slot');
 
-  const positionedTasks = usePositionedTasks({
-    tasks,
+  const positionedEvents = usePositionedEvents({
+    events,
     hourSlotHeight: HOUR_SLOT_HEIGHT,
     hourSlotWidth,
     currentRangeStart: currenteDateRange.start,
     currentRangeEnd: currenteDateRange.end,
 
-    taskMinHeight: 20,
+    eventMinHeight: 20,
     spacing: SPACING,
   });
 
-  const anchoredTasks = useAnchoredTasks({
-    tasks: multiDayTasks,
+  const anchoredEvents = useAnchoredEvents({
+    events: multiDayEvents,
     daySlotWidth: hourSlotWidth,
     currentRangeStart: currenteDateRange.start,
     currentRangeEnd: currenteDateRange.end,
   });
 
-  const slotClickHandlers = useClickToCreateTask({
-    onCreateTask,
+  const slotClickHandlers = useClickToCreateEvent({
+    onCreateEvent,
   });
 
   return (
@@ -144,21 +144,21 @@ export const WeekCalendar = ({
           ))}
         </div>
 
-        {anchoredTasks.length > 0 && (
+        {anchoredEvents.length > 0 && (
           <div
             className={clsx('relative space-y-1', {
-              'py-1': anchoredTasks.length > 0,
+              'py-1': anchoredEvents.length > 0,
             })}
           >
-            {anchoredTasks.map((t) => (
-              <AnchoredTaskItem
+            {anchoredEvents.map((t) => (
+              <AnchoredEventItem
                 className="relative z-10"
                 style={{
                   width: t.width,
                   left: t.left + HOUR_SLOT_HEADER_WIDTH,
                 }}
-                key={t.task.id}
-                task={t.task}
+                key={t.event.id}
+                event={t.event}
               />
             ))}
             <div className="absolute flex h-full w-full top-0 z-0 pr-4">
@@ -177,7 +177,7 @@ export const WeekCalendar = ({
         )}
 
         <div
-          ref={setTasksContainer}
+          ref={setEventsContainer}
           key={selectedWeek.key}
           className="relative h-full w-full flex overflow-auto pr-4"
         >
@@ -209,14 +209,14 @@ export const WeekCalendar = ({
           {/* Placeholders */}
           <WeekCalendarPlaceholders
             week={selectedWeek}
-            selectedStart={createTaskSelectedStart}
-            selectedEnd={createTaskSelectedEnd}
+            selectedStart={createEventSelectedStart}
+            selectedEnd={createEventSelectedEnd}
             slotProps={slotClickHandlers}
           />
 
-          {/* Tasks */}
-          {positionedTasks.map((t) => (
-            <CalendarTask
+          {/* events */}
+          {positionedEvents.map((t) => (
+            <CalendarEvent
               style={{
                 top: t.top,
                 height: t.height,
@@ -224,8 +224,8 @@ export const WeekCalendar = ({
                 width: t.width,
               }}
               className="text-xs absolute px-[6px] py-[6px] whitespace-pre-line overflow-hidden break-all"
-              key={t.task.id}
-              task={t.task}
+              key={t.event.id}
+              event={t.event}
             />
           ))}
         </div>

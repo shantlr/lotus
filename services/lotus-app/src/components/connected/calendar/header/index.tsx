@@ -1,13 +1,13 @@
 import { useMemo } from 'react';
 import { Button } from '../../../base/button';
 import { ButtonPopper } from '../../../base/buttonPopper';
-import { CalendarType, OnCreateTask } from '../types';
+import { CalendarType, OnCreateEvent } from '../types';
 import dayjs from 'dayjs';
 import isoWeek from 'dayjs/plugin/isoWeek';
 import { FaCaretLeft, FaCaretRight, FaPlus } from 'react-icons/fa';
 import clsx from 'clsx';
 import { SelectDateRange } from './dateRange';
-import { SelectLabels } from '../../selectTaskLabels';
+import { SelectLabels } from '../../selectEventLabels';
 
 dayjs.extend(isoWeek);
 
@@ -16,7 +16,7 @@ export const CalendarHeader = ({
   selectedStart,
   setSelectedStart,
   setType,
-  onCreateTask,
+  onCreateEvent,
 
   labelIds,
   onChangeLabelIds,
@@ -25,7 +25,7 @@ export const CalendarHeader = ({
   setSelectedStart: (date: Date) => void;
   type: CalendarType;
   setType: (type: CalendarType) => void;
-  onCreateTask?: OnCreateTask;
+  onCreateEvent?: OnCreateEvent;
   labelIds?: string[] | null;
   onChangeLabelIds: (labelIds: string[] | null) => void;
 }) => {
@@ -197,7 +197,7 @@ export const CalendarHeader = ({
               }
             }
 
-            onCreateTask?.({
+            onCreateEvent?.({
               elem: e.currentTarget as HTMLElement,
               start,
               end: dayjs(start).add(1, 'h').toDate(),

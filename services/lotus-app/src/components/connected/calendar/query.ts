@@ -1,8 +1,8 @@
 import { graphql } from '@/gql/__generated/client';
 
-export const QUERY_TASKS = graphql(`
-  query CalendarTasks($input: GetTasksInput) {
-    tasks(input: $input) {
+export const QUERY_CAL_EVENTS = graphql(`
+  query GetCalendarEvents($input: GetCalendarEventsInput) {
+    calendarEvents(input: $input) {
       id
       title
       start

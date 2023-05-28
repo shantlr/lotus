@@ -1,7 +1,7 @@
 import dayjs, { Dayjs } from 'dayjs';
 import { useHourSlots } from '../useHourSlots';
 import { HOUR_SLOT_HEIGHT } from './constants';
-import { OnCreateTask } from '../types';
+import { OnCreateEvent } from '../types';
 import clsx from 'clsx';
 import { SlotPlaceholder } from '../slot';
 import { ComponentProps } from 'react';
@@ -15,7 +15,7 @@ const DayHourSlots = ({
   day: Date | Dayjs;
   selectedStart?: Date | number;
   selectedEnd?: Date | number;
-  onCreateTask?: OnCreateTask;
+  onCreateEvent?: OnCreateEvent;
   slotProps?: ComponentProps<typeof SlotPlaceholder>;
 }) => {
   const slots = useHourSlots({
@@ -24,7 +24,7 @@ const DayHourSlots = ({
     selectedStart,
   });
 
-  const hour = new Date().getHours();
+  // const hour = new Date().getHours();
 
   return (
     <>

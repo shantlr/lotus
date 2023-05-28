@@ -2,7 +2,7 @@ import clsx from 'clsx';
 import { DayCalendar } from './dayCalendar';
 import { MonthCalendar } from './monthCalendar';
 import { WeekCalendar } from './weekCalendar';
-import { CalendarType, OnCreateTask } from './types';
+import { CalendarType, OnCreateEvent } from './types';
 import { CalendarHeader } from './header';
 import { useState } from 'react';
 
@@ -26,15 +26,15 @@ const OPTIONS = [
 
 export const Calendar = ({
   className,
-  onCreateTask,
+  onCreateEvent,
 
-  createTaskSelectedStart,
-  createTaskSelectedEnd,
+  createEventSelectedStart,
+  createEventSelectedEnd,
 }: {
   className?: string;
-  createTaskSelectedStart?: Date | number;
-  createTaskSelectedEnd?: Date | number;
-  onCreateTask?: OnCreateTask;
+  createEventSelectedStart?: Date | number;
+  createEventSelectedEnd?: Date | number;
+  onCreateEvent?: OnCreateEvent;
 }) => {
   const [type, setType] = useState<CalendarType>('week');
   const [selectedStart, setSelectedStart] = useState<Date>(() => new Date());
@@ -49,7 +49,7 @@ export const Calendar = ({
         setSelectedStart={setSelectedStart}
         type={type}
         setType={setType}
-        onCreateTask={onCreateTask}
+        onCreateEvent={onCreateEvent}
         labelIds={labelIds}
         onChangeLabelIds={setLabelIds}
       />
@@ -57,26 +57,26 @@ export const Calendar = ({
       {type === 'day' && (
         <DayCalendar
           selectedStart={selectedStart}
-          createTaskSelectedStart={createTaskSelectedStart}
-          createTaskSelectedEnd={createTaskSelectedEnd}
-          onCreateTask={onCreateTask}
+          createEventSelectedStart={createEventSelectedStart}
+          createEventSelectedEnd={createEventSelectedEnd}
+          onCreateEvent={onCreateEvent}
           labelIds={labelIds}
         />
       )}
       {type === 'week' && (
         <WeekCalendar
           selectedStart={selectedStart}
-          createTaskSelectedStart={createTaskSelectedStart}
-          createTaskSelectedEnd={createTaskSelectedEnd}
-          onCreateTask={onCreateTask}
+          createEventSelectedStart={createEventSelectedStart}
+          createEventSelectedEnd={createEventSelectedEnd}
+          onCreateEvent={onCreateEvent}
           labelIds={labelIds}
         />
       )}
       {type === 'month' && (
         <MonthCalendar
-          createTaskSelectedStart={createTaskSelectedStart}
-          createTaskSelectedEnd={createTaskSelectedEnd}
-          onCreateTask={onCreateTask}
+          createEventSelectedStart={createEventSelectedStart}
+          createEventSelectedEnd={createEventSelectedEnd}
+          onCreateEvent={onCreateEvent}
           labelIds={labelIds}
         />
       )}

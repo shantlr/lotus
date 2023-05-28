@@ -1,19 +1,18 @@
-import { pushTaskIntoSlots } from '@/components/connected/calendar/useTasksPosition';
-import dayjs from 'dayjs';
+import { pushEventIntoSlots } from '@/components/connected/calendar/useEventsPosition';
 
 describe('components', () => {
   describe('calendar', () => {
     describe('week', () => {
-      describe('pushTaskIntoSlots', () => {
+      describe('pushEventIntoSlots', () => {
         it('should push before slots', () => {
           const slots = [
             {
               top: 50,
               height: 100,
-              tasks: [],
+              events: [],
             },
           ];
-          pushTaskIntoSlots(slots, {
+          pushEventIntoSlots(slots, {
             top: 0,
             height: 50,
             usedSlots: [],
@@ -35,10 +34,10 @@ describe('components', () => {
             {
               top: 0,
               height: 100,
-              tasks: [],
+              events: [],
             },
           ];
-          pushTaskIntoSlots(slots, {
+          pushEventIntoSlots(slots, {
             top: 100,
             height: 50,
             usedSlots: [],
@@ -60,10 +59,10 @@ describe('components', () => {
             {
               top: 20,
               height: 80,
-              tasks: [],
+              events: [],
             },
           ];
-          pushTaskIntoSlots(slots, {
+          pushEventIntoSlots(slots, {
             top: 0,
             height: 50,
             usedSlots: [],
@@ -88,10 +87,10 @@ describe('components', () => {
             {
               top: 0,
               height: 100,
-              tasks: [],
+              events: [],
             },
           ];
-          pushTaskIntoSlots(slots, {
+          pushEventIntoSlots(slots, {
             top: 50,
             height: 80,
             usedSlots: [],
@@ -117,15 +116,15 @@ describe('components', () => {
             {
               top: 0,
               height: 100,
-              tasks: [],
+              events: [],
             },
             {
               top: 100,
               height: 50,
-              tasks: [],
+              events: [],
             },
           ];
-          pushTaskIntoSlots(slots, {
+          pushEventIntoSlots(slots, {
             top: 0,
             height: 130,
             usedSlots: [],

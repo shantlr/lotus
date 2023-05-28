@@ -1,14 +1,17 @@
 import { ActionItem } from '@/components/base/button';
 import { graphql } from '@/gql/__generated/client';
-import { Order, PlanningTasksQuery } from '@/gql/__generated/client/graphql';
+import {
+  Order,
+  GetPlanningEventsQuery,
+} from '@/gql/__generated/client/graphql';
 import { MainLayout } from '@/layout/main';
 import dayjs, { Dayjs } from 'dayjs';
 import { useMemo, useState } from 'react';
 import { useQuery } from 'urql';
 
-const PLANNING_TASKS_QUERY = graphql(`
-  query PlanningTasks($input: GetTasksInput) {
-    tasks(input: $input) {
+const PLANNING_EVENTS_QUERY = graphql(`
+  query GetPlanningEvents($input: GetCalendarEventsInput) {
+    calendarEvents(input: $input) {
       id
       title
       start
@@ -17,14 +20,14 @@ const PLANNING_TASKS_QUERY = graphql(`
   }
 `);
 
-type Task = PlanningTasksQuery['tasks'][number];
+type Event = GetPlanningEventsQuery['calendarEvents'][number];
 
-const DayItem = ({ date, tasks }: { date: Dayjs; tasks: Task[] }) => {
+const DayItem = ({ date, events }: { date: Dayjs; events: Event[] }) => {
   return (
     <div className="flex">
       <div className="w-[60px]">{date.format('DD')}</div>
       <div className="grow space-y-2">
-        {tasks.map((t) => (
+        {events.map((t) => (
           <ActionItem className="rounded px-4" key={t.id}>
             {t.title}
           </ActionItem>
@@ -45,7 +48,7 @@ export default function PlanningPage() {
   );
 
   const [{ data }] = useQuery({
-    query: PLANNING_TASKS_QUERY,
+    query: PLANNING_EVENTS_QUERY,
     variables: {
       input: {
         order: Order.Asc,
@@ -53,24 +56,24 @@ export default function PlanningPage() {
     },
   });
 
-  const tasksByDay = useMemo(() => {
-    const res: Record<string, Task[]> = {};
-    data?.tasks?.forEach((t) => {
-      let s = dayjs(t.start).startOf('day');
-      const end = dayjs(t.end).valueOf();
+  const eventsByDay = useMemo(() => {
+    const res: Record<string, Event[]> = {};
+    data?.calendarEvents?.forEach((e) => {
+      let s = dayjs(e.start).startOf('day');
+      const end = dayjs(e.end).valueOf();
       while (s.isBefore(end)) {
         const k = s.format('DD/MM/YYYY');
         if (!(k in res)) {
           res[k] = [];
         }
-        res[k].push(t);
+        res[k].push(e);
 
         s = s.add(1, 'day');
       }
     });
 
     return res;
-  }, [data?.tasks]);
+  }, [data?.calendarEvents]);
 
   const days = useMemo(() => {
     let s = dayjs(start).startOf('day');
@@ -78,15 +81,15 @@ export default function PlanningPage() {
 
     const res: (
       | { key: string; type: 'month'; date: Dayjs }
-      | { key: number; type: 'day'; start: Dayjs; tasks: Task[] }
+      | { key: number; type: 'day'; start: Dayjs; events: Event[] }
     )[] = [];
 
     let last: Dayjs | null = null;
 
     while (s.isBefore(e)) {
       const k = s.format('DD/MM/YYYY');
-      const tasks = tasksByDay[k];
-      if (tasks?.length) {
+      const events = eventsByDay[k];
+      if (events?.length) {
         if (!last || !last.isSame(s, 'month')) {
           res.push({
             key: s.format('MM/YYYY'),
@@ -98,14 +101,14 @@ export default function PlanningPage() {
           key: s.valueOf(),
           type: 'day',
           start: s,
-          tasks,
+          events,
         });
         last = s;
       }
       s = s.add(1, 'day');
     }
     return res;
-  }, [end, start, tasksByDay]);
+  }, [end, start, eventsByDay]);
 
   return (
     <MainLayout>
@@ -113,7 +116,7 @@ export default function PlanningPage() {
         {days.map((d) => (
           <div key={d.key}>
             {d.type === 'month' && <div>{d.date.format('MMMM YYYY')}</div>}
-            {d.type === 'day' && <DayItem date={d.start} tasks={d.tasks} />}
+            {d.type === 'day' && <DayItem date={d.start} events={d.events} />}
           </div>
         ))}
       </div>

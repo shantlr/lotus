@@ -8,7 +8,7 @@ import { useEffect, useState } from 'react';
 import { FaArrowLeft } from 'react-icons/fa';
 import { useQuery } from 'urql';
 
-const GET_LABEL_COLORS = graphql(`
+const GET_LABEL_COLORS_QUERY = graphql(`
   query GetLabelColors {
     labelColors {
       id
@@ -30,7 +30,7 @@ const ColorPicker = ({
   autoPick?: boolean;
 }) => {
   const [{ data }] = useQuery({
-    query: GET_LABEL_COLORS,
+    query: GET_LABEL_COLORS_QUERY,
   });
 
   useEffect(() => {

@@ -2,32 +2,32 @@ import clsx from 'clsx';
 import dayjs from 'dayjs';
 import { useLayoutEffect, useMemo, useState } from 'react';
 import { useQuery } from 'urql';
-import { QUERY_TASKS } from '../query';
-import { AnchoredTaskItem, CalendarTask } from '../taskItem';
-import { usePartitionTasks } from './useTasksPositions';
-import { usePositionedTasks } from '../useTasksPosition';
+import { QUERY_CAL_EVENTS } from '../query';
+import { AnchoredEventItem, CalendarEvent } from '../eventItem';
+// import { usePartitionEvents } from './useEventsPositions';
 import { useObserveWidth } from '@/components/base/hooks';
 import { useHourSlots } from '../useHourSlots';
 import { SlotPlaceholder } from '../slot';
-import { OnCreateTask } from '../types';
-import { useClickToCreateTask } from '../useClickToCreateTask';
+import { OnCreateEvent } from '../types';
+import { useClickToCreateEvent } from '../useClickToCreateEvent';
+import { usePartitionEvents, usePositionedEvents } from '../useEventsPosition';
 
 const HOUR_HEIGHT = 100;
 const HEADER_HOUR_WIDTH = 45;
-const TASK_MIN_HEIGHT = 35;
+const EVENT_MIN_HEIGHT = 35;
 
 export const DayCalendar = ({
   selectedStart,
-  createTaskSelectedStart,
-  createTaskSelectedEnd,
-  onCreateTask,
+  createEventSelectedStart,
+  createEventSelectedEnd,
+  onCreateEvent,
   labelIds,
 }: {
   selectedStart: Date;
-  createTaskSelectedStart?: Date | number;
-  createTaskSelectedEnd?: Date | number;
+  createEventSelectedStart?: Date | number;
+  createEventSelectedEnd?: Date | number;
   onSetSelectedStart?: Date;
-  onCreateTask?: OnCreateTask;
+  onCreateEvent?: OnCreateEvent;
   labelIds?: string[] | null;
 }) => {
   const input = useMemo(
@@ -40,7 +40,7 @@ export const DayCalendar = ({
   );
 
   const [{ data }] = useQuery({
-    query: QUERY_TASKS,
+    query: QUERY_CAL_EVENTS,
     variables: {
       input,
     },
@@ -73,22 +73,22 @@ export const DayCalendar = ({
     [selectedStart]
   );
 
-  const [fulldayTask, tasks] = usePartitionTasks({
-    tasks: data?.tasks,
-    start: selectedDateRange.start,
-    end: selectedDateRange.end,
+  const [events, fulldayEvents] = usePartitionEvents({
+    events: data?.calendarEvents,
+    currentRangeStart: selectedDateRange.start,
+    currentRangeEnd: selectedDateRange.end,
   });
   const hourSlotWidth = useObserveWidth(hoursContainer, '.hour-slot');
 
-  const positionedTasks = usePositionedTasks({
+  const positionedEvents = usePositionedEvents({
     currentRangeStart: selectedDateRange.start,
     currentRangeEnd: selectedDateRange.end,
-    tasks,
+    events,
     hourSlotHeight: HOUR_HEIGHT,
     hourSlotWidth: hourSlotWidth,
-    taskMinHeight: TASK_MIN_HEIGHT,
+    eventMinHeight: EVENT_MIN_HEIGHT,
     spacing: {
-      collidingTasksXDivider: 4,
+      collidingEventsXDivider: 4,
       hourSlotPaddingBottom: 2,
       hourSlotPaddingRight: 20,
     },
@@ -96,21 +96,21 @@ export const DayCalendar = ({
 
   const slots = useHourSlots({
     day: selectedDateRange.start,
-    selectedStart: createTaskSelectedStart,
-    selectedEnd: createTaskSelectedEnd,
+    selectedStart: createEventSelectedStart,
+    selectedEnd: createEventSelectedEnd,
   });
 
-  const clickEvents = useClickToCreateTask({ onCreateTask });
+  const clickEvents = useClickToCreateEvent({ onCreateEvent });
 
   return (
     <div className="flex flex-col overflow-hidden w-full h-full">
       <div
         className={clsx('space-y-1', {
-          'pb-2': fulldayTask.length > 0,
+          'pb-2': fulldayEvents.length > 0,
         })}
       >
-        {fulldayTask.map((t) => (
-          <AnchoredTaskItem key={t.id} task={t} />
+        {fulldayEvents.map((t) => (
+          <AnchoredEventItem key={t.id} event={t} />
         ))}
       </div>
 
@@ -150,23 +150,22 @@ export const DayCalendar = ({
           </div>
         ))}
 
-        {/* Tasks */}
-        {positionedTasks.map(
+        {/* Events */}
+        {positionedEvents.map(
           ({
             overflowAfter,
             overflowBefore,
-            task,
+            event,
             height,
             top,
             left,
             width,
           }) => {
             return (
-              <CalendarTask
-                key={task.id}
-                id={task.id}
+              <CalendarEvent
+                key={event.id}
                 className={clsx(
-                  'task-item whitespace-pre-line overflow-hidden break-all absolute px-4 py-1',
+                  'event-item whitespace-pre-line overflow-hidden break-all absolute px-4 py-1',
                   {
                     'border-dashed border-t-white border-t-[1px]':
                       overflowBefore,
@@ -182,7 +181,7 @@ export const DayCalendar = ({
                   width,
                   left: left + HEADER_HOUR_WIDTH,
                 }}
-                task={task}
+                event={event}
               />
             );
           }

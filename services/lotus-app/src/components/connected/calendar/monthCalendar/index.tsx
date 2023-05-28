@@ -1,9 +1,9 @@
 export const MonthCalendar = ({}: {
   labelIds?: string[] | null;
-  createTaskSelectedStart?: Date | number;
-  createTaskSelectedEnd?: Date | number;
+  createEventSelectedStart?: Date | number;
+  createEventSelectedEnd?: Date | number;
 
-  onCreateTask?: (value: { title?: string; start?: Date; end?: Date }) => void;
+  onCreateEvent?: (value: { title?: string; start?: Date; end?: Date }) => void;
 }) => {
   return null;
 };

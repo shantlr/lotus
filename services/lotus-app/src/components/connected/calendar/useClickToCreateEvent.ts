@@ -1,10 +1,10 @@
 import { MouseEvent, useMemo, useRef } from 'react';
-import { OnCreateTask } from './types';
+import { OnCreateEvent } from './types';
 
-export const useClickToCreateTask = ({
-  onCreateTask,
+export const useClickToCreateEvent = ({
+  onCreateEvent,
 }: {
-  onCreateTask?: OnCreateTask;
+  onCreateEvent?: OnCreateEvent;
 }) => {
   const ref = useRef<{
     firstSlot: { start: number; end: number; elem: HTMLElement };
@@ -36,7 +36,7 @@ export const useClickToCreateTask = ({
           },
         };
         event.preventDefault();
-        onCreateTask?.({
+        onCreateEvent?.({
           start: new Date(start),
           end: new Date(end),
           elem: div,
@@ -70,13 +70,13 @@ export const useClickToCreateTask = ({
         };
 
         if (start < ref.current.firstSlot.start) {
-          onCreateTask?.({
+          onCreateEvent?.({
             start: new Date(start),
             end: new Date(ref.current.firstSlot.end),
             elem: ref.current.firstSlot.elem,
           });
         } else {
-          onCreateTask?.({
+          onCreateEvent?.({
             start: new Date(ref.current.firstSlot.start),
             end: new Date(end),
             elem: div,
@@ -87,6 +87,6 @@ export const useClickToCreateTask = ({
         return;
       },
     }),
-    [onCreateTask]
+    [onCreateEvent]
   );
 };

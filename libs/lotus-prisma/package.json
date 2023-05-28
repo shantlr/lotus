@@ -4,7 +4,9 @@
   "description": "",
   "main": "build/main/index.js",
   "scripts": {
-    "prepare": "prisma generate --schema=./prisma/schema.prisma && tsc"
+    "prepare": "prisma generate --schema=./prisma/schema.prisma && tsc",
+    "make:migration": "prisma migrate dev --name",
+    "reset": "prisma migrate reset"
   },
   "files": [
     "build",

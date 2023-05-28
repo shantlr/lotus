@@ -4,42 +4,42 @@ import { FaTimes, FaTrash } from 'react-icons/fa';
 import dayjs from 'dayjs';
 import { useMutation, useQuery } from 'urql';
 import {
-  DELETE_TASK_MUTATION,
-  QUERY_TASK_DETAIL,
-  UPDATE_TASK_MUT,
+  DELETE_EVENT_MUTATION,
+  GET_CAL_EVENT_DETAIL_QUERY,
+  UPDATE_EVENT_MUTATION,
 } from './query';
 import { IconButton } from '../../base/iconButton';
 import { useOnBlurChange } from '../../base/hooks/useOnBlurChange';
 import { DateRangePicker } from '../../base/dateRangePicker';
 import clsx from 'clsx';
-import { SelectLabels } from '../selectTaskLabels';
+import { SelectLabels } from '../selectEventLabels';
 
-export const TaskDetails = ({
-  taskId,
+export const CalendarEventDetails = ({
+  eventId,
   onClose,
 }: {
-  taskId: string;
+  eventId: string;
   onClose?: () => void;
 }) => {
   const [{ data }] = useQuery({
-    query: QUERY_TASK_DETAIL,
+    query: GET_CAL_EVENT_DETAIL_QUERY,
     variables: {
-      id: taskId,
+      id: eventId,
     },
   });
 
-  const task = data?.task;
+  const event = data?.calendarEvent;
 
   const formattedDate = useMemo(() => {
-    if (!task?.end || !task?.start) {
+    if (!event?.end || !event?.start) {
       return '';
     }
 
-    const start = dayjs(task.start);
-    const end = dayjs(task.end);
+    const start = dayjs(event.start);
+    const end = dayjs(event.end);
 
     if (start.format('DD/MM/YYYY') === end.format('DD/MM/YYYY')) {
-      return `${start.format('DD/MM/YYYY')} ${dayjs(task.start).format(
+      return `${start.format('DD/MM/YYYY')} ${dayjs(event.start).format(
         'HH:mm'
       )} - ${end.format('HH:mm')}`;
     }
@@ -57,24 +57,28 @@ export const TaskDetails = ({
     return `${start.format('DD/MM/YYYY HH:mm')} - ${end.format(
       'DD/MM/YYYY HH:mm'
     )}`;
-  }, [task?.end, task?.start]);
+  }, [event?.end, event?.start]);
 
-  const [{ fetching: deleting }, deleteTask] =
-    useMutation(DELETE_TASK_MUTATION);
-  const [{}, updateTask] = useMutation(UPDATE_TASK_MUT);
+  const [{ fetching: deleting }, deleteEvent] = useMutation(
+    DELETE_EVENT_MUTATION
+  );
+  const [{}, updateEvent] = useMutation(UPDATE_EVENT_MUTATION);
   const title = useOnBlurChange(
-    task?.title,
+    event?.title,
     (val) => {
-      if (val && task) {
-        updateTask({ input: { id: task.id, title: val } });
+      if (val && event) {
+        updateEvent({ input: { id: event.id, title: val } });
       }
     },
     { blurOnEnter: true, escapeCancel: true }
   );
 
-  const labelIds = useMemo(() => task?.labels.map((l) => l.id), [task?.labels]);
+  const labelIds = useMemo(
+    () => event?.labels.map((l) => l.id),
+    [event?.labels]
+  );
 
-  if (!task) {
+  if (!event) {
     return null;
   }
 
@@ -93,11 +97,11 @@ export const TaskDetails = ({
 
       <DateRangePicker
         className="mt-2 mr-2"
-        start={task.start}
-        end={task.end}
+        start={event.start}
+        end={event.end}
         onChange={(range) => {
-          updateTask({
-            input: { id: task.id, startDate: range.start, endDate: range.end },
+          updateEvent({
+            input: { id: event.id, startDate: range.start, endDate: range.end },
           });
         }}
       >
@@ -128,9 +132,9 @@ export const TaskDetails = ({
           if (!nextLabelIds.length) {
             return;
           }
-          updateTask({
+          updateEvent({
             input: {
-              id: task.id,
+              id: event.id,
               labelIds: nextLabelIds,
             },
           });
@@ -143,9 +147,9 @@ export const TaskDetails = ({
           className="py-2 px-8"
           loading={deleting}
           onClick={() => {
-            deleteTask({
+            deleteEvent({
               input: {
-                id: task.id,
+                id: event.id,
               },
             });
           }}

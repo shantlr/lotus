@@ -14,7 +14,7 @@ import { SIZES, Size } from '@/components/base/styles';
 import { Spinner } from '@/components/base/spinner';
 import { EditLabel } from './editLabel';
 
-export const TASK_LABELS_QUERY = graphql(`
+export const GET_LABELS_QUERY = graphql(`
   query GetLabels($input: GetLabelsInput) {
     labels(input: $input) {
       id
@@ -54,7 +54,7 @@ export const SelectLabels = ({
   labelClassName?: string;
 }) => {
   const [{ data, fetching }] = useQuery({
-    query: TASK_LABELS_QUERY,
+    query: GET_LABELS_QUERY,
     variables: {
       input: {
         assignable,

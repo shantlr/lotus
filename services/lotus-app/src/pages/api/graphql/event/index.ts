@@ -1,33 +1,33 @@
 import { Resolvers } from '@/gql/__generated/resolversTypes';
 import { prisma } from '@/lib/prisma';
-import { Prisma } from '@prisma/client';
 import { GraphqlContext } from '../types';
 import { UnauthenticatedError, UnauthorizedError } from '../util';
 import { pickBy } from 'lodash';
 import { diff } from '@/lib/utils/diff';
+import { Prisma } from 'lotus-prisma';
 
 export const resolvers: Resolvers<GraphqlContext> = {
   Query: {
-    task: async (root, { id }, context) => {
+    calendarEvent: async (root, { id }, context) => {
       if (!context.currentSession?.user) {
         throw new UnauthenticatedError();
       }
 
-      const task = await prisma.task.findFirst({
+      const event = await prisma.event.findFirst({
         where: {
           id,
         },
       });
-      if (task?.creator_id !== context.currentSession.user.id) {
+      if (event?.creator_id !== context.currentSession.user.id) {
         throw new UnauthorizedError();
       }
-      return task;
+      return event;
     },
-    tasks: async (root, { input }, { currentSession: { user } }) => {
+    calendarEvents: async (root, { input }, { currentSession: { user } }) => {
       if (!user) {
         return [];
       }
-      const conds: Prisma.TaskWhereInput[] = [
+      const conds: Prisma.EventWhereInput[] = [
         {
           creator_id: user.id,
         },
@@ -58,7 +58,7 @@ export const resolvers: Resolvers<GraphqlContext> = {
           },
         });
       }
-      const tasks = prisma.task.findMany({
+      const events = prisma.event.findMany({
         where: {
           AND: conds,
         },
@@ -71,11 +71,11 @@ export const resolvers: Resolvers<GraphqlContext> = {
           },
         ],
       });
-      return tasks;
+      return events;
     },
   },
   Mutation: {
-    createTask: async (
+    createCalendarEvent: async (
       root,
       { input: { endDate, startDate, title, labelIds } },
       { currentSession }
@@ -100,7 +100,7 @@ export const resolvers: Resolvers<GraphqlContext> = {
         throw new UnauthorizedError();
       }
 
-      const task = await prisma.task.create({
+      const event = await prisma.event.create({
         data: {
           title,
           start: startDate,
@@ -116,10 +116,10 @@ export const resolvers: Resolvers<GraphqlContext> = {
       });
 
       return {
-        task,
+        event,
       };
     },
-    updateTask: async (
+    updateCalendarEvent: async (
       root,
       { input: { id, title, startDate, endDate, labelIds } },
       { currentSession: { user } }
@@ -127,45 +127,45 @@ export const resolvers: Resolvers<GraphqlContext> = {
       if (!user) {
         throw new UnauthenticatedError();
       }
-      const task = await prisma.task.findFirst({
+      const event = await prisma.event.findFirst({
         where: {
           id,
         },
       });
-      if (!task) {
-        throw new Error('INVALID_TASK');
+      if (!event) {
+        throw new Error('INVALID_EVENT');
       }
 
       // TODO: transaction
       if (!title && !startDate && !endDate && !labelIds?.length) {
-        return task;
+        return event;
       }
 
       return prisma.$transaction(async (p) => {
         //#region Labels
         if (labelIds?.length) {
-          const existings = await p.userTaskLabel.findMany({
-            where: { task_id: task.id, user_id: user.id },
+          const existings = await p.userEventLabel.findMany({
+            where: { event_id: event.id, user_id: user.id },
           });
           const { deleted, created } = diff(
             existings.map((e) => e.label_id),
             labelIds
           );
           if (deleted.length) {
-            await p.userTaskLabel.deleteMany({
+            await p.userEventLabel.deleteMany({
               where: {
                 label_id: {
                   in: deleted,
                 },
-                task_id: task.id,
+                event_id: event.id,
                 user_id: user.id,
               },
             });
           }
           if (created.length) {
-            await p.userTaskLabel.createMany({
+            await p.userEventLabel.createMany({
               data: created.map((c) => ({
-                task_id: task.id,
+                event_id: event.id,
                 user_id: user.id,
                 label_id: c,
               })),
@@ -176,35 +176,39 @@ export const resolvers: Resolvers<GraphqlContext> = {
 
         const update = pickBy({ title, start: startDate, end: endDate });
         if (Object.keys(update).length) {
-          const res = await prisma.task.update({
+          const res = await prisma.event.update({
             where: { id },
             data: pickBy({ title, start: startDate, end: endDate }),
           });
           return res;
         }
-        return task;
+        return event;
       });
     },
-    deleteTask: async (root, { input: { id } }, { currentSession }) => {
+    deleteCalendarEvent: async (
+      root,
+      { input: { id } },
+      { currentSession }
+    ) => {
       if (!currentSession?.user) {
         throw new UnauthenticatedError();
       }
 
-      const task = await prisma.task.findFirst({ where: { id } });
-      if (!task) {
-        throw new Error('INVALID_TASK');
+      const event = await prisma.event.findFirst({ where: { id } });
+      if (!event) {
+        throw new Error('INVALID_EVENT');
       }
 
-      if (task.creator_id !== currentSession.user.id) {
+      if (event.creator_id !== currentSession.user.id) {
         throw new UnauthorizedError();
       }
 
-      await prisma.task.delete({ where: { id } });
+      await prisma.event.delete({ where: { id } });
       return true;
     },
   },
-  Task: {
-    labels: (task, args, { currentSession }) => {
+  CalendarEvent: {
+    labels: (event, args, { currentSession }) => {
       const user = currentSession?.user;
       if (!user) {
         return [];
@@ -212,19 +216,19 @@ export const resolvers: Resolvers<GraphqlContext> = {
 
       return prisma.label.findMany({
         where: {
-          userTaskLabels: {
+          userEventLabels: {
             some: {
               user_id: user.id,
-              task_id: task.id,
+              event_id: event.id,
             },
           },
         },
       });
     },
-    color: async (task, args, { currentSession: { user } }) => {
-      const settings = await prisma.userTaskLabel.findFirst({
+    color: async (event, args, { currentSession: { user } }) => {
+      const settings = await prisma.userEventLabel.findFirst({
         where: {
-          task_id: task.id,
+          event_id: event.id,
           user_id: user?.id,
         },
         include: {
@@ -245,10 +249,10 @@ export const resolvers: Resolvers<GraphqlContext> = {
       }
       return settings?.label.userSettings[0].color;
     },
-    secondaryColor: async (task, args, { currentSession: { user } }) => {
-      const settings = await prisma.userTaskLabel.findFirst({
+    secondaryColor: async (event, args, { currentSession: { user } }) => {
+      const settings = await prisma.userEventLabel.findFirst({
         where: {
-          task_id: task.id,
+          event_id: event.id,
           user_id: user?.id,
         },
         include: {

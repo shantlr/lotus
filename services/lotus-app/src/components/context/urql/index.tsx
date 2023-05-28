@@ -8,15 +8,18 @@ const client = createClient({
   url: '/api/graphql',
   exchanges: [
     cacheExchange<GraphCacheConfig>({
+      // @ts-ignore
+      storage: undefined,
+
       resolvers: {
         Query: {
-          task(parent, args, cache, info) {
-            return { __typename: 'Task', id: args.id };
+          calendarEvent(parent, args, cache, info) {
+            return { __typename: 'CalendarEvent', id: args.id };
           },
         },
       },
       optimistic: {
-        updateTask(args, cache, info) {
+        updateCalendarEvent(args, cache, info) {
           const up = pickBy(omit(args.input, ['id', 'labelIds']));
           if (args.input.labelIds) {
             up.labels = args.input.labelIds.map((id) => ({
@@ -24,7 +27,7 @@ const client = createClient({
             }));
           }
           return {
-            __typename: 'Task',
+            __typename: 'CalendarEvent',
             id: args.input.id,
             ...up,
           };
@@ -32,9 +35,9 @@ const client = createClient({
       },
       updates: {
         Mutation: {
-          createTask: (result, args, cache, info) => {
+          createCalendarEvent: (result, args, cache, info) => {
             cache.inspectFields('Query').forEach((q) => {
-              if (q.fieldName === 'tasks') {
+              if (q.fieldName === 'calendarEvents') {
                 cache.invalidate('Query', q.fieldName, q.arguments);
               }
             });
@@ -46,9 +49,9 @@ const client = createClient({
               }
             });
           },
-          deleteTask: (result, args, cache, info) => {
+          deleteCalendarEvent: (result, args, cache, info) => {
             cache.invalidate({
-              __typename: 'Task',
+              __typename: 'CalendarEvent',
               // @ts-ignore
               id: args.input.id,
             });

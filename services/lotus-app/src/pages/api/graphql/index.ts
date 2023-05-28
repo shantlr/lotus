@@ -1,4 +1,3 @@
-import { Resolvers } from '@/gql/__generated/resolversTypes';
 import { typeDefs } from '@/gql/__generated/typeDefs';
 import { useGenericAuth } from '@envelop/generic-auth';
 
@@ -11,7 +10,7 @@ import { resolvers as scalarResolvers } from 'graphql-scalars';
 import { authOptions } from '../auth/[...nextauth]';
 import { GraphqlContext } from './types';
 
-import { resolvers as task } from './task';
+import { resolvers as event } from './event';
 import { resolvers as label } from './label';
 import { resolvers as user } from './user';
 import { pick } from 'lodash';
@@ -24,7 +23,7 @@ export const config = {
 };
 
 const schema = makeExecutableSchema({
-  resolvers: [pick(scalarResolvers, 'DateTime'), task, label, user],
+  resolvers: [pick(scalarResolvers, 'DateTime'), event, label, user],
   typeDefs: typeDefs,
 });
 

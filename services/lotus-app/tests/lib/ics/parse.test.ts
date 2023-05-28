@@ -19,7 +19,7 @@ END:VCALENDAR\r
         method: 'PUBLISH',
         prodID: 'Microsoft Exchange Server 2010',
         version: '2.0',
-        'X-WR-CALNAME': { params: {}, value: 'Calendrier' },
+        name: 'Calendrier',
         TEST: { params: {}, value: 'HELLOWORLD' },
         HELLO: [{ NAME: { params: {}, value: 'TEST' } }],
       });

@@ -35,7 +35,7 @@ model Account {
 
 model Session {
   id           String   @id @default(cuid())
-  sessionToken String   @unique
+  sessionToken String   @unique @map("session_token")
   expires      DateTime
   userId       String   @map("user_id")
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -52,10 +52,10 @@ model User {
 
   accounts      Account[]
   sessions      Session[]
-  tasks         Task[]
-  labels    Label[]
+  events        Event[]
+  labels        Label[]
   labelSettings UserLabelSettings[]
-  taskLabels UserTaskLabel[]
+  eventLabels    UserEventLabel[]
 
   @@map("users")
 }
@@ -69,7 +69,7 @@ model VerificationToken {
   @@map("verification_tokens")
 }
 
-model Task {
+model Event {
   id String @id @default(cuid())
   start DateTime
   end DateTime
@@ -81,7 +81,7 @@ model Task {
 
   created_at DateTime @default(now())
 
-  userLabels UserTaskLabel[]
+  userLabels UserEventLabel[]
 }
 
 model Label {
@@ -96,7 +96,7 @@ model Label {
   created_at DateTime @default(now())
 
   userSettings UserLabelSettings[]
-  userTaskLabels UserTaskLabel[]
+  userEventLabels UserEventLabel[]
 }
 
 model UserLabelSettings {
@@ -107,21 +107,21 @@ model UserLabelSettings {
   user_id String
   user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
-  task_label_id String
-  task_label Label @relation(fields: [task_label_id], references: [id], onDelete: Cascade)
+  event_label_id String
+  event_label Label @relation(fields: [event_label_id], references: [id], onDelete: Cascade)
 
-  @@unique([user_id, task_label_id])
+  @@unique([user_id, event_label_id])
 }
 
-model UserTaskLabel {
+model UserEventLabel {
   user_id String
   user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
-  task_id String
-  task Task @relation(fields: [task_id], references: [id], onDelete: Cascade)
+  event_id String
+  event Event @relation(fields: [event_id], references: [id], onDelete: Cascade)
 
   label_id String
   label Label @relation(fields: [label_id], references: [id], onDelete: Cascade)
 
-  @@unique([task_id, label_id, user_id])
+  @@unique([event_id, label_id, user_id])
 }

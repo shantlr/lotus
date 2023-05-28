@@ -1,6 +1,6 @@
 import { Calendar } from '@/components/connected/calendar';
 import { CalendarType } from '@/components/connected/calendar/types';
-import { CreateTaskPopper } from '@/components/connected/createTaskPane';
+import { CreateCalendarEventPopper } from '@/components/connected/createEvent';
 import { MainLayout } from '@/layout/main';
 import { omit } from 'lodash';
 import { useRouter } from 'next/router';
@@ -9,15 +9,15 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 export default function CalendarPage({ type }: { type?: CalendarType }) {
   const router = useRouter();
 
-  const [taskPopperElem, setPopperElem] = useState<HTMLElement>();
+  const [eventPopperElem, setPopperElem] = useState<HTMLElement>();
 
-  const createTask = useMemo(() => {
-    if (!('new_task' in router.query)) {
+  const createEvent = useMemo(() => {
+    if (!('new_event' in router.query)) {
       return null;
     }
 
-    if (typeof router.query.new_task === 'string') {
-      const [start, end] = router.query.new_task
+    if (typeof router.query.new_event === 'string') {
+      const [start, end] = router.query.new_event
         .split(':')
         .map((d) => Number(d));
       if (isFinite(start) || isFinite(end)) {
@@ -32,7 +32,7 @@ export default function CalendarPage({ type }: { type?: CalendarType }) {
 
   useEffect(() => {
     // auto clean popper elem
-    if (!createTask && taskPopperElem) {
+    if (!createEvent && eventPopperElem) {
       // if we immediately clean timeout
       // there is a case where elem is cleaned before router updated
       // => timeout do the job
@@ -43,9 +43,9 @@ export default function CalendarPage({ type }: { type?: CalendarType }) {
         clearTimeout(handle);
       };
     }
-  }, [createTask, taskPopperElem]);
+  }, [createEvent, eventPopperElem]);
 
-  const onOpenCreateTask = useCallback(
+  const onOpenCreateEvent = useCallback(
     (value: {
       elem?: HTMLElement;
       title?: string;
@@ -57,7 +57,7 @@ export default function CalendarPage({ type }: { type?: CalendarType }) {
         pathname: router.pathname,
         query: {
           ...router.query,
-          new_task: `${value.start?.valueOf() ?? ''}:${
+          new_event: `${value.start?.valueOf() ?? ''}:${
             value.end?.valueOf() ?? ''
           }`,
         },
@@ -69,21 +69,21 @@ export default function CalendarPage({ type }: { type?: CalendarType }) {
   return (
     <MainLayout>
       <Calendar
-        createTaskSelectedStart={createTask?.start}
-        createTaskSelectedEnd={createTask?.end}
-        onCreateTask={onOpenCreateTask}
+        createEventSelectedStart={createEvent?.start}
+        createEventSelectedEnd={createEvent?.end}
+        onCreateEvent={onOpenCreateEvent}
       />
-      {createTask && (
-        <CreateTaskPopper
-          start={createTask.start}
-          end={createTask.end}
-          parentElem={taskPopperElem}
+      {createEvent && (
+        <CreateCalendarEventPopper
+          start={createEvent.start}
+          end={createEvent.end}
+          parentElem={eventPopperElem}
           onStartChange={(d) => {
             router.replace({
               pathname: router.pathname,
               query: {
                 ...router.query,
-                new_task: `${d.valueOf()}:${createTask.end}`,
+                new_event: `${d.valueOf()}:${createEvent.end}`,
               },
             });
           }}
@@ -92,14 +92,14 @@ export default function CalendarPage({ type }: { type?: CalendarType }) {
               pathname: router.pathname,
               query: {
                 ...router.query,
-                new_task: `${createTask.start}:${d.valueOf()}`,
+                new_event: `${createEvent.start}:${d.valueOf()}`,
               },
             });
           }}
           onClose={() => {
             router.replace({
               pathname: router.pathname,
-              query: omit(router.query, ['new_task']),
+              query: omit(router.query, ['new_event']),
             });
           }}
         />

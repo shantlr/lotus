@@ -31,7 +31,7 @@ const config = {
           DateTime: 'Date',
         },
         mappers: {
-          Task: '../../lib/prisma#TaskModel',
+          CalendarEvent: '../../lib/prisma#EventModel',
           Account: '../../lib/prisma#Account',
         },
       },

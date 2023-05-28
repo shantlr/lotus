@@ -1,20 +1,20 @@
 import { classed } from '@/components/base/classed';
 import { Popper } from '@/components/base/popper';
-import { TaskDetails } from '@/components/connected/taskDetails';
-import { CalendarTasksQuery } from '@/gql/__generated/client/graphql';
+import { CalendarEventDetails } from '@/components/connected/eventDetails';
+import { GetCalendarEventsQuery } from '@/gql/__generated/client/graphql';
 import clsx from 'clsx';
 import { ComponentProps, useState } from 'react';
 
 const Base = classed(
   'div',
-  'border-2 overflow-hidden task-item bg-gray-500 cursor-pointer hover:bg-gray-400 transition drop-shadow'
+  'border-2 overflow-hidden event-item bg-gray-500 cursor-pointer hover:bg-gray-400 transition drop-shadow'
 );
 
-export const BaseTaskItem = ({
-  taskId,
+const BaseEventItem = ({
+  eventId,
   ...props
 }: {
-  taskId: string;
+  eventId: string;
 } & ComponentProps<typeof Base>) => {
   const [show, setShow] = useState(false);
 
@@ -31,7 +31,10 @@ export const BaseTaskItem = ({
       }}
       popper={
         <div className="shadow-xl z-50">
-          <TaskDetails taskId={taskId} onClose={() => setShow(false)} />
+          <CalendarEventDetails
+            eventId={eventId}
+            onClose={() => setShow(false)}
+          />
         </div>
       }
       onClose={setShow}
@@ -46,43 +49,43 @@ export const BaseTaskItem = ({
   );
 };
 
-export const CalendarTask = ({
-  task,
+export const CalendarEvent = ({
+  event,
   className,
   ...props
 }: {
-  task: CalendarTasksQuery['tasks'][number];
-} & Omit<ComponentProps<typeof BaseTaskItem>, 'taskId'>) => {
+  event: GetCalendarEventsQuery['calendarEvents'][number];
+} & Omit<ComponentProps<typeof BaseEventItem>, 'eventId'>) => {
   return (
-    <BaseTaskItem
-      taskId={task.id}
+    <BaseEventItem
+      eventId={event.id}
       {...props}
       style={{
         ...(props.style || null),
-        background: task.color || undefined,
-        borderColor: task.secondaryColor || undefined,
+        background: event.color || undefined,
+        borderColor: event.secondaryColor || undefined,
       }}
       className={clsx('rounded', className)}
     >
-      {task.title}
-    </BaseTaskItem>
+      {event.title}
+    </BaseEventItem>
   );
 };
 
-export const AnchoredTaskItem = ({
+export const AnchoredEventItem = ({
   className,
-  task,
+  event,
   ...props
 }: {
-  task: CalendarTasksQuery['tasks'][number];
-} & Omit<ComponentProps<typeof BaseTaskItem>, 'taskId'>) => {
+  event: GetCalendarEventsQuery['calendarEvents'][number];
+} & Omit<ComponentProps<typeof BaseEventItem>, 'eventId'>) => {
   return (
-    <BaseTaskItem
-      taskId={task.id}
+    <BaseEventItem
+      eventId={event.id}
       className={clsx('text-xs rounded px-4 py-1', className)}
       {...props}
     >
-      {task.title}
-    </BaseTaskItem>
+      {event.title}
+    </BaseEventItem>
   );
 };

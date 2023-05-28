@@ -1,0 +1,31 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "shell",
+			"command": "cd libs/lotus-prisma && rushx prepare",
+			"problemMatcher": [],
+			"label": "build prisma client",
+			"detail": "",
+		},
+		{
+			"type": "shell",
+			"command": "cd libs/lotus-prisma && rushx make:migration ${input:name}",
+			"label": "make new migration",
+			"problemMatcher": [],
+			"detail": "",
+		},
+		{
+			"type": "shell",
+			"command": "cd libs/lotus-prisma && rushx reset",
+			"label": "reset prisma db",
+			"problemMatcher": [],
+			"detail": ""
+		}
+	],
+	"inputs": [{
+		"id": "name",
+		"type": "promptString",
+		"description": "migration name"
+	}],
+}

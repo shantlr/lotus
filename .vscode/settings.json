@@ -7,5 +7,6 @@
     "./services/lotus-worker",
     "./libs/lotus-prisma",
     "./libs/lotus-queue",
-  ]
+  ],
+  "graphql-config.load.rootDir": "./services/lotus-app"
 }

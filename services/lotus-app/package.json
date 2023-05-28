@@ -40,7 +40,9 @@
     "ts-node": "^10.9.1",
     "typescript": "^5.0.4",
     "urql": "^4.0.0",
-    "lotus-prisma": "workspace:*"
+    "bullmq": "^3.13.4",
+    "lotus-prisma": "workspace:*",
+    "lotus-queue": "workspace:*"
   },
   "devDependencies": {
     "@graphql-codegen/cli": "3.3.1",
